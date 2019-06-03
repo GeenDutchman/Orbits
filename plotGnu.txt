@@ -13,7 +13,7 @@ set zlabel 'Z'
 # splot "sun.txt" u 2:2:1 pt 30 ps 1
 do for [i=0:10000] {
 # set output "./images/".i.".png"
-splot "xyzData.txt" u 2:1:3 every ::i::i pt 7 ps 3 title sprintf("time: %f", i*0.001)
+splot "xyzData.txt" u 1:2:3 every ::i::i pt 7 ps 3 title sprintf("time: %f", i*0.001)
 # pause 0.0001
 }
 

@@ -1,0 +1,13 @@
+set size square
+set xrange [-2.0:2.0]
+set yrange [-2.0:2.0]
+set zrange [-2.0:2.0]
+set xlabel 'X'
+set ylabel 'Y'
+set zlabel 'Z'
+
+do for [i=0:10000] {
+splot '<cat' u 1:2:3 every ::i::i pt 7 ps 3 title sprintf("time: %f", i*0.001)
+}
+
+pause -1 "Hit enter to continue"

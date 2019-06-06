@@ -3,7 +3,7 @@ import numpy as np
 from RK import RK4_Step, RK45_Step
 
 
-def Keppler_Binary_RHS(t, y0, BHs0, **kwargs):
+def Keppler_Binary_RHS(t, y0, **kwargs):
     star_x_vec = y0[0:3]  # star position stored in first 3 elements
     star_v_vec = y0[3:]  # star velocity stored in last 3 elements
 
@@ -27,15 +27,23 @@ def Keppler_Binary_RHS(t, y0, BHs0, **kwargs):
     else:
         BH_ratio = 1.0  # equal mass default
 
-    if 'bhs' in kwargs:
-        BHs0 = kwargs['bhs']
+    if 'bh1' in kwargs:
+        BH1 = kwargs['bh1']
     else:
         print("Must have black hole data!!")
         exit(2)
 
+    if 'bh2' in kwargs:
+        BH2 = kwargs['bh2']
+    else:
+        print("Must have black hole information!!")
+        exit(2)
 
-    BHs_x_init_vec = BHs0[0:3]
-    BHs_v_init_vec = BHs0[3:]
+    BH1_x_vec = BH1[0:3]
+    BH1_v_vec = BH1[3:]
+
+    BH2_x_vec = BH2[0:3]
+    BH2_v_vec = BH2[3:]
 
     # calculate the current position, but does not do the z coord??
     BHs_x_curr_vec = BHs_x_init_vec * np.array((np.cos(BHs_v_init_vec[0] * t), np.sin(BHs_v_init_vec[1] * t), 0),
@@ -66,7 +74,7 @@ def Keppler_Binary_RHS(t, y0, BHs0, **kwargs):
 
 
 kwargs = {'mass': 1.0, 'G': 1.0, 'q': 1.0}
-x0 = 1.0
+x0 = 2.0
 y0 = 0.0
 z0 = 0.0
 
@@ -84,21 +92,34 @@ initial_velocity = np.array((vx0, vy0, vz0), dtype=np.float64)
 
 Y = np.concatenate((initial_position, initial_velocity))
 
-BHx = 0.0
-BHy = 2.0
-BHz = 0.0
+BH1x = 1.0
+BH1y = 0.0
+BH1z = 0.0
 
-BHvx = 1.0
-BHvy = 0.0
-BHvz = 0.0
+BH1vx = 0.0
+BH1vy = -1.0
+BH1vz = 0.0
 
-initial_bh_pos = np.array((BHx, BHy, BHz), dtype=np.float64)
-initial_bh_velocity = np.array((BHvx, BHvy, BHvz), dtype=np.float64)
+initial_bh1_pos = np.array((BH1x, BH1y, BH1z), dtype=np.float64)
+initial_bh1_velocity = np.array((BH1vx, BH1vy, BH1vz), dtype=np.float64)
 
-BHs0 = np.concatenate((initial_bh_pos, initial_bh_velocity))
+BH1 = np.concatenate((initial_bh1_pos, initial_bh1_velocity))
 
-kwargs['bhs'] = BHs0
+BH2x = -1.0
+BH2y = 0.0
+BH2z = 0.0
 
+BH2vx = 0.0
+BH2vy = -1.0
+BH2vz = 0.0
+
+initial_bh2_pos = np.array((BH2x, BH2y, BH2z), dtype=np.float64)
+initial_bh2_velocity = np.array((BH2vx, BH2vy, BH2vz), dtype=np.float64)
+
+BH2 = np.concatenate((initial_bh2_pos, initial_bh2_velocity))
+
+kwargs['bh1'] = BH1
+kwargs['bh2'] = BH2
 
 while t < 30:
     print(Y[0], Y[1], Y[2])

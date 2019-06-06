@@ -21,7 +21,7 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
     # star position vector norm, such that
     # star_r = (star_x**2 + star_y**2 + star_z**2)**1/2
     # or the distance from the origin
-    star_r = np.linalg.norm(star_x_vec)
+    # star_r = np.linalg.norm(star_x_vec)
 
     if 'mass' in kwargs:
         combined_BH_mass = kwargs['mass']
@@ -73,10 +73,10 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
     BH2_mass = combined_BH_mass - BH1_mass
 
     # find the acceleration due to gravity from the respective black holes
-    acc_star_1 = (star_r - BH1_x_vec) * (-1 * BH1_mass * G) / \
-        (np.linalg.norm(star_r - BH1_x_vec) ** 3)
-    acc_star_2 = (star_r - BH2_x_vec) * (-1 * BH2_mass * G) / \
-        (np.linalg.norm(star_r - BH2_x_vec) ** 3)
+    acc_star_1 = (star_x_vec - BH1_x_vec) * (-1 * BH1_mass * G) / \
+        (np.linalg.norm(star_x_vec - BH1_x_vec) ** 3)
+    acc_star_2 = (star_x_vec - BH2_x_vec) * (-1 * BH2_mass * G) / \
+        (np.linalg.norm(star_x_vec - BH2_x_vec) ** 3)
 
     acc_star = acc_star_1 + acc_star_2
     vel_star = star_v_vec
@@ -93,7 +93,7 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
 
 
 kwargs = {'mass': 1.0, 'G': 1.0, 'q': 1.0}
-x0 = 2.0
+x0 = 1.2
 y0 = 0.0
 z0 = 0.0
 
@@ -124,7 +124,8 @@ BH1vz = 0.0
 initial_bh1_pos = np.array((BH1x, BH1y, BH1z), dtype=np.float64)
 #initial_bh1_velocity = np.array((BH1vx, BH1vy, BH1vz), dtype=np.float64)
 
-BH1 = initial_bh1_pos # np.concatenate((initial_bh1_pos, initial_bh1_velocity))
+# np.concatenate((initial_bh1_pos, initial_bh1_velocity))
+BH1 = initial_bh1_pos
 
 BH2x = -1.0
 BH2y = 0.0
@@ -139,7 +140,8 @@ BH2vz = 0.0
 initial_bh2_pos = np.array((BH2x, BH2y, BH2z), dtype=np.float64)
 #initial_bh2_velocity = np.array((BH2vx, BH2vy, BH2vz), dtype=np.float64)
 
-BH2 = initial_bh2_pos # np.concatenate((initial_bh2_pos, initial_bh2_velocity))
+# np.concatenate((initial_bh2_pos, initial_bh2_velocity))
+BH2 = initial_bh2_pos
 
 kwargs['bh1'] = BH1
 kwargs['bh2'] = BH2
@@ -147,7 +149,7 @@ kwargs['bh2'] = BH2
 while t < 30:
     BH1 = kwargs['bh1']
     BH2 = kwargs['bh2']
-    print(Y[1], Y[2], BH1[0], BH1[1], BH2[0], BH2[1])
+    print(Y[0], Y[1], BH1[0], BH1[1], BH2[0], BH2[1])
 
     # The Runge-Kutta routine returns the new value of Y, t, and a
     # possibly updated value of dt

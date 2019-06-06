@@ -93,7 +93,7 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
 
 
 kwargs = {'mass': 1.0, 'G': 1.0, 'q': 1.0}
-x0 = 1.2
+x0 = 2.0
 y0 = 0.0
 z0 = 0.0
 

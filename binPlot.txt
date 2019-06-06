@@ -1,0 +1,10 @@
+set xrange[-5:5]
+set yrange[-5:5]
+set size square
+
+do for [i=0:30000] {
+plot 'binary1.txt' u 1:2 every ::i::i, 'binary1.txt' u 3:4 every ::i::i, 'binary1.txt' u 5:6 every ::i::i
+# pause 0.0001
+}
+
+pause -1 "Hit enter to continue"

@@ -33,11 +33,12 @@ def Keppler_Binary_RHS(t, y0, BHs0, **kwargs):
         print("Must have black hole data!!")
         exit(2)
 
+
     BHs_x_init_vec = BHs0[0:3]
     BHs_v_init_vec = BHs0[3:]
 
     # calculate the current position, but does not do the z coord??
-    BHs_x_curr_vec = BHs_x_init_vec * np.array((np.sin(BHs_v_init_vec[0] * t), np.cos(BHs_v_init_vec[1] * t), 0),
+    BHs_x_curr_vec = BHs_x_init_vec * np.array((np.cos(BHs_v_init_vec[0] * t), np.sin(BHs_v_init_vec[1] * t), 0),
                                                dtype=np.float64)  # , np.cos(BHs_v_init_vec[2] * t)))
 
     BH1_mass = combined_BH_mass / (BH_ratio + 1)
@@ -47,7 +48,7 @@ def Keppler_Binary_RHS(t, y0, BHs0, **kwargs):
     BH1_pos = BHs_x_curr_vec / (BH_ratio + 1)
     BH2_pos = BH1_pos - BHs_x_curr_vec
 
-    # find the acceleration due to gravity from the respective blach holes
+    # find the acceleration due to gravity from the respective black holes
     acc_star_1 = (star_r - BH1_pos) * (-1 * BH1_mass * G) / \
         (np.linalg.norm(star_r - BH1_pos) ** 3)
     acc_star_2 = (star_r - BH2_pos) * (-1 * BH2_mass * G) / \

@@ -137,7 +137,7 @@ kwargs['bh1'] = BH1
 kwargs['bh2'] = BH2
 
 while t < 30:
-    print(Y[0], Y[1], Y[2])
+    print(Y[1], Y[2], BH1[0], BH1[1], BH2[0], BH2[1])
 
     # The Runge-Kutta routine returns the new value of Y, t, and a
     # possibly updated value of dt

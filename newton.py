@@ -63,7 +63,7 @@ initial_velocity = np.array((vx0, vy0, vz0), dtype=np.float64)
 Y = np.concatenate((initial_position, initial_velocity))
 
 
-while t < 10:
+while t < 30:
     print(Y[0], Y[1], Y[2])
 
     # The Runge-Kutta routine returns the new value of Y, t, and a

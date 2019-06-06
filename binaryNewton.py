@@ -2,6 +2,16 @@ from __future__ import print_function
 import numpy as np
 from RK import RK4_Step, RK45_Step
 
+def calc_omega(mass, G, pos1, pos2):
+    magnitude1 = np.linalg.norm(pos1)
+    magnitude2 = np.linalg.norm(pos2)
+    mag_sum = magnitude1 + magnitude2
+    dist = abs(mag_sum)
+    dist3 = dist ** 3
+
+    omega = np.sqrt((mass * G) / dist3)
+    return omega, magnitude1, magnitude2
+
 
 def Keppler_Binary_RHS(t, y0, **kwargs):
     star_x_vec = y0[0:3]  # star position stored in first 3 elements
@@ -45,22 +55,27 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
     BH2_x_vec = BH2[0:3]
     BH2_v_vec = BH2[3:]
 
+    omega, BH1r, BH2r = calc_omega(combined_BH_mass, G, BH1_x_vec, BH2_x_vec)
+
     # calculate the current position, but does not do the z coord??
-    BHs_x_curr_vec = BHs_x_init_vec * np.array((np.cos(BHs_v_init_vec[0] * t), np.sin(BHs_v_init_vec[1] * t), 0),
-                                               dtype=np.float64)  # , np.cos(BHs_v_init_vec[2] * t)))
+    BH1_x_vec[0] = BH1r * np.cos(BH1_v_vec[0] * omega * t)
+    BH1_x_vec[1] = BH1r * np.sin(BH1_v_vec[0] * omega * t)
+    BH1_x_vec[2] = 0 # don't do z...
+
+    # calculate the current position, but does not do the z coord??
+    BH2_x_vec[0] = -1 * BH2r * np.cos(BH2_v_vec[0] * omega * t)
+    BH2_x_vec[1] = -1 * BH2r * np.sin(BH2_v_vec[0] * omega * t)
+    BH2_x_vec[2] = 0  # don't do z...
 
     BH1_mass = combined_BH_mass / (BH_ratio + 1)
     # (-1 * combined_BH_mass * BH_ratio) / (BH_ratio + 1)
     BH2_mass = combined_BH_mass - BH1_mass
 
-    BH1_pos = BHs_x_curr_vec / (BH_ratio + 1)
-    BH2_pos = BH1_pos - BHs_x_curr_vec
-
     # find the acceleration due to gravity from the respective black holes
-    acc_star_1 = (star_r - BH1_pos) * (-1 * BH1_mass * G) / \
-        (np.linalg.norm(star_r - BH1_pos) ** 3)
-    acc_star_2 = (star_r - BH2_pos) * (-1 * BH2_mass * G) / \
-        (np.linalg.norm(star_r - BH2_pos) ** 3)
+    acc_star_1 = (star_r - BH1_x_vec) * (-1 * BH1_mass * G) / \
+        (np.linalg.norm(star_r - BH1_x_vec) ** 3)
+    acc_star_2 = (star_r - BH2_x_vec) * (-1 * BH2_mass * G) / \
+        (np.linalg.norm(star_r - BH2_x_vec) ** 3)
 
     acc_star = acc_star_1 + acc_star_2
     vel_star = star_v_vec

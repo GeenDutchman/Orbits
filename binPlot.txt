@@ -7,4 +7,6 @@ plot 'binary1.txt' u 1:2 every ::i::i, 'binary1.txt' u 3:4 every ::i::i, 'binary
 # pause 0.0001
 }
 
+# plot 'binary1.txt' u 1:2, 'binary1.txt' u 3:4, 'binary1.txt' u 5:6
+
 pause -1 "Hit enter to continue"

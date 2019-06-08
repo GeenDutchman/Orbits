@@ -93,11 +93,11 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
 
 
 kwargs = {'mass': 1.0, 'G': 1.0, 'q': 1.0}
-x0 = 0.0
-y0 = 1.0
-z0 = 0.0
+x0 = 2.0
+y0 = 0.0
+z0 = 1.0
 
-vx0 = 1.0
+vx0 = 0.0
 vy0 = 0.0
 vz0 = 0.0
 
@@ -149,7 +149,7 @@ kwargs['bh2'] = BH2
 while t < 30:
     BH1 = kwargs['bh1']
     BH2 = kwargs['bh2']
-    print(Y[0], Y[1], BH1[0], BH1[1], BH2[0], BH2[1])
+    print(Y[0], Y[1], Y[2], BH1[0], BH1[1], BH1[2], BH2[0], BH2[1], BH2[2])
 
     # The Runge-Kutta routine returns the new value of Y, t, and a
     # possibly updated value of dt

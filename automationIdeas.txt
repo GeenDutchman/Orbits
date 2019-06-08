@@ -1,0 +1,22 @@
+input parameters:
+star_pos, star_vel_vec, BH1_pos [--mirrored(default) | BH2_pos] Omega_multiplier, Time_max, step_size(dx)
+
+issues:
+How to organize saving?
+-mirrored/not
+-sz-/sz0/sz+
+How to collapse parameters in order to check unique?
+
+Generate:
+-check unique params
+-if not unique/exist
+--generate data (newton)
+---save data
+-show?
+-if generate plate && !exist
+--(s)plot data > png
+-show?
+-if generate movie && !exist
+--(s)plot data every ::i::i > ./images/i.png
+--ffmpeg
+-show?

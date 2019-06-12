@@ -119,28 +119,30 @@ def print_help():
 
 def main(argv):
     # The Initial condition for the star orbiting a black hole
-    # The black hole's mass is given by the 'mass',
-    # Newton's constant by 'G', the initial position by
-    # (x0, y0, z0), the initial velocity by (vx, vy, vz)
+    # The black holes' collective mass is given by the 'mass',
+    # Newton's constant by 'G', the star's initial position by
+    # (x0, y0, z0), the star's initial velocity by (vx, vy, vz)
+    # and q is the mass ratio between the black holes.
 
     # Initializing default parameters
 
+    # Default mass, G, and q values
     kwargs = {'mass': 1.0, 'G': 1.0, 'q': 1.0}
+
     x0 = 2.0
     y0 = 0.0
     z0 = 0.2
 
     vx0 = 0.0
     vy0 = 1.0
-    vz0 = 0.0
-
-    t = 0.0
-
-    tmax = 10
+    vz0 = 0.0    
 
     # dt is the timestep. The error will be proportional to dt**4
     dt = 1.0e-2
+    tmax = 10 # max time
+    t = 0.0 # start time
 
+    # Black Hole 1's initial position
     BH1x = 1.0
     BH1y = 0.0
     BH1z = 0.0
@@ -151,6 +153,7 @@ def main(argv):
 	BH1vz = 0.0
 	'''
 
+    # Black Hole 2's initial position
     BH2x = -1.0
     BH2y = 0.0
     BH2z = 0.0
@@ -200,8 +203,10 @@ def main(argv):
                     vz0 = float(argv[i])
                     #print('Velocity z vector  changed')
                 else:
+                    # If the *current* argument is not for a star, counter the *next* increment
                     i -= 1
                     break
+                # move to the next argument
                 i += 1
         elif argv[i] == '--tstep' or argv[i] == '-ts':
             i += 1

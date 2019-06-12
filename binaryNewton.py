@@ -13,7 +13,7 @@ def calc_omega(mass, G, pos1, pos2):
     dist3 = dist ** 3
 
     omega = np.sqrt((mass * G) / dist3)
-    return omega, magnitude1, magnitude2
+    return omega, dist
 
 
 def Keppler_Binary_RHS(t, y0, **kwargs):
@@ -56,22 +56,24 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
 
     BH2_x_vec = BH2[0:3]
 
-    if 'omega' in kwargs:
+    if 'omega' in kwargs and 'BH_dist' in kwargs:
         omega = kwargs['omega']
+        BH_dist = kwargs['BH_dist']
     else:
-        print('#Calculating omega')
-        omega, BH1r, BH2r = calc_omega(combined_BH_mass, G, BH1_x_vec, BH2_x_vec)
+        print('# Calculating omega')
+        omega, BH_dist = calc_omega(combined_BH_mass, G, BH1_x_vec, BH2_x_vec)
         kwargs['omega'] = omega
+        kwargs['BH_dist'] = BH_dist
 
 
     # calculate the current position, but does not do the z coord??
-    BH1_x_vec[0] = BH1r * np.cos(omega * t)
-    BH1_x_vec[1] = BH1r * np.sin(omega * t)
+    BH1_x_vec[0] = (.5 * BH_dist) * np.cos(omega * t)
+    BH1_x_vec[1] = (.5 * BH_dist) * np.sin(omega * t)
     BH1_x_vec[2] = 0  # don't do z...
 
     # calculate the current position, but does not do the z coord??
-    BH2_x_vec[0] = -1 * BH2r * np.cos(omega * t)
-    BH2_x_vec[1] = -1 * BH2r * np.sin(omega * t)
+    BH2_x_vec[0] = -1 * (.5 * BH_dist) * np.cos(omega * t)
+    BH2_x_vec[1] = -1 * (.5 * BH_dist) * np.sin(omega * t)
     BH2_x_vec[2] = 0  # don't do z...
 
     BH1_mass = combined_BH_mass / (BH_ratio + 1)
@@ -249,8 +251,9 @@ def main(argv):
     kwargs['bh2'] = BH2
     #kwargs['q'] = 0.5
 
-    omega = calc_omega(kwargs['mass'], kwargs['G'], BH1, BH2)
+    omega, BH_dist = calc_omega(kwargs['mass'], kwargs['G'], BH1, BH2)
     kwargs['omega'] = omega
+    kwargs['BH_dist'] = BH_dist
 
     if record_comment:
         print('# Star Position: x:', x0, ' y:', y0, ' z:', z0)

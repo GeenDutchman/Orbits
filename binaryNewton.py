@@ -65,16 +65,14 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
         kwargs['omega'] = omega
         kwargs['BH_dist'] = BH_dist
 
-    half_BH_dist = 0.5 * BH_dist
-
     # calculate the current position, but does not do the z coord??
-    BH1_x_vec[0] = half_BH_dist * np.cos(omega * t)
-    BH1_x_vec[1] = half_BH_dist * np.sin(omega * t)
+    BH1_x_vec[0] = (.5 * BH_dist) * np.cos(omega * t)
+    BH1_x_vec[1] = (.5 * BH_dist) * np.sin(omega * t)
     BH1_x_vec[2] = 0  # don't do z...
 
     # calculate the current position, but does not do the z coord??
-    BH2_x_vec[0] = -1 * half_BH_dist * np.cos(omega * t)
-    BH2_x_vec[1] = -1 * half_BH_dist * np.sin(omega * t)
+    BH2_x_vec[0] = -1 * (.5 * BH_dist) * np.cos(omega * t)
+    BH2_x_vec[1] = -1 * (.5 * BH_dist) * np.sin(omega * t)
     BH2_x_vec[2] = 0  # don't do z...
 
     BH1_mass = combined_BH_mass / (BH_ratio + 1)
@@ -83,9 +81,9 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
 
     # find the acceleration due to gravity from the respective black holes
     acc_star_1 = (star_x_vec - BH1_x_vec) * (-1 * BH1_mass * G) / \
-        (np.linalg.norm(star_x_vec - BH1_x_vec) ** 3)
+                 (np.linalg.norm(star_x_vec - BH1_x_vec) ** 3)
     acc_star_2 = (star_x_vec - BH2_x_vec) * (-1 * BH2_mass * G) / \
-        (np.linalg.norm(star_x_vec - BH2_x_vec) ** 3)
+                 (np.linalg.norm(star_x_vec - BH2_x_vec) ** 3)
 
     acc_star = acc_star_1 + acc_star_2
     vel_star = star_v_vec
@@ -142,7 +140,7 @@ def main(argv):
 
     vx0 = 0.0
     vy0 = 1.0
-    vz0 = 0.0    
+    vz0 = 0.0
 
     # dt is the timestep. The error will be proportional to dt**4
     dt = 1.0e-2
@@ -176,31 +174,31 @@ def main(argv):
         if argv[i] == '--star':
             i += 1
             while i < len(argv):  # while there are unprocessed star
-                #print('Star arguments')
+                # print('Star arguments')
                 if argv[i] == '--x0' or argv[i] == '-x':
                     i += 1
                     x0 = float(argv[i])
-                    #print('X position  changed')
+                    # print('X position  changed')
                 elif argv[i] == '--y0' or argv[i] == '-y':
                     i += 1
                     y0 = float(argv[i])
-                    #print('Y position  changed')
+                    # print('Y position  changed')
                 elif argv[i] == '--z0' or argv[i] == '-z':
                     i += 1
                     z0 = float(argv[i])
-                    #print('Z position  changed')
+                    # print('Z position  changed')
                 elif argv[i] == '--vx0' or argv[i] == '-vx':
                     i += 1
                     vx0 = float(argv[i])
-                    #print('Velocity x vector  changed')
+                    # print('Velocity x vector  changed')
                 elif argv[i] == '--vy0' or argv[i] == '-vy':
                     i += 1
                     vy0 = float(argv[i])
-                    #print('Velocity y vector  changed')
+                    # print('Velocity y vector  changed')
                 elif argv[i] == '--vz0' or argv[i] == '-vz':
                     i += 1
                     vz0 = float(argv[i])
-                    #print('Velocity z vector  changed')
+                    # print('Velocity z vector  changed')
                 else:
                     # If the *current* argument is not for a star, counter the *next* increment
                     i -= 1
@@ -210,11 +208,11 @@ def main(argv):
         elif argv[i] == '--tstep' or argv[i] == '-ts':
             i += 1
             dt = float(argv[i])
-            #print('Time step changed')
+            # print('Time step changed')
         elif argv[i] == '--tmax' or argv[i] == '-tm':
             i += 1
             tmax = float(argv[i])
-            #print('Maximum run time changed')
+            # print('Maximum run time changed')
         elif argv[i] == '--help' or argv[i] == '-h':
             print_help()
             exit(0)
@@ -250,7 +248,7 @@ def main(argv):
 
     kwargs['bh1'] = BH1
     kwargs['bh2'] = BH2
-    #kwargs['q'] = 0.1
+    # kwargs['q'] = 0.1
 
     omega, BH_dist = calc_omega(kwargs['mass'], kwargs['G'], BH1, BH2)
     kwargs['omega'] = omega
@@ -271,12 +269,9 @@ def main(argv):
     x_list = np.zeros(shape=(list_size,))
     y_list = np.zeros(shape=(list_size,))
     t_list = np.zeros(shape=(list_size,))
-    
+
     lst_indx = 0
     """
-
-
-
 
     while t < tmax:
         """

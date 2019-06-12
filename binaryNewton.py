@@ -53,12 +53,16 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
         exit(2)
 
     BH1_x_vec = BH1[0:3]
-    #BH1_v_vec = BH1[3:]
 
     BH2_x_vec = BH2[0:3]
-    #BH2_v_vec = BH2[3:]
 
-    omega, BH1r, BH2r = calc_omega(combined_BH_mass, G, BH1_x_vec, BH2_x_vec)
+    if 'omega' in kwargs:
+        omega = kwargs['omega']
+    else:
+        print('#Calculating omega')
+        omega, BH1r, BH2r = calc_omega(combined_BH_mass, G, BH1_x_vec, BH2_x_vec)
+        kwargs['omega'] = omega
+
 
     # calculate the current position, but does not do the z coord??
     BH1_x_vec[0] = BH1r * np.cos(omega * t)
@@ -139,30 +143,22 @@ def main(argv):
 
     # dt is the timestep. The error will be proportional to dt**4
     dt = 1.0e-2
-    tmax = 10 # max time
-    t = 0.0 # start time
+
+    # start time
+    t = 0.0
+
+    # max time
+    tmax = 10
 
     # Black Hole 1's initial position
     BH1x = 1.0
     BH1y = 0.0
     BH1z = 0.0
 
-    '''
-	BH1vx = 0.0
-	BH1vy = 1.0
-	BH1vz = 0.0
-	'''
-
     # Black Hole 2's initial position
     BH2x = -1.0
     BH2y = 0.0
     BH2z = 0.0
-
-    '''
-	BH2vx = 0.0
-	BH2vy = -1.0
-	BH2vz = 0.0
-	'''
 
     # Processing command line arguments
     # This will possibly change some of the default values
@@ -252,6 +248,9 @@ def main(argv):
     kwargs['bh1'] = BH1
     kwargs['bh2'] = BH2
     #kwargs['q'] = 0.5
+
+    omega = calc_omega(kwargs['mass'], kwargs['G'], BH1, BH2)
+    kwargs['omega'] = omega
 
     if record_comment:
         print('# Star Position: x:', x0, ' y:', y0, ' z:', z0)

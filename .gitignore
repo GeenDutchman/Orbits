@@ -106,5 +106,5 @@ venv.bak/
 # vscode settings
 /vscode
 
-# hide gnuplot
-/gnuplot*
+# ignore idea
+/.idea/

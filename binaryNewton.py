@@ -105,7 +105,8 @@ def print_default():
     print('Default Y component of Velocity of the Star:\t\t1.0')
     print('Default Z component of Velocity of the Star:\t\t0.0')
     print('Default time step: \t\t\t\t\t1.0e-2')
-    print('Default maximum run time: \t\t\t\t10\n')
+    print('Default maximum run time: \t\t\t\t10')
+    print('Default mass ratio: \t\t\t\t\t1.0\n')
 
 
 def print_help():
@@ -118,8 +119,9 @@ def print_help():
     print('\t--vx0,\t-vx\t\tSets the Vx velocity component of the star')
     print('\t--vy0,\t-vy\t\tSets the Vy velocity component of the star')
     print('\t--vz0,\t-vz\t\tSets the Vz velocity component of the star')
-    print('--tstep,-ts\t\t\tSets the time step for the simulation data')
+    print('--tstep, -ts\t\t\tSets the time step for the simulation data')
     print('--tmax, -tm\t\t\tSets the maximum run time for the simulation data')
+    print('--mratio, -q\t\t\tSets the mass ratio for the binary system')
     print('--default, -d\t\t\tShows the default parameters\n')
     print('--record, -r\t\t\tPrints the initial conditions as a comment')
 
@@ -215,6 +217,10 @@ def main(argv):
             i += 1
             tmax = float(argv[i])
             #print('Maximum run time changed')
+        elif argv[i] == '--mratio' or argv[i] == '-q':
+            i += 1
+            kwargs['q'] = float(argv[i])
+            #print('Mass ratio changed')
         elif argv[i] == '--help' or argv[i] == '-h':
             print_help()
             exit(0)
@@ -250,7 +256,6 @@ def main(argv):
 
     kwargs['bh1'] = BH1
     kwargs['bh2'] = BH2
-    #kwargs['q'] = 0.5
 
     omega, BH_dist = calc_omega(kwargs['mass'], kwargs['G'], BH1, BH2)
     kwargs['omega'] = omega

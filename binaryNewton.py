@@ -137,7 +137,55 @@ def main(argv):
     vy0 = 1.0
     vz0 = 0.0    
 
-`                    #print('Y position  changed')
+    # dt is the timestep. The error will be proportional to dt**4
+    dt = 1.0e-2
+    tmax = 10 # max time
+    t = 0.0 # start time
+
+    # Black Hole 1's initial position
+    BH1x = 1.0
+    BH1y = 0.0
+    BH1z = 0.0
+
+    '''
+	BH1vx = 0.0
+	BH1vy = 1.0
+	BH1vz = 0.0
+	'''
+
+    # Black Hole 2's initial position
+    BH2x = -1.0
+    BH2y = 0.0
+    BH2z = 0.0
+
+    '''
+	BH2vx = 0.0
+	BH2vy = -1.0
+	BH2vz = 0.0
+	'''
+
+    # Processing command line arguments
+    # This will possibly change some of the default values
+
+    i = 0
+    record_comment = False
+
+    if len(argv) == 0:
+        print('# Running with default settings')
+
+    while i < len(argv):  # while there are unprocessed arguments
+        if argv[i] == '--star':
+            i += 1
+            while i < len(argv):  # while there are unprocessed star
+                #print('Star arguments')
+                if argv[i] == '--x0' or argv[i] == '-x':
+                    i += 1
+                    x0 = float(argv[i])
+                    #print('X position  changed')
+                elif argv[i] == '--y0' or argv[i] == '-y':
+                    i += 1
+                    y0 = float(argv[i])
+                    #print('Y position  changed')
                 elif argv[i] == '--z0' or argv[i] == '-z':
                     i += 1
                     z0 = float(argv[i])

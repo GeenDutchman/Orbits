@@ -65,15 +65,16 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
         kwargs['omega'] = omega
         kwargs['BH_dist'] = BH_dist
 
+    half_BH_dist = 0.5 * BH_dist
 
     # calculate the current position, but does not do the z coord??
-    BH1_x_vec[0] = (.5 * BH_dist) * np.cos(omega * t)
-    BH1_x_vec[1] = (.5 * BH_dist) * np.sin(omega * t)
+    BH1_x_vec[0] = half_BH_dist * np.cos(omega * t)
+    BH1_x_vec[1] = half_BH_dist * np.sin(omega * t)
     BH1_x_vec[2] = 0  # don't do z...
 
     # calculate the current position, but does not do the z coord??
-    BH2_x_vec[0] = -1 * (.5 * BH_dist) * np.cos(omega * t)
-    BH2_x_vec[1] = -1 * (.5 * BH_dist) * np.sin(omega * t)
+    BH2_x_vec[0] = -1 * half_BH_dist * np.cos(omega * t)
+    BH2_x_vec[1] = -1 * half_BH_dist * np.sin(omega * t)
     BH2_x_vec[2] = 0  # don't do z...
 
     BH1_mass = combined_BH_mass / (BH_ratio + 1)

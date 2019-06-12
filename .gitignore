@@ -109,3 +109,5 @@ venv.bak/
 
 # ignore idea
 /.idea/
+
+errors.log.txt

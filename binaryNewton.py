@@ -150,15 +150,15 @@ def main(argv):
     t = 0.0
 
     # max time
-    tmax = 10
+    tmax = 60
 
     # Black Hole 1's initial position
-    BH1x = 1.0
+    BH1x = -1.0
     BH1y = 0.0
     BH1z = 0.0
 
     # Black Hole 2's initial position
-    BH2x = -1.0
+    BH2x = 1.0
     BH2y = 0.0
     BH2z = 0.0
 
@@ -249,7 +249,7 @@ def main(argv):
 
     kwargs['bh1'] = BH1
     kwargs['bh2'] = BH2
-    #kwargs['q'] = 0.5
+    #kwargs['q'] = 0.1
 
     omega, BH_dist = calc_omega(kwargs['mass'], kwargs['G'], BH1, BH2)
     kwargs['omega'] = omega
@@ -262,7 +262,37 @@ def main(argv):
         print('# Time Step:', dt, '\tRun Time max:', tmax)
         print('')
 
+    """
+    list_size = int(tmax / dt) + 1
+
+    r_list = np.zeros(shape=(list_size,))
+    phi_list = np.zeros(shape=(list_size,))
+    x_list = np.zeros(shape=(list_size,))
+    y_list = np.zeros(shape=(list_size,))
+    t_list = np.zeros(shape=(list_size,))
+    
+    lst_indx = 0
+    """
+
+
+
+
     while t < tmax:
+        """
+        x_pos = Y[0]
+        y_pos = Y[1]
+        z_pos = Y[2]
+
+        r = np.sqrt(x_pos ** 2 + y_pos ** 2)
+        phi = np.arctan2(y_pos, x_pos)
+        phi_list[lst_indx] = phi
+        r_list[lst_indx] = r
+        x_list[lst_indx] = Y[0]
+        y_list[lst_indx] = Y[1]
+        t_list[lst_indx] = t
+        lst_indx += 1
+        """
+
         BH1 = kwargs['bh1']
         BH2 = kwargs['bh2']
         print(t, Y[0], Y[1], Y[2], BH1[0], BH1[1],
@@ -275,3 +305,10 @@ def main(argv):
 
 if __name__ == "__main__":
     main(sys.argv[1:])
+
+"""
+phi = np.unwrap(phi_list[0:lst_indx])
+for i in range(lst_indx):
+    print(t_list[i], x_list[i], y_list[i], r_list[i], phi[i])
+"""
+

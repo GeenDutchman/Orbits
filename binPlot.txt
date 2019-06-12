@@ -9,7 +9,7 @@ set size square
 
 
 
-do for [i=0:3000] {
+do for [i=0:6000] {
 splot 'binary1.txt' u 2:3:4 every ::i::i ps 1 pt 7 title "Neutron Star", 'binary1.txt' u 5:6:7 every ::i::i ps 3 pt 7 title "Black Hole 1", 'binary1.txt' u 8:9:10 every ::i::i ps 3 pt 7 title "Black Hole 2"
 }
 

@@ -24,6 +24,10 @@ function display_animation {
     else
         (>&2 echo 'No data file')
     fi
+
+    # how to make a movie
+    ## ffmpeg -framerate 100 -i ./images/%d.png -c:v libx264 -profile:v high -crf 20 -pix_fmt yuv420p all_orbit.mp4
+
 }
 
 

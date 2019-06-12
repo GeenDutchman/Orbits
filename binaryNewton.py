@@ -114,6 +114,7 @@ def print_help():
     print('--tstep,-ts\t\t\tSets the time step for the simulation data')
     print('--tmax, -tm\t\t\tSets the maximum run time for the simulation data')
     print('--default, -d\t\t\tShows the default parameters\n')
+    print('--record, -r\t\t\tPrints the initial conditions as a comment')
 
 
 def main(argv):

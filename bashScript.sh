@@ -28,7 +28,7 @@ function display_animation {
 
 
 function main {
-    write_success=$( python3 binaryNewton.py -blah > binary1.txt )
+    write_success=$( python3 binaryNewton.py $@ > binary1.txt )
     if [ $? != 0 ]; then
         (>&2 echo 'An error occured during python execution!')
         (>&2 echo 'Logging the error')
@@ -44,4 +44,4 @@ function main {
 }
 
 pre_checks
-main
+main "$@"

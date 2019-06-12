@@ -142,7 +142,7 @@ def main(argv):
 
     vx0 = 0.0
     vy0 = 1.0
-    vz0 = 0.0    
+    vz0 = 0.0
 
     # dt is the timestep. The error will be proportional to dt**4
     dt = 1.0e-2

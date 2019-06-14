@@ -25,7 +25,7 @@ function display_animation {
         # echo $BIN_LEN
         # echo $NUM_COMMENTS
         # echo $((BIN_LEN - NUM_COMMENTS))
-        gnuplot -c 'binPlot.txt' $((BIN_LEN - NUM_COMMENTS))
+        gnuplot -c 'binPlot.plt' $((BIN_LEN - NUM_COMMENTS))
     else
         (>&2 echo 'No data file')
     fi

@@ -226,7 +226,6 @@ def main(argv):
             i += 1
             BH1x = float(argv[i])/2
             BH2x = -1.0*BH1x
-            i += 1
             #Print('Seperation distance of black holes changes)
         elif argv[i] == '--help' or argv[i] == '-h':
             print_help()

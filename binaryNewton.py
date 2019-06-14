@@ -122,8 +122,9 @@ def print_help():
     print('--tstep, -ts\t\t\tSets the time step for the simulation data')
     print('--tmax, -tm\t\t\tSets the maximum run time for the simulation data')
     print('--mratio, -q\t\t\tSets the mass ratio for the binary system')
-    print('--default, -d\t\t\tShows the default parameters\n')
-    print('--record, -r\t\t\tPrints the initial conditions as a comment')
+    print('--sep, -s\t\t\tSets the separation distances of the black holes')
+    print('--default, -d\t\t\tShows the default parameters')
+    print('--record, -r\t\t\tPrints the initial conditions as a comment\n')
 
 
 def main(argv):
@@ -221,6 +222,12 @@ def main(argv):
             i += 1
             kwargs['q'] = float(argv[i])
             #print('Mass ratio changed')
+        elif argv[i] == '--sep' or argv[i] == '-s':
+            i += 1
+            BH1x = float(argv[i])/2
+            BH2x = -1.0*BH1x
+            i += 1
+            #Print('Seperation distance of black holes changes)
         elif argv[i] == '--help' or argv[i] == '-h':
             print_help()
             exit(0)

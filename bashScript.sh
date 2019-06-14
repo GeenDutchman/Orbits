@@ -18,10 +18,10 @@ function pre_checks {
 }
 
 function display_animation {
-    if [ -e 'binary1.txt' ]; then
+    if [ -e 'binary1.dat' ]; then
         echo 'Displaying animation'
-        BIN_LEN=$(wc -l < binary1.txt)
-        NUM_COMMENTS=$(grep -c "#" binary1.txt)
+        BIN_LEN=$(wc -l < binary1.dat)
+        NUM_COMMENTS=$(grep -c "#" binary1.dat)
         # echo $BIN_LEN
         # echo $NUM_COMMENTS
         # echo $((BIN_LEN - NUM_COMMENTS))
@@ -37,14 +37,14 @@ function display_animation {
 
 
 function main {
-    write_success=$( python3 binaryNewton.py $@ > binary1.txt )
+    write_success=$( python3 binaryNewton.py $@ > binary1.dat )
     if [ $? != 0 ]; then
         (>&2 echo 'An error occured during python execution!')
         (>&2 echo 'Logging the error')
         date >> errors.log.txt
-        cat binary1.txt >> errors.log.txt
+        cat binary1.dat >> errors.log.txt
         (>&2 echo 'Removing the errant file')
-        rm ./binary1.txt
+        rm ./binary1.dat
     else
         echo 'The data was produced and written successfully.'
         display_animation

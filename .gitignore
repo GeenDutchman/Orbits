@@ -110,4 +110,8 @@ venv.bak/
 # ignore idea
 /.idea/
 
+# ignore the errors
 errors.log.txt
+
+# ignore .dat files
+*.dat

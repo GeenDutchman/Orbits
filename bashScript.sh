@@ -20,7 +20,12 @@ function pre_checks {
 function display_animation {
     if [ -e 'binary1.txt' ]; then
         echo 'Displaying animation'
-        gnuplot 'binPlot.txt'
+        BIN_LEN=$(wc -l < binary1.txt)
+        NUM_COMMENTS=$(grep -c "#" binary1.txt)
+        # echo $BIN_LEN
+        # echo $NUM_COMMENTS
+        # echo $((BIN_LEN - NUM_COMMENTS))
+        gnuplot -c 'binPlot.txt' $((BIN_LEN - NUM_COMMENTS))
     else
         (>&2 echo 'No data file')
     fi

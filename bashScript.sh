@@ -40,9 +40,11 @@ function main {
     write_success=$( python3 binaryNewton.py $@ > binary1.dat )
     if [ $? != 0 ]; then
         (>&2 echo 'An error occured during python execution!')
+        err_msg=$(grep '!!' binary1.dat)
+        (>&2 echo $err_msg)
         (>&2 echo 'Logging the error')
         date >> errors.log.txt
-        cat binary1.dat >> errors.log.txt
+        echo $err_msg >> errors.log.txt
         (>&2 echo 'Removing the errant file')
         rm ./binary1.dat
     else

@@ -175,6 +175,8 @@ def main(argv):
     if len(argv) == 0:
         print('# Running with default settings')
 
+    # for better options menu https://docs.python.org/3/library/argparse.html#sub-commands
+
     while i < len(argv):  # while there are unprocessed arguments
         if argv[i] == '--star':
             i += 1

@@ -1,13 +1,32 @@
 #!/bin/bash
 
+function file_exists() {
+    echo -n "Checking for \"$1\" in this directory..."
+    exists=$( ls | grep -c $1 )
+    if [ $exists == 0 ]; then
+        echo "not found!!"
+        return 1
+    fi
+    echo "found."
+}
 
 function pre_checks {
-    binaryNewton_exists=$( ls | grep -c 'binaryNewton.py' )
-    if [ $binaryNewton_exists == 0 ]; then
-        (>&2 echo 'This script cannot be run in this directory.') 
-        (>&2 echo 'Run in a directory with "binaryNewton.py"')
-        exit 1
-    fi
+    # binaryNewton_exists=$( ls | grep -c 'binaryNewton.py' )
+    # if [ $binaryNewton_exists == 0 ]; then
+    #     (>&2 echo 'This script cannot be run in this directory.') 
+    #     (>&2 echo 'Run in a directory with "binaryNewton.py"')
+    #     exit 1
+    # fi
+
+    declare -a files=("binaryNewton.py" "RK.py")
+    for file_name in ${files[@]}
+    do
+        file_exists $file_name
+        if [ $? != 0 ]; then
+            (>&2 echo 'Please run in the directory with this file')
+            exit 1
+        fi
+    done
 
     python_exists=$( which python3 )
     if [ $? != 0  ]; then
@@ -35,6 +54,15 @@ function display_animation {
 
 }
 
+function display_plate {
+    if [ -e 'binary1.dat' ]; then
+        echo "Displaying plate"
+        gnuplot -c 'platePlot.plt'
+    else
+        (>&2 echo 'No data file')
+    fi
+}
+
 
 function main {
     write_success=$( python3 binaryNewton.py $@ > binary1.dat )
@@ -50,6 +78,7 @@ function main {
     else
         echo 'The data was produced and written successfully.'
         display_animation
+        display_plate
     fi
 
 }

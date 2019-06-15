@@ -100,12 +100,12 @@ def print_default():
     print('\nThese are the default parameters:')
     print('\nDefault X position of Star:\t\t\t\t2.0')
     print('Default Y position of Star:\t\t\t\t0.0')
-    print('Default Z position of Star:\t\t\t\t0.2')
+    print('Default Z position of Star:\t\t\t\t0.0')
     print('Default X component of Velocity of the Star:\t\t0.0')
     print('Default Y component of Velocity of the Star:\t\t1.0')
     print('Default Z component of Velocity of the Star:\t\t0.0')
     print('Default time step: \t\t\t\t\t1.0e-2')
-    print('Default maximum run time: \t\t\t\t10')
+    print('Default maximum run time: \t\t\t\t60')
     print('Default mass ratio: \t\t\t\t\t1.0\n')
 
 
@@ -141,7 +141,7 @@ def main(argv):
 
     x0 = 2.0
     y0 = 0.0
-    z0 = 0.2
+    z0 = 0.0
 
     vx0 = 0.0
     vy0 = 1.0
@@ -226,7 +226,7 @@ def main(argv):
             i += 1
             BH1x = float(argv[i])/2
             BH2x = -1.0*BH1x
-            #Print('Seperation distance of black holes changes)
+            # Print('Seperation distance of black holes changes)
         elif argv[i] == '--help' or argv[i] == '-h':
             print_help()
             exit(0)
@@ -236,7 +236,7 @@ def main(argv):
         elif argv[i] == '-r' or argv[i] == '--record':
             record_comment = True
         else:
-            print('\n', argv[i], ' is not an option!!')
+            print('\n "', argv[i], '" is not an option!!')
             print_help()
             exit(1)
         i += 1

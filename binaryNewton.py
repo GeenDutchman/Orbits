@@ -277,34 +277,43 @@ def main(argv):
         print('')
 
     """
-    list_size = int(tmax / dt) + 1
+        list_size = int(tmax / dt) + 1
 
-    r_list = np.zeros(shape=(list_size,))
-    phi_list = np.zeros(shape=(list_size,))
-    x_list = np.zeros(shape=(list_size,))
-    y_list = np.zeros(shape=(list_size,))
-    t_list = np.zeros(shape=(list_size,))
+        r_list = np.zeros(shape=(list_size,))
+        phi_list = np.zeros(shape=(list_size,))
+        x_list = np.zeros(shape=(list_size,))
+        y_list = np.zeros(shape=(list_size,))
+        t_list = np.zeros(shape=(list_size,))
     """
+
+    theta_list = np.zeros(shape=2, dtype=np.float64)
+    theta_list[1] = np.linalg.norm(
+        np.cross(Y[0:3], Y[3:])) / (np.linalg.norm(Y[0:3]) ** 2)
 
     while t < tmax:
         """
-        x_pos = Y[0]
-        y_pos = Y[1]
-        z_pos = Y[2]
-        r = np.sqrt(x_pos ** 2 + y_pos ** 2)
-        phi = np.arctan2(y_pos, x_pos)
-        phi_list[lst_indx] = phi
-        r_list[lst_indx] = r
-        x_list[lst_indx] = Y[0]
-        y_list[lst_indx] = Y[1]
-        t_list[lst_indx] = t
-        lst_indx += 1
+            x_pos = Y[0]
+            y_pos = Y[1]
+            z_pos = Y[2]
+            r = np.sqrt(x_pos ** 2 + y_pos ** 2)
+            phi = np.arctan2(y_pos, x_pos)
+            phi_list[lst_indx] = phi
+            r_list[lst_indx] = r
+            x_list[lst_indx] = Y[0]
+            y_list[lst_indx] = Y[1]
+            t_list[lst_indx] = t
+            lst_indx += 1
         """
+        pos_r = np.linalg.norm(Y[0:3])
+
+        theta_list[0] = theta_list[1]
+        theta_list[1] = np.linalg.norm(np.dot(Y[0:3], Y[3:])) / (pos_r ** 2)
+        theta_list = np.unwrap(theta_list)
 
         BH1 = kwargs['bh1']
         BH2 = kwargs['bh2']
         print(t, Y[0], Y[1], Y[2], BH1[0], BH1[1],
-              BH1[2], BH2[0], BH2[1], BH2[2])
+              BH1[2], BH2[0], BH2[1], BH2[2], pos_r, theta_list[1])
 
         # The Runge-Kutta routine returns the new value of Y, t, and a
         # possibly updated value of dt

@@ -281,6 +281,7 @@ def main(argv):
         print('# Star Velocity Components: vx0: ',
               vx0, ' vy0:', vy0, ' vz0:', vz0)
         print('# Time Step:', dt, '\tRun Time max:', tmax)
+        print('# Black hole separation:', abs(BH1x) * 2)
         print('')
 
     """

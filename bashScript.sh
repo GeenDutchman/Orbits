@@ -116,7 +116,7 @@ function main {
     else
         tee_print "$@"
         tee_print 'The data was produced and written successfully.'
-        display_animation
+        #display_animation
         display_plate
 	    display_angplate
     fi

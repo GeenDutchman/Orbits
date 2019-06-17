@@ -307,8 +307,8 @@ def main(argv):
         pos_r = np.linalg.norm(Y[0:3])
 
         theta_list[0] = theta_list[1]
-        theta_list[1] = np.linalg.norm(np.cross(Y[0:3], Y[3:])) / (pos_r ** 2)
-        #theta_list[1] = np.arctan2(Y[1], Y[0])
+        #theta_list[1] = np.linalg.norm(np.cross(Y[0:3], Y[3:])) / (pos_r ** 2)
+        theta_list[1] = np.arctan2(Y[1], Y[0])
         theta_list = np.unwrap(theta_list)
 
         BH1 = kwargs['bh1']

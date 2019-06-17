@@ -52,12 +52,16 @@ function pre_checks {
         fi
     done
 
-    python_exists=$( which python3 )
-    if [ $? != 0  ]; then
-        tee_print -p 'This script requires "python3" to be installed.'
-        tee_print -p 'Please install "python3" and then rerun.'
-        exit 1
-    fi
+    declare -a programs=("python3" "gnuplot")
+    for prog_name in ${programs[$@]}
+    do
+        python_exists=$( which $prog_name )
+        if [ $? != 0  ]; then
+            tee_print -p "This script requires '$prog_name' to be installed."
+            tee_print -p "Please install '$prog_name' and then rerun."
+            exit 1
+        fi
+    done
 }
 
 function display_animation {

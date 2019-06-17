@@ -114,7 +114,12 @@ function main {
         tee_print -nt 'Removing the errant file'
         rm ./binary1.dat
     else
-        tee_print "$@"
+        if [ $# != 0 ]; then
+            tee_print "$@"
+        else
+            tee_print "Running with the default parameters.\nExample:"
+            tee_print "\n\t--star -x 2 -y 0 -vy 1 --tstep 1.0e-2 --tmax 60 --mratio 1 --sep 2"
+        fi
         tee_print 'The data was produced and written successfully.'
         #display_animation
         display_plate

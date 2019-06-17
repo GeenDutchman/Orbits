@@ -1,5 +1,5 @@
-set xlabel "Theta
-set ylabel "R"
+set xlabel "Time"
+set ylabel "Theta"
 
 set xrange[0:60]
 set yrange[0:2*pi]

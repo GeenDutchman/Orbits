@@ -127,7 +127,8 @@ def print_help():
     print('--mratio, -q\t\t\tSets the mass ratio for the binary system')
     print('--sep, -s\t\t\tSets the separation distances of the black holes')
     print('--default, -d\t\t\tShows the default parameters')
-    print('--record, -r\t\t\tPrints the initial conditions as a comment\n')
+    print('--record, -r\t\t\tPrints the initial conditions as a comment')
+    print('--rk45, -45\t\t\tSets to auto adjust the time-step dynamically\n')
 
 
 def main(argv):
@@ -174,6 +175,7 @@ def main(argv):
 
     i = 0
     record_comment = False
+    use_RK_45 = False
 
     if len(argv) == 0:
         print('# Running with default settings')
@@ -240,6 +242,8 @@ def main(argv):
             exit(0)
         elif argv[i] == '-r' or argv[i] == '--record':
             record_comment = True
+        elif argv[i] == '-45' or argv[i] == '--rk45':
+            use_RK_45 = True
         else:
             print('\n "', argv[i], '" is not an option!!')
             print_help()
@@ -291,7 +295,7 @@ def main(argv):
 
     theta_list = np.zeros(shape=2, dtype=np.float64)
     theta_list[1] = np.linalg.norm(np.cross(Y[0:3], Y[3:])) /\
-         (np.linalg.norm(Y[0:3]) ** 2)
+        (np.linalg.norm(Y[0:3]) ** 2)
 
     while t < tmax:
         """
@@ -321,7 +325,12 @@ def main(argv):
 
         # The Runge-Kutta routine returns the new value of Y, t, and a
         # possibly updated value of dt
-        t, Y, dt = RK4_Step(t, Y, dt, Keppler_Binary_RHS, **kwargs)
+        if use_RK_45:
+            # fine-tunes the dt
+            t, Y, dt = RK45_Step(t, Y, dt, Keppler_Binary_RHS, **kwargs)
+        else:
+            # does not change the dt
+            t, Y, dt = RK4_Step(t, Y, dt, Keppler_Binary_RHS, **kwargs)
 
 
 if __name__ == "__main__":

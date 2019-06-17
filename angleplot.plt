@@ -1,9 +1,9 @@
-set xlabel "Theta"
-set ylabel "R"
+set xlabel "Time"
+set ylabel "Theta"
 
-set xrange[0:2*pi]
-set yrange[-3:3]
+set xrange[0:60]
+set yrange[0:2*pi]
 
-plot 'binary1.dat' u 12:11 w l title "R over Theta Graph"
+plot 'binary1.dat' u 1:11 w l title "Time vs Theta"
 
 pause -1 "Hit enter to continue"

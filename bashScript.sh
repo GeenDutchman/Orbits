@@ -91,6 +91,15 @@ function display_plate {
     fi
 }
 
+function display_angplate {
+    if [ -e 'binary1.dat' ]; then
+        tee_print -nt "Displaying r vs theta"
+        gnuplot -c 'angleplot.plt'
+    else
+        tee_print -p 'No data file for the plate!'
+    fi
+}
+
 
 function main {
     date >> $log_file
@@ -107,8 +116,9 @@ function main {
     else
         tee_print "$@"
         tee_print 'The data was produced and written successfully.'
-        display_animation
-        display_plate
+        #display_animation
+        #display_plate
+	display_angplate
     fi
 
 }

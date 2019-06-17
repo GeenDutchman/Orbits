@@ -287,8 +287,8 @@ def main(argv):
     """
 
     theta_list = np.zeros(shape=2, dtype=np.float64)
-    theta_list[1] = np.linalg.norm(
-        np.cross(Y[0:3], Y[3:])) / (np.linalg.norm(Y[0:3]) ** 2)
+    theta_list[1] = np.linalg.norm(np.cross(Y[0:3], Y[3:])) /\
+    (np.linalg.norm(Y[0:3]) ** 2)
 
     while t < tmax:
         """
@@ -307,7 +307,8 @@ def main(argv):
         pos_r = np.linalg.norm(Y[0:3])
 
         theta_list[0] = theta_list[1]
-        theta_list[1] = np.linalg.norm(np.dot(Y[0:3], Y[3:])) / (pos_r ** 2)
+        theta_list[1] = np.linalg.norm(np.cross(Y[0:3], Y[3:])) / (pos_r ** 2)
+        #theta_list[1] = np.arctan2(Y[1], Y[0])
         theta_list = np.unwrap(theta_list)
 
         BH1 = kwargs['bh1']
@@ -317,7 +318,7 @@ def main(argv):
 
         # The Runge-Kutta routine returns the new value of Y, t, and a
         # possibly updated value of dt
-        t, Y, dt = RK4_Step(t, Y, dt, Keppler_Binary_RHS, **kwargs)
+        t, Y, dt = RK45_Step(t, Y, dt, Keppler_Binary_RHS, **kwargs)
 
 
 if __name__ == "__main__":

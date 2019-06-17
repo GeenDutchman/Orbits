@@ -94,11 +94,21 @@ function display_plate {
 function display_angplate {
     if [ -e 'binary1.dat' ]; then
         tee_print -nt "Displaying r vs theta"
-        gnuplot -c 'angleplot.plt'
+        gnuplot -c 'r_theta_plot.plt'
     else
         tee_print -p 'No data file for the plate!'
     fi
 }
+
+function display_time_angplate {
+    if [ -e 'binary1.dat' ]; then
+        tee_print -nt "Displaying theta vs time"
+        gnuplot -c 'theta_time_plot.plt'
+    else
+        tee_print -p 'No data file for the plate!'
+    fi
+}
+
 
 
 function main {
@@ -121,9 +131,10 @@ function main {
             tee_print "\n\t--star -x 2 -y 0 -vy 1 --tstep 1.0e-2 --tmax 60 --mratio 1 --sep 2"
         fi
         tee_print 'The data was produced and written successfully.'
-        #display_animation
+        display_animation
         display_plate
-	    display_angplate
+	display_angplate
+	display_time_angplate
     fi
 
 }

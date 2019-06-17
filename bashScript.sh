@@ -101,6 +101,7 @@ function main {
         tee_print -nt 'Removing the errant file'
         rm ./binary1.dat
     else
+        tee_print "$@"
         tee_print 'The data was produced and written successfully.'
         display_animation
         display_plate

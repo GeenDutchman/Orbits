@@ -109,6 +109,7 @@ def print_default():
     print('Default Z component of Velocity of the Star:\t\t0.0')
     print('Default time step: \t\t\t\t\t1.0e-2')
     print('Default maximum run time: \t\t\t\t60')
+    print('Default black hole separation: \t\t\t\t2')
     print('Default mass ratio: \t\t\t\t\t1.0\n')
 
 

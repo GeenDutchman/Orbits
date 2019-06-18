@@ -296,8 +296,8 @@ def main(argv):
     """
 
     theta_list = np.zeros(shape=2, dtype=np.float64)
-    theta_list[1] = np.linalg.norm(np.cross(Y[0:3], Y[3:])) /\
-        (np.linalg.norm(Y[0:3]) ** 2)
+    #theta_list[1] = np.linalg.norm(np.cross(Y[0:3], Y[3:])) /\
+        #(np.linalg.norm(Y[0:3]) ** 2)
 
     while t < tmax:
         """

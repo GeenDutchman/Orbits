@@ -7,25 +7,26 @@ err_file="errors.log.txt"
 #err_flag=0
 log_file="hist.log.txt"
 #log_flag=0
+data_file="binary1.dat"
 
 function tee_print() {
     if  { { [ "$1" == "-nt" ] || [ "$1" == "--no-tee" ]; } && shift; } || [ "$NO_TEE" != "0" ]; then
         # echo "no tee"
         if [ "$1" == "-p" ] || [ "$1" == "--prob" ]; then
             shift 
-            echo $@ >> /dev/stderr
+            echo -e "$@" >> /dev/stderr
         else
-            echo $@
+            echo -e "$@"
         fi
     else # just echo normalish
         # echo "normal echo"
         if [ "$1" == "-p" ] || [ "$1" == "--prob" ]; then     
             shift
             date_string = $(date)
-            echo -n $date_string >> $err_file
-            echo $@ | tee -a $log_file $err_file
+            echo -e -n $date_string >> $err_file
+            echo -e "$@" | tee -a $log_file $err_file
         else
-            echo $@ | tee -a $log_file
+            echo -e "$@" | tee -a $log_file
         fi
     fi
 
@@ -65,10 +66,10 @@ function pre_checks {
 }
 
 function display_animation {
-    if [ -e 'binary1.dat' ]; then
+    if [ -e "$data_file" ]; then
         tee_print -nt 'Displaying animation'
-        BIN_LEN=$(wc -l < binary1.dat)
-        NUM_COMMENTS=$(grep -c "#" binary1.dat)
+        BIN_LEN=$( wc -l < $data_file )
+        NUM_COMMENTS=$(grep -c "#" $data_file)
         # echo $BIN_LEN
         # echo $NUM_COMMENTS
         # echo $((BIN_LEN - NUM_COMMENTS))
@@ -83,7 +84,7 @@ function display_animation {
 }
 
 function display_plate {
-    if [ -e 'binary1.dat' ]; then
+    if [ -e "$data_file" ]; then
         tee_print -nt "Displaying plate"
         gnuplot -c 'platePlot.plt'
     else
@@ -92,7 +93,7 @@ function display_plate {
 }
 
 function display_angplate {
-    if [ -e 'binary1.dat' ]; then
+    if [ -e "$data_file" ]; then
         tee_print -nt "Displaying r vs theta"
         gnuplot -c 'r_theta_plot.plt'
     else
@@ -101,7 +102,7 @@ function display_angplate {
 }
 
 function display_time_angplate {
-    if [ -e 'binary1.dat' ]; then
+    if [ -e "$data_file" ]; then
         tee_print -nt "Displaying theta vs time"
         gnuplot -c 'theta_time_plot.plt'
     else
@@ -112,24 +113,44 @@ function display_time_angplate {
 
 
 function main {
-    date >> $log_file
-    write_success=$( python3 binaryNewton.py $@ > binary1.dat )
+
+    if [ $# == 0 ]; then
+        date >> $log_file
+        tee_print "Running with the default parameters. Example:"
+        tee_print "    --star -x 2 -y 0 -vy 1 --tstep 1.0e-2 --tmax 60 --mratio 1 --sep 2"
+        write_success=$( python3 binaryNewton.py > "$data_file")
+    else
+        # declare -a ARG_ARRAY
+        # this is for processing the exceptions
+        for arg in "$@";
+        do
+            case $arg in
+                -h|--help)
+                    tee_print -nt $( python3 binaryNewton.py --help )
+                    return 0
+                    ;;
+                -d|--default)
+                    tee_print -nt $( python3 binaryNewton.py --default )
+                    return 0
+                    ;;
+            esac
+        done
+        date >> $log_file
+        tee_print "$@"
+        write_success=$( python3 binaryNewton.py "$@" > "$data_file" )
+    fi
+    # echo $write_success
+    # if it ran incorrectly
     if [ $? != 0 ]; then
         tee_print -p 'An error occured during python execution!'
-        err_msg=$(grep '!!' binary1.dat)
+        err_msg=$(grep '!!' "$data_file")
         tee_print -nt 'Logging the error'
         tee_print -p $err_msg        
         # date >> errors.log.txt
         # echo $err_msg >> errors.log.txt
         tee_print -nt 'Removing the errant file'
-        rm ./binary1.dat
-    else
-        if [ $# != 0 ]; then
-            tee_print "$@"
-        else
-            tee_print "Running with the default parameters. Example:"
-            tee_print "    --star -x 2 -y 0 -vy 1 --tstep 1.0e-2 --tmax 60 --mratio 1 --sep 2"
-        fi
+        rm ./"$data_file"
+    else # it ran correctly
         tee_print 'The data was produced and written successfully.'
         display_animation
         display_plate

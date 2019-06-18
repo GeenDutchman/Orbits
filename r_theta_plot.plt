@@ -2,6 +2,7 @@ set xlabel "Theta"
 set ylabel "R"
 
 set xrange[0:2*pi]
+set xtics (0, 'π' pi, '2π' 2*pi)
 set yrange[0:2]
 
 # plot R vs theta, and shift over some of the later orbits to compare with the first few orbits

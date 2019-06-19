@@ -131,6 +131,13 @@ def print_help():
     print('--record, -r\t\t\tPrints the initial conditions as a comment')
     print('--rk45, -45\t\t\tSets to auto adjust the time-step dynamically\n')
 
+def update_min_max(min_max_list, Y, index):
+    # if new coordinate is less than stored minimum, update
+    if Y[index] < min_max_list[0]:
+        min_max_list[0] = np.floor(Y[index])
+    elif Y[index] > min_max_list[1]: # if new coord is more than stored maximum
+        min_max_list[1] = np.ceil(Y[index])
+
 
 def main(argv):
     # The Initial condition for the star orbiting a black hole
@@ -298,6 +305,9 @@ def main(argv):
     theta_list = np.zeros(shape=2, dtype=np.float64)
     #theta_list[1] = np.linalg.norm(np.cross(Y[0:3], Y[3:])) /\
         #(np.linalg.norm(Y[0:3]) ** 2)
+    star_x_min_max = [Y[0], Y[0]]
+    star_y_min_max = [Y[1], Y[1]]
+    star_z_min_max = [Y[2], Y[2]]
 
     while t < tmax:
         """
@@ -333,6 +343,13 @@ def main(argv):
         else:
             # does not change the dt
             t, Y, dt = RK4_Step(t, Y, dt, Keppler_Binary_RHS, **kwargs)
+        
+        update_min_max(star_x_min_max, Y, 0)
+        update_min_max(star_y_min_max, Y, 1)
+        update_min_max(star_z_min_max, Y, 2)
+
+    print("# Xmin\tXmax\tYmin\tYmax\tZmin\tZmax")
+    print("#", star_x_min_max[0], " ", star_x_min_max[1], " ", star_y_min_max[0], " ", star_y_min_max[1], " ", star_z_min_max[0], " ", star_z_min_max[1])
 
 
 if __name__ == "__main__":

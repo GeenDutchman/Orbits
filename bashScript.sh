@@ -23,8 +23,8 @@ function tee_print() {
         # echo "normal echo"
         if [ "$1" == "-p" ] || [ "$1" == "--prob" ]; then     
             shift
-            date_string = $(date)
-            echo -e -n $date_string >> $err_file
+            date_string=$(date)
+            echo -e -n $date_string ": " >> $err_file
             echo -e "$@" | tee -a $log_file $err_file
         else
             echo -e "$@" | tee -a $log_file

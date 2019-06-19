@@ -2,6 +2,7 @@
 
 # only print to stdout and stderr if not equal to "0"
 NO_TEE="0"
+ADJUST_MIN_MAX="1"
 
 err_file="errors.log.txt"
 #err_flag=0
@@ -68,12 +69,17 @@ function pre_checks {
 function display_animation {
     if [ -e "$data_file" ]; then
         tee_print -nt 'Displaying animation'
+        # find length of data and ignore comments
         BIN_LEN=$( wc -l < $data_file )
         NUM_COMMENTS=$(grep -c "#" $data_file)
-        # echo $BIN_LEN
-        # echo $NUM_COMMENTS
-        # echo $((BIN_LEN - NUM_COMMENTS))
-        gnuplot -c 'moviePlot.plt' $((BIN_LEN - NUM_COMMENTS))
+        # get the min and max of x,y,z of star
+        IFS=' ' read -a MIN_MAXs <<< $( tail -n 1 "$data_file")
+        MIN_MAXs=("${MIN_MAXs[@]:1}")
+        # if we don't want to use it, then empty MIN_MAXs
+        if [ ADJUST_MIN_MAX == "0" ]; then
+            MIN_MAXs=""
+        fi
+        gnuplot -c 'moviePlot.plt' $((BIN_LEN - NUM_COMMENTS)) ${MIN_MAXs[@]}
     else
         tee_print -p 'No data file for the animation!'
     fi
@@ -86,7 +92,14 @@ function display_animation {
 function display_plate {
     if [ -e "$data_file" ]; then
         tee_print -nt "Displaying plate"
-        gnuplot -c 'platePlot.plt'
+        # get the min and max of x,y,z of star
+        IFS=' ' read -a MIN_MAXs <<< $( tail -n 1 "$data_file")
+        MIN_MAXs=("${MIN_MAXs[@]:1}")
+        # if we don't want to use it, then empty MIN_MAXs
+        if [ ADJUST_MIN_MAX == "0" ]; then
+            MIN_MAXs=""
+        fi
+        gnuplot -c 'platePlot.plt' ${MIN_MAXs[@]}
     else
         tee_print -p 'No data file for the plate!'
     fi

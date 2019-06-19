@@ -130,7 +130,7 @@ function main {
     if [ $# == 0 ]; then
         date >> $log_file
         tee_print "Running with the default parameters. Example:"
-        tee_print "    --star -x 2 -y 0 -vy 1 --tstep 1.0e-2 --tmax 60 --mratio 1 --sep 2"
+        tee_print "    --star -x 4 -y 0 -vy 0.5 --tstep 1.0e-2 --tmax 100 --mratio 1 --sep 2"
         write_success=$( python3 binaryNewton.py > "$data_file")
     else
         # declare -a ARG_ARRAY

@@ -15,6 +15,7 @@ if (ARGC > 0) {
 }
 print length
 
+
 if (ARGC > 1) {
     x_min=ARG2 - 1
     x_max=ARG3 + 1
@@ -23,6 +24,7 @@ if (ARGC > 1) {
     z_min=ARG6 - 1
     z_max=ARG7 + 1
 }
+
 
 CUBED_VIEW=1
 if (CUBED_VIEW == 1) {

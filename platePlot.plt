@@ -18,6 +18,28 @@ if (ARGC > 0) {
     z_max=ARG6 + 1
 }
 
+CUBED_VIEW=1
+if (CUBED_VIEW == 1) {
+    # define function
+    max(x, y) = (x > y ? x : y)
+
+    # find the biggest single dimension
+    x_dim=max(abs(x_min), x_max)
+    y_dim=max(abs(y_min), y_max)
+    z_dim=max(abs(z_min), z_max)
+    xyz_dim=max(max(x_dim, y_dim), z_dim)
+
+    # assign x    
+    x_min=-1 * xyz_dim
+    x_max=xyz_dim
+    # assign y    
+    y_min=-1 * xyz_dim
+    y_max=xyz_dim
+    # assign z    
+    z_min=-1 * xyz_dim
+    z_max=xyz_dim
+}
+
 set xrange[x_min:x_max]
 set yrange[y_min:y_max]
 set zrange[z_min:z_max]

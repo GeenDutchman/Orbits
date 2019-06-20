@@ -93,11 +93,12 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
 
     acc_star = acc_star_1 + acc_star_2
     vel_star = star_v_vec
+    phi_star = star_phi_vec
 
     kwargs['bh1'] = BH1_x_vec
     kwargs['bh2'] = BH2_x_vec
 
-    return np.concatenate((vel_star, acc_star))
+    return np.concatenate((vel_star, acc_star, phi_star))
 
 
 def print_default():
@@ -265,8 +266,11 @@ def main(argv):
     # Calculate initial star velocity
     initial_velocity = np.array((vx0, vy0, vz0), dtype=np.float64)
 
+    # Calculate initial star angle(phi)
+    initial_phi = np.array((arctan2(y0, x0), dtype=np.float64)
+
     # Concatanate star parameters
-    Y = np.concatenate((initial_position, initial_velocity))
+    Y = np.concatenate((initial_position, initial_velocity, initial_phi))
 
     # Puts blach hole 1 position parameters into an array
     initial_bh1_pos = np.array((BH1x, BH1y, BH1z), dtype=np.float64)

@@ -168,7 +168,7 @@ function main {
         display_animation
         display_plate
 	    display_angplate
-	    display_time_angplate
+	    #display_time_angplate
     fi
 
 }

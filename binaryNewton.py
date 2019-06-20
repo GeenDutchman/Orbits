@@ -91,14 +91,16 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
     acc_star_2 = (star_x_vec - BH2_x_vec) * (-1 * BH2_mass * G) / \
         (np.linalg.norm(star_x_vec - BH2_x_vec) ** 3)
 
+    phi_dot = np.linalg.norm(np.cross(star_x_vec, star_v_vec)) / (np.linalg.norm(star_x_vec) ** 2)
+
     acc_star = acc_star_1 + acc_star_2
     vel_star = star_v_vec
-    phi_star = star_phi_vec
 
     kwargs['bh1'] = BH1_x_vec
     kwargs['bh2'] = BH2_x_vec
 
-    return np.concatenate((vel_star, acc_star, phi_star))
+    pre_y = np.concatenate((vel_star, acc_star))
+    return np.append(pre_y, phi_dot)
 
 
 def print_default():
@@ -267,10 +269,12 @@ def main(argv):
     initial_velocity = np.array((vx0, vy0, vz0), dtype=np.float64)
 
     # Calculate initial star angle(phi)
-    initial_phi = np.array((arctan2(y0, x0), dtype=np.float64)
+    # TODO: need to check if this is the right initialization
+    initial_phi = np.array(np.arctan2(y0, x0), dtype=np.float64) 
 
     # Concatanate star parameters
-    Y = np.concatenate((initial_position, initial_velocity, initial_phi))
+    Y = np.concatenate((initial_position, initial_velocity))
+    Y = np.append(Y, initial_phi)
 
     # Puts blach hole 1 position parameters into an array
     initial_bh1_pos = np.array((BH1x, BH1y, BH1z), dtype=np.float64)
@@ -297,7 +301,7 @@ def main(argv):
         print('# Black hole separation:', abs(BH1x) * 2)
         print('')
 
-    phi_list = np.zeros(shape=2, dtype=np.float64)
+    #phi_list = np.zeros(shape=2, dtype=np.float64)
     #phi_list[1] = np.linalg.norm(np.cross(Y[0:3], Y[3:])) /\
         #(np.linalg.norm(Y[0:3]) ** 2)
     star_x_min_max = [Y[0], Y[0]]
@@ -308,15 +312,15 @@ def main(argv):
 
         pos_r = np.linalg.norm(Y[0:3])
 
-        phi_list[0] = phi_list[1]
-        #phi_list[1] = np.linalg.norm(np.cross(Y[0:3], Y[3:])) / (pos_r ** 2)
-        phi_list[1] = np.arctan2(Y[1], Y[0])
-        phi_list = np.unwrap(phi_list)
+        # phi_list[0] = phi_list[1]
+        # #phi_list[1] = np.linalg.norm(np.cross(Y[0:3], Y[3:])) / (pos_r ** 2)
+        # phi_list[1] = np.arctan2(Y[1], Y[0])
+        # phi_list = np.unwrap(phi_list)
 
         BH1 = kwargs['bh1']
         BH2 = kwargs['bh2']
         print(t, Y[0], Y[1], Y[2], BH1[0], BH1[1],
-              BH1[2], BH2[0], BH2[1], BH2[2], pos_r, phi_list[1])
+              BH1[2], BH2[0], BH2[1], BH2[2], pos_r, Y[6])
 
         # The Runge-Kutta routine returns the new value of Y, t, and a
         # possibly updated value of dt

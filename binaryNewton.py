@@ -21,7 +21,8 @@ def calc_omega(mass, G, pos1, pos2):
 
 def Keppler_Binary_RHS(t, y0, **kwargs):
     star_x_vec = y0[0:3]  # star position stored in first 3 elements
-    star_v_vec = y0[3:]  # star velocity stored in last 3 elements
+    star_v_vec = y0[3:6]  # star velocity stored in the next 3 elements
+    star_phi_vec = y0[6]  # star angle position stored in the last element
 
     # star position vector norm, such that
     # star_r = (star_x**2 + star_y**2 + star_z**2)**1/2
@@ -292,8 +293,8 @@ def main(argv):
         print('# Black hole separation:', abs(BH1x) * 2)
         print('')
 
-    theta_list = np.zeros(shape=2, dtype=np.float64)
-    #theta_list[1] = np.linalg.norm(np.cross(Y[0:3], Y[3:])) /\
+    phi_list = np.zeros(shape=2, dtype=np.float64)
+    #phi_list[1] = np.linalg.norm(np.cross(Y[0:3], Y[3:])) /\
         #(np.linalg.norm(Y[0:3]) ** 2)
     star_x_min_max = [Y[0], Y[0]]
     star_y_min_max = [Y[1], Y[1]]
@@ -303,15 +304,15 @@ def main(argv):
 
         pos_r = np.linalg.norm(Y[0:3])
 
-        theta_list[0] = theta_list[1]
-        #theta_list[1] = np.linalg.norm(np.cross(Y[0:3], Y[3:])) / (pos_r ** 2)
-        theta_list[1] = np.arctan2(Y[1], Y[0])
-        theta_list = np.unwrap(theta_list)
+        phi_list[0] = phi_list[1]
+        #phi_list[1] = np.linalg.norm(np.cross(Y[0:3], Y[3:])) / (pos_r ** 2)
+        phi_list[1] = np.arctan2(Y[1], Y[0])
+        phi_list = np.unwrap(phi_list)
 
         BH1 = kwargs['bh1']
         BH2 = kwargs['bh2']
         print(t, Y[0], Y[1], Y[2], BH1[0], BH1[1],
-              BH1[2], BH2[0], BH2[1], BH2[2], pos_r, theta_list[1])
+              BH1[2], BH2[0], BH2[1], BH2[2], pos_r, phi_list[1])
 
         # The Runge-Kutta routine returns the new value of Y, t, and a
         # possibly updated value of dt

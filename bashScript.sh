@@ -165,6 +165,7 @@ function main {
         rm ./"$data_file"
     else # it ran correctly
         tee_print 'The data was produced and written successfully.'
+        tee_print $( tail -n 2 "$data_file")
         display_animation
         display_plate
 	    display_angplate

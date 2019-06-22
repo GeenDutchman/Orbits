@@ -21,7 +21,7 @@ def snipper(extracted, cycles=1, epsilon=0.0):
     return second_set
 
 def find_residual(extracted, second_set):
-    second_set[second_set[:,0].argsort()]
+    second_set = second_set[second_set[:,0].argsort()]
     f = interp1d(second_set[:,0], second_set[:,1], kind='cubic')
     print('hihihihihihhihihihihihihihi')
     residual = 0
@@ -42,4 +42,7 @@ def main(epsilon=0.0):
 
 if __name__ == "__main__":
     #main(sys.argv[1:])
-    main(sys.argv[1])
+    if len(sys.argv) > 0:
+        main(sys.argv[1])
+    else:
+        main()

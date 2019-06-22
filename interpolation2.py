@@ -23,7 +23,7 @@ def find_residual(extracted, second_set):
     f = interp1d(second_set[:,0], second_set[:,1], kind='cubic')
     residual = 0
     for i in range(len(extracted)):
-        residual += abs(extracted[i][1] - f(extracted[i][1]))
+        residual += abs(extracted[i][1] - f(second_set[i][0]))
     return residual
 
 def main():

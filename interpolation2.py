@@ -3,8 +3,6 @@
 import numpy as np
 from scipy.interpolate import interp1d
 
-data = np.loadtxt('binary1.dat', dtype=np.float64)
-
 def orbital_extractor(data, cycles=1):
     extractor = []
     for i in range(len(data)):
@@ -27,3 +25,13 @@ def find_residual(extracted, second_set):
     for i in range(len(extracted)):
         residual += abs(extracted[i][1] - f(extracted[i][1]))
     return residual
+
+def main():
+    data = np.loadtxt('binary1.dat', dtype=np.float64)
+    extracted = orbital_extractor(data)
+    second_set = snipper(extracted)
+    residual = find_residual(extracted, second_set)
+    print(residual)
+
+if __name__ == "__main__":
+    main()

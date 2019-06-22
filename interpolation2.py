@@ -17,11 +17,14 @@ def orbital_extractor(data, cycles=1):
 def snipper(extracted, cycles=1, epsilon=0.0):
     second_set = np.copy(extracted)
     for i in range(len(second_set)):
-        second_set[i][0] -= 2 * np.pi * cycles - epsilon
+        second_set[i][0] = second_set[i][0] - 2 * np.pi * cycles - epsilon
     return second_set
 
 def find_residual(extracted, second_set):
+    print(len(second_set[:,0]))
+    print(len(second_set[:,1]))
     f = interp1d(second_set[:,0], second_set[:,1], kind='cubic')
+    print('hihihihihihhihihihihihihihi')
     residual = 0
     for i in range(len(extracted)):
         residual += abs(extracted[i][1] - f(second_set[i][0]))

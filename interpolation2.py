@@ -10,7 +10,7 @@ def orbital_extractor(data, cycles=1):
             break
         elif data[i][-1] >= np.pi * cycles:
             extractor.append([data[i][-1], data[i][-2]])
-            extracted = np.array(extractor)
+    extracted = np.array(extractor)
     return extracted
 
 def snipper(extracted, cycles=1, epsilon=0.0):
@@ -28,7 +28,11 @@ def find_residual(extracted, second_set):
 
 def main():
     data = np.loadtxt('binary1.dat', dtype=np.float64)
+    
     extracted = orbital_extractor(data)
+    if len(extracted) == 0:
+        print("Not enough data points!!")
+        return 1
     second_set = snipper(extracted)
     residual = find_residual(extracted, second_set)
     print(residual)

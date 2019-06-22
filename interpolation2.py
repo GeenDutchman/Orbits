@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import sys
 import numpy as np
 from scipy.interpolate import interp1d
 
@@ -26,12 +27,13 @@ def find_residual(extracted, second_set):
         residual += abs(extracted[i][1] - f(second_set[i][0]))
     return residual
 
-def main():
+def main(epsilon=0.0):
     data = np.loadtxt('binary1.dat', dtype=np.float64)
     extracted = orbital_extractor(data)
-    second_set = snipper(extracted)
+    second_set = snipper(extracted, epsilon=float(epsilon))
     residual = find_residual(extracted, second_set)
     print(residual)
 
 if __name__ == "__main__":
-    main()
+    #main(sys.argv[1:])
+    main(sys.argv[1])

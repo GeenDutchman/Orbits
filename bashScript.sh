@@ -108,7 +108,7 @@ function display_plate {
 function display_angplate {
     if [ -e "$data_file" ]; then
         tee_print -nt "Displaying r vs theta"
-        gnuplot -c 'r_theta_plot.plt'
+        gnuplot -c 'r_phi_plot.plt'
     else
         tee_print -p 'No data file for the plate!'
     fi
@@ -117,7 +117,7 @@ function display_angplate {
 function display_time_angplate {
     if [ -e "$data_file" ]; then
         tee_print -nt "Displaying theta vs time"
-        gnuplot -c 'theta_time_plot.plt'
+        gnuplot -c 'phi_time_plot.plt'
     else
         tee_print -p 'No data file for the plate!'
     fi
@@ -166,10 +166,10 @@ function main {
     else # it ran correctly
         tee_print 'The data was produced and written successfully.'
         tee_print $( tail -n 2 "$data_file")
-        display_animation
+        #display_animation
         display_plate
-	    display_angplate
-	    #display_time_angplate
+	display_angplate
+	#display_time_angplate
     fi
 
 }

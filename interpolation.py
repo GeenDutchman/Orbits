@@ -1,47 +1,50 @@
 #!/usr/bin/python3
+import sys
 import numpy as np
 from scipy.interpolate import interp1d
 
-#for i in range(len(data)):
-    #for j in range(len(data[i])):
-        #print(data[i][j], end=' ')
-    #print()
+def interpolater(phi_old, r_old, phi_new, r_new):
+    residuals = []
+    func = interp1d(phi_new, r_new, kind='cubic')
+    for i in range(len(phi_old)):
+        r_interp = func(phi_old[i])    
+        residuals.append(r_old[i] - r_interp)
+    return np.linalg.norm(residuals)
+        
+def shifter(phi_column, epsilon):
+    phi_shifted = [x - (2*np.pi + epsilon) for x in phi_column]
+    return phi_shifted
 
-for i in range(len(data)):
-    if data[i][-1] >= np.pi and data[i][-1] <= 3*np.pi:
-        new_row = [data[i][-1], data[i][-2]]
-        extractor.append(new_row)
-        print(new_row)
-
-extracted = np.array(extractor)
-
-np.savetxt("binary2.dat", extracted)
-
-def copy_piece(theta_column, r_column, start_cut, end_cut):
-    theta = []
+def copy_piece(phi_column, r_column, start_cut, end_cut):
+    phi = []
     r = []
-    for row in range(len(theta_column)):
-        if theta_column[row] >= start_cut and theta_column[row] <= end_cut:
-            theta.append(theta_column[row])
+    for row in range(len(phi_column)):
+        if phi_column[row] >= start_cut and phi_column[row] <= end_cut:
+            phi.append(phi_column[row])
             r.append(r_column[row])
-    return theta, r      
+    return phi, r      
 
 def extractor(data):
-    theta_original = []
+    phi_original = []
     r_original = []
     for row in range(len(data)):
-        theta_original.append(data[row][-1])
+        phi_original.append(data[row][-1])
         r_original.append(data[row][-2])
-    return theta_original, r_original
+    return phi_original, r_original
         
-
 def main(epsilon=0.0):
     data = np.loadtxt('binary1.dat', dtype=np.float64)
-    theta_original, r_original = extractor(data)
+    phi_original, r_original = extractor(data)
+    phi_old, r_old = copy_piece(phi_original, r_original, np.pi, 3*np.pi)
+    phi_shifted = shifter(phi_original, epsilon)
+    phi_new, r_new = copy_piece(phi_shifted, r_original, (np.pi/2), ((7*np.pi)/2))
+    residual = interpolater(phi_old, r_old, phi_new, r_new)
+    print('Residual:')
+    print(residual)
 
 if __name__ == "__main__":
     # main(sys.argv[1:])
     if len(sys.argv) > 1:
-        main(sys.argv[1])
+        main(float(sys.argv[1]))
     else:
         main()

@@ -49,6 +49,12 @@ def opt(epsilon):
 
 # print (minimize(opt, 0.005,  method='Powell'))
 result = minimize(opt, 0.005, method='Powell')
-print(result.x)
-print(result.success)
-print(result.message)
+if result.success:
+    print(result.message)
+    print('Angle of precession: ', result.x)
+else:
+    print('An error occured:')
+    print(result.message)
+# print(result.x)
+# print('Sucess:', result.success)
+# print(result.message)

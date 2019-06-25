@@ -43,8 +43,7 @@ def RK4_Step(xold, yold, dx, fxy, **kwargs):
 
 
 # Adaptive RK45
-def RK45_Step(xold, yold, dx, fxy, tol=DEFAULT_TOL,
-    max_step_size=DEFAULT_MAX_STEP_SIZE, **kwargs):
+def RK45_Step(xold, yold, dx, fxy, tol=DEFAULT_TOL, max_step_size=DEFAULT_MAX_STEP_SIZE, **kwargs):
   """
   Implement Adaptive RK45 (Runge-Kutta-Fehlberg)
   Arguments:
@@ -112,6 +111,6 @@ def RK45_Step(xold, yold, dx, fxy, tol=DEFAULT_TOL,
   # Pass the old values of x and y, but a new smaller value of dx,
   # to the calling function.
   if err > tol:
-    return xold, yold, dxnew
+    return RK45_Step(xold, yold, dxnew, fxy, tol, max_step_size, **kwargs)
 
   return (xnew, ynew, dxnew)

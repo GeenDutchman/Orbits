@@ -4,7 +4,7 @@ import numpy as np
 from scipy.interpolate import interp1d
 from scipy.optimize import minimize
 
-def interpolater(phi_old, r_old, phi_new, r_new):
+def find_residual(phi_old, r_old, phi_new, r_new):
     residuals = []
     func = interp1d(phi_new, r_new, kind='cubic')
     for i in range(len(phi_old)):
@@ -41,6 +41,6 @@ def opt(epsilon):
     epsilon = epsilon[0]
     phi_shifted = shifter(phi_original, epsilon)
     phi_new, r_new = copy_piece(phi_shifted, r_original, (np.pi/2), ((7*np.pi)/2))
-    return interpolater(phi_old, r_old, phi_new, r_new)
+    return find_residual(phi_old, r_old, phi_new, r_new)
 
 print (minimize(opt, 0.005,  method='Powell'))

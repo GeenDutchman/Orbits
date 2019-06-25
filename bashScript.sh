@@ -167,7 +167,7 @@ function main {
         tee_print 'The data was produced and written successfully.'
         tee_print $( tail -n 2 "$data_file")
         #display_animation
-        display_plate
+        #display_plate
 	display_angplate
 	#display_time_angplate
     fi

@@ -47,4 +47,8 @@ def opt(epsilon):
         raise ValueError('The data needs to have more orbits!')
     return find_residual(phi_old, r_old, phi_new, r_new)
 
-print (minimize(opt, 0.005,  method='Powell'))
+# print (minimize(opt, 0.005,  method='Powell'))
+result = minimize(opt, 0.005, method='Powell')
+print(result.x)
+print(result.success)
+print(result.message)

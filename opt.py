@@ -20,7 +20,9 @@ def copy_piece(phi_column, r_column, start_cut, end_cut):
     phi = []
     r = []
     for row in range(len(phi_column)):
-        if phi_column[row] >= start_cut and phi_column[row] <= end_cut:
+        if phi_column[row] > end_cut:
+            break
+        elif phi_column[row] >= start_cut:
             phi.append(phi_column[row])
             r.append(r_column[row])
     return phi, r      

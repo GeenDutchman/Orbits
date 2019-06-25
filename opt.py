@@ -47,14 +47,14 @@ def opt(epsilon):
         raise ValueError('The data needs to have more orbits!')
     return find_residual(phi_old, r_old, phi_new, r_new)
 
-# print (minimize(opt, 0.005,  method='Powell'))
 result = minimize(opt, 0.005, method='Powell')
 if result.success:
+    print()
     print(result.message)
-    print('Angle of precession: ', result.x)
+    print('Angle of precession:', result.x)
+    print()
 else:
+    print()
     print('An error occured:')
     print(result.message)
-# print(result.x)
-# print('Sucess:', result.success)
-# print(result.message)
+    print()

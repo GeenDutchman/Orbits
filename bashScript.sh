@@ -44,7 +44,7 @@ function file_exists() {
 }
 
 function pre_checks {
-    declare -a files=("binaryNewton.py" "RK.py")
+    declare -a files=("binaryNewton.py" "RK.py" "opt.py")
     for file_name in ${files[@]}
     do
         file_exists $file_name
@@ -168,8 +168,10 @@ function main {
         tee_print $( tail -n 2 "$data_file")
         #display_animation
         #display_plate
-	display_angplate
-	#display_time_angplate
+        display_angplate
+        #display_time_angplate
+
+        tee_print $( python3 opt.py )    
     fi
 
 }

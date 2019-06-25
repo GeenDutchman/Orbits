@@ -44,17 +44,24 @@ def opt(epsilon):
     phi_shifted = shifter(phi_original, epsilon)
     phi_new, r_new = copy_piece(phi_shifted, r_original, (np.pi/2), ((7*np.pi)/2))
     if phi_old[-1] >= phi_new[-1]:
-        raise ValueError('The data needs to have more orbits!')
+        raise ValueError('The data needs to have more orbits!!')
     return find_residual(phi_old, r_old, phi_new, r_new)
 
-result = minimize(opt, 0.005, method='Powell')
-if result.success:
-    print()
-    print(result.message)
-    print('Angle of precession:', result.x)
-    print()
-else:
-    print()
-    print('An error occured:')
-    print(result.message)
-    print()
+try:
+    result = minimize(opt, 0.005, method='Powell')
+    if result.success:
+        print()
+        print(result.message)
+        print('Angle of precession:', result.x)
+        print()
+    else:
+        print()
+        print('An error occured:')
+        print(result.message)
+        print()
+        exit(1)
+except ValueError as e:
+    print('An exception was caught:')
+    print(e)
+    exit(1)
+

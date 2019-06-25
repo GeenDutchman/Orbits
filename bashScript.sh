@@ -15,32 +15,32 @@ function tee_print() {
         # echo "no tee"
         if [ "$1" == "-p" ] || [ "$1" == "--prob" ]; then
             shift 
-            echo -e "$@" >> /dev/stderr
+            printf "$@" >> /dev/stderr
         else
-            echo -e "$@"
+            printf "$@"
         fi
     else # just echo normalish
         # echo "normal echo"
         if [ "$1" == "-p" ] || [ "$1" == "--prob" ]; then     
             shift
             date_string=$(date)
-            echo -e -n $date_string ": " >> $err_file
-            echo -e "$@" | tee -a $log_file $err_file
+            printf "$date_string\" : \"" >> $err_file
+            printf "$@" | tee -a $log_file $err_file
         else
-            echo -e "$@" | tee -a $log_file
+            printf "$@" | tee -a $log_file
         fi
     fi
 
 }
 
 function file_exists() {
-    tee_print -nt -n "Checking for \"$1\" in this directory..."
+    tee_print -nt "Checking for \"$1\" in this directory..."
     exists=$( ls | grep -c $1 )
     if [ $exists == 0 ]; then
-        tee_print -nt "not found!!"
+        tee_print -nt "not found!!\n"
         return 1
     fi
-    tee_print -nt "found."
+    tee_print -nt "found.\n"
 }
 
 function pre_checks {
@@ -49,7 +49,7 @@ function pre_checks {
     do
         file_exists $file_name
         if [ $? != 0 ]; then
-            tee_print -nt -p "Please run in the directory with '$file_name'"
+            tee_print -nt -p "Please run in the directory with '$file_name'\n"
             exit 1
         fi
     done
@@ -59,8 +59,8 @@ function pre_checks {
     do
         python_exists=$( which $prog_name )
         if [ $? != 0  ]; then
-            tee_print -p "This script requires '$prog_name' to be installed."
-            tee_print -p "Please install '$prog_name' and then rerun."
+            tee_print -p "This script requires '$prog_name' to be installed.\n"
+            tee_print -p "Please install '$prog_name' and then rerun.\n"
             exit 1
         fi
     done
@@ -68,7 +68,7 @@ function pre_checks {
 
 function display_animation {
     if [ -e "$data_file" ]; then
-        tee_print -nt 'Displaying animation'
+        tee_print -nt 'Displaying animation\n'
         # find length of data and ignore comments
         BIN_LEN=$( wc -l < $data_file )
         NUM_COMMENTS=$(grep -c "#" $data_file)
@@ -81,7 +81,7 @@ function display_animation {
         fi
         gnuplot -c 'moviePlot.plt' $((BIN_LEN - NUM_COMMENTS)) ${MIN_MAXs[@]}
     else
-        tee_print -p 'No data file for the animation!'
+        tee_print -p 'No data file for the animation!\n'
     fi
 
     # how to make a movie
@@ -91,7 +91,7 @@ function display_animation {
 
 function display_plate {
     if [ -e "$data_file" ]; then
-        tee_print -nt "Displaying plate"
+        tee_print -nt "Displaying plate\n"
         # get the min and max of x,y,z of star
         IFS=' ' read -a MIN_MAXs <<< $( tail -n 1 "$data_file")
         MIN_MAXs=("${MIN_MAXs[@]:1}")
@@ -101,25 +101,25 @@ function display_plate {
         fi
         gnuplot -c 'platePlot.plt' ${MIN_MAXs[@]}
     else
-        tee_print -p 'No data file for the plate!'
+        tee_print -p 'No data file for the plate!\n'
     fi
 }
 
 function display_angplate {
     if [ -e "$data_file" ]; then
-        tee_print -nt "Displaying r vs theta"
+        tee_print -nt "Displaying r vs theta\n"
         gnuplot -c 'r_phi_plot.plt'
     else
-        tee_print -p 'No data file for the plate!'
+        tee_print -p 'No data file for the plate!\n'
     fi
 }
 
 function display_time_angplate {
     if [ -e "$data_file" ]; then
-        tee_print -nt "Displaying theta vs time"
+        tee_print -nt "Displaying theta vs time\n"
         gnuplot -c 'phi_time_plot.plt'
     else
-        tee_print -p 'No data file for the plate!'
+        tee_print -p 'No data file for the plate!\n'
     fi
 }
 
@@ -129,49 +129,57 @@ function main {
 
     if [ $# == 0 ]; then
         date >> $log_file
-        tee_print "Running with the default parameters. Example:"
-        tee_print "    --star -x 4 -y 0 -vy 0.5 --tstep 1.0e-2 --tmax 100 --mratio 1 --sep 2"
+        tee_print "Running with the default parameters. Example:\n"
+        tee_print "\t--star -x 4 -y 0 -vy 0.5 --tstep 1.0e-2 --tmax 100 --mratio 1 --sep 2\n"
         write_success=$( python3 binaryNewton.py > "$data_file")
     else
-        # declare -a ARG_ARRAY
+        # if not tee, then don't log the time
+        if [ "$NO_TEE" == "0" ]; then
+            date >> $log_file
+        fi
         # this is for processing the exceptions
         for arg in "$@";
         do
             case $arg in
                 -h|--help)
-                    tee_print -nt $( python3 binaryNewton.py --help )
+                    python3 binaryNewton.py --help
                     return 0
                     ;;
                 -d|--default)
-                    tee_print -nt $( python3 binaryNewton.py --default )
+                    python3 binaryNewton.py --default
                     return 0
                     ;;
             esac
+            tee_print "%s " "$arg"
         done
-        date >> $log_file
-        tee_print "$@"
+        tee_print "\n"
         write_success=$( python3 binaryNewton.py "$@" > "$data_file" )
     fi
     # echo $write_success
     # if it ran incorrectly
     if [ $? != 0 ]; then
-        tee_print -p 'An error occured during python execution!'
+        tee_print -p 'An error occured during python execution!\n'
         err_msg=$(grep '!!' "$data_file")
-        tee_print -nt 'Logging the error'
+        tee_print -nt 'Logging the error\n'
         tee_print -p $err_msg        
-        # date >> errors.log.txt
-        # echo $err_msg >> errors.log.txt
-        tee_print -nt 'Removing the errant file'
+        tee_print -nt 'Removing the errant file\n'
         rm ./"$data_file"
     else # it ran correctly
-        tee_print 'The data was produced and written successfully.'
-        tee_print $( tail -n 2 "$data_file")
+        tee_print 'The data was produced and written successfully.\n'
+        min_max_info=$( tail -n 2 "$data_file")
+        tee_print "$min_max_info\n"
         #display_animation
-        #display_plate
-        display_angplate
+        display_plate
+        #display_angplate
         #display_time_angplate
-
-        tee_print $( python3 opt.py )    
+        tee_print "Analyzing data for precession\n"
+        precession_analysis=$( python3 opt.py )
+        if [ $? != 0 ]; then
+            tee_print -p "$precession_analysis\n"
+            return 1
+        else
+            tee_print "$precession_analysis\n"
+        fi
     fi
 
 }

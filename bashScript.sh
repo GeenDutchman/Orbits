@@ -114,17 +114,6 @@ function display_angplate {
     fi
 }
 
-function display_time_angplate {
-    if [ -e "$data_file" ]; then
-        tee_print -nt "Displaying theta vs time\n"
-        gnuplot -c 'phi_time_plot.plt'
-    else
-        tee_print -p 'No data file for the plate!\n'
-    fi
-}
-
-
-
 function main {
 
     if [ $# == 0 ]; then
@@ -168,10 +157,9 @@ function main {
         tee_print 'The data was produced and written successfully.\n'
         min_max_info=$( tail -n 2 "$data_file")
         tee_print "$min_max_info\n"
-        #display_animation
-        #display_plate
-        #display_angplate
-        #display_time_angplate
+        display_animation
+        display_plate
+        display_angplate
         tee_print "Analyzing data for precession\n"
         precession_analysis=$( python3 opt.py )
         if [ $? != 0 ]; then

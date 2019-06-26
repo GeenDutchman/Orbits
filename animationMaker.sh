@@ -56,8 +56,6 @@ function make_animation {
         if [ ADJUST_MIN_MAX == "0" ]; then
             MIN_MAXs=""
         fi
-	# delete old images
-	rm images/*
 	# run gnuplot
 	tee_print "Running gnuplot to make images\n"
         gnuplot -c 'animationPlot.plt' $((BIN_LEN - NUM_COMMENTS)) ${MIN_MAXs[@]}
@@ -77,6 +75,8 @@ function main {
     tee_print "Running ffmpeg to put images together as a movie.\n"
     ffmpeg -framerate 100 -i ./images/%d.png -c:v libx264 -profile:v high -crf 20 -pix_fmt yuv420p orbit.mp4
     tee_print "Done with making movie\n"
+    # delete old images
+	rm images/*
 }
 
 pre_checks

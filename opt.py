@@ -50,12 +50,10 @@ def opt(epsilon):
 try:
     result = minimize(opt, 0.005, method='Powell')
     if result.success:
-        print()
         print(result.message)
         print('Angle of precession:', result.x)
         print()
     else:
-        print()
         print('An error occured:')
         print(result.message)
         print()

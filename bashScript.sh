@@ -169,7 +169,7 @@ function main {
         min_max_info=$( tail -n 2 "$data_file")
         tee_print "$min_max_info\n"
         #display_animation
-        display_plate
+        #display_plate
         #display_angplate
         #display_time_angplate
         tee_print "Analyzing data for precession\n"

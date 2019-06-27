@@ -171,14 +171,19 @@ def main(argv):
 
     # max time
     tmax = 100
+    
+    #Separation of Black Holes' initial position
+    r_vec_x = 2.0
+    r_vec_y = 0.0
+    r_vec_z = 0.0
 
     # Black Hole 1's initial position
-    BH1x = 1.0
+    BH1x = 0.0
     BH1y = 0.0
     BH1z = 0.0
 
     # Black Hole 2's initial position
-    BH2x = -1.0
+    BH2x = 0.0
     BH2y = 0.0
     BH2z = 0.0
 
@@ -229,6 +234,28 @@ def main(argv):
                     break
                 # move to the next argument
                 i += 1
+    while i < len(argv):  # while there are unprocessed arguments
+        if argv[i] == '--sep':
+            i += 1
+            while i < len(argv):  # while there are unprocessed separations
+                #print('Star arguments')
+                if argv[i] == '--rx' or argv[i] == '-x':
+                    i += 1
+                    r_x_vec = float(argv[i])
+                    #print('X position  changed')
+                elif argv[i] == '--rz' or argv[i] == '-y':
+                    i += 1
+                    r_y_vec = float(argv[i])
+                    #print('Y position  changed')
+                elif argv[i] == '--rz' or argv[i] == '-z':
+                    i += 1
+                    r_z_vec = float(argv[i])
+                else:
+                    # If the *current* argument is not for a separation, counter the *next* increment
+                    i -= 1
+                    break
+                # move to the next argument
+                i += 1
         elif argv[i] == '--tstep' or argv[i] == '-ts':
             i += 1
             dt = float(argv[i])
@@ -241,11 +268,6 @@ def main(argv):
             i += 1
             kwargs['q'] = float(argv[i])
             #print('Mass ratio changed')
-        elif argv[i] == '--sep' or argv[i] == '-s':
-            i += 1
-            BH1x = float(argv[i])/2
-            BH2x = -1.0*BH1x
-            # Print('Seperation distance of black holes changes)
         elif argv[i] == '--help' or argv[i] == '-h':
             print_help()
             exit(0)

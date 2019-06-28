@@ -224,7 +224,7 @@ def main(argv):
                     break
                 # move to the next argument
                 i += 1
-        if argv[i] == '--sep':
+        elif argv[i] == '--sep':
             i += 1
             while i < len(argv):  # while there are unprocessed separation arguments
                 #print('Star arguments')

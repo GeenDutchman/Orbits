@@ -5,18 +5,13 @@ import sys
 import getopt
 
 
-def calc_omega(mass, G, pos1, pos2):
-    magnitude1 = np.linalg.norm(pos1)
-    magnitude2 = np.linalg.norm(pos2)
-    mag_sum = magnitude1 + magnitude2
-    dist = abs(mag_sum)
-    dist3 = dist ** 3
-
-    if dist3 != 0:
-        omega = np.sqrt((mass * G) / dist3)
-    else:
-        omega = 0
-    return omega, dist
+def calc_accel(mass, G, r_vec):
+    dist = np.linalg.norm(r_vec)
+    if dist == 0:
+        return 0
+    dist_cubed = dist ** 3
+    
+    return ((-mass * G)/dist_cubed) * r_vec
 
 
 def Keppler_Binary_RHS(t, y0, **kwargs):
@@ -60,16 +55,16 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
 
     BH2_x_vec = BH2[0:3]
 
-    if 'omega' in kwargs and 'BH_dist' in kwargs:
-        omega = kwargs['omega']
+    if 'BH_dist' in kwargs:
         r_vec = kwargs['BH_dist']
     else:
-        print('# Calculating omega')
-        omega, r_vec = calc_omega(combined_BH_mass, G, BH1_x_vec, BH2_x_vec)
-        kwargs['omega'] = omega
+        # reconstruct it from the BH data
+        r_vec = BH1_x_vec * ( 1 + BH_ratio)
         kwargs['BH_dist'] = r_vec
 
     half_BH_dist = 0.5 * r_vec
+
+    
 
     # calculate the current position, but does not do the z coord??
     BH1_x_vec[0] = half_BH_dist * np.cos(omega * t)
@@ -295,19 +290,22 @@ def main(argv):
     # Puts black hole 1 position parameters into an array
     initial_bh1_pos = (r_vec/(1 + kwargs['q']))
 
-    BH1 = initial_bh1_pos
+    initial_bh1_vel = np.sqrt((kwargs['mass'] * kwargs['G'])/r_vec)
+
+    BH1 = np.concatenate(initial_bh1_pos, initial_bh1_vel)
 
     # Puts black hole 2 position parameters into an array
     initial_bh2_pos = ((-1 * kwargs['q'])/(1 + kwargs['q']))*r_vec
 
-    BH2 = initial_bh2_pos
+    initial_bh2_vel = -np.sqrt((kwargs['mass'] * kwargs['G'])/r_vec)
 
+    BH2 = np.concatenate(initial_bh2_pos, initial_bh2_vel)
 
     kwargs['bh1'] = BH1
     kwargs['bh2'] = BH2
 
-    omega, r_vec = calc_omega(kwargs['mass'], kwargs['G'], BH1, BH2)
-    kwargs['omega'] = omega
+    # omega, r_vec = calc_accel(kwargs['mass'], kwargs['G'], BH1, BH2)
+    #kwargs['omega'] = omega
     kwargs['BH_dist'] = r_vec
 
     if record_comment:
@@ -315,7 +313,7 @@ def main(argv):
         print('# Star Velocity Components: vx0: ',
               vx0, ' vy0:', vy0, ' vz0:', vz0)
         print('# Time Step:', dt, '\tRun Time max:', tmax)
-        print('# Black hole separation:', abs(BH1[0]) * 2)
+        print('# Black hole separation:', np.linalg.norm(r_vec) / 2)
         print('')
 
     #phi_list = np.zeros(shape=2, dtype=np.float64)

@@ -20,14 +20,14 @@ def calc_omega(mass, G, pos1, pos2):
 
 
 def Keppler_Binary_RHS(t, y0, **kwargs):
-    star_x_vec = y0[0:3]  # star position stored in first 3 elements
+    star_x_hat = y0[0:3]  # star position stored in first 3 elements
     star_v_vec = y0[3:6]  # star velocity stored in the next 3 elements
     star_phi_vec = y0[6]  # star angle position stored in the last element
 
     # star position vector norm, such that
     # star_r = (star_x**2 + star_y**2 + star_z**2)**1/2
     # or the distance from the origin
-    # star_r = np.linalg.norm(star_x_vec)
+    # star_r = np.linalg.norm(star_x_hat)
 
     if 'mass' in kwargs:
         combined_BH_mass = kwargs['mass']
@@ -62,14 +62,14 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
 
     if 'omega' in kwargs and 'BH_dist' in kwargs:
         omega = kwargs['omega']
-        BH_dist = kwargs['BH_dist']
+        r_vec = kwargs['BH_dist']
     else:
         print('# Calculating omega')
-        omega, BH_dist = calc_omega(combined_BH_mass, G, BH1_x_vec, BH2_x_vec)
+        omega, r_vec = calc_omega(combined_BH_mass, G, BH1_x_vec, BH2_x_vec)
         kwargs['omega'] = omega
-        kwargs['BH_dist'] = BH_dist
+        kwargs['BH_dist'] = r_vec
 
-    half_BH_dist = 0.5 * BH_dist
+    half_BH_dist = 0.5 * r_vec
 
     # calculate the current position, but does not do the z coord??
     BH1_x_vec[0] = half_BH_dist * np.cos(omega * t)
@@ -86,12 +86,12 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
     BH2_mass = combined_BH_mass - BH1_mass
 
     # find the acceleration due to gravity from the respective black holes
-    acc_star_1 = (star_x_vec - BH1_x_vec) * (-1 * BH1_mass * G) / \
-        (np.linalg.norm(star_x_vec - BH1_x_vec) ** 3)
-    acc_star_2 = (star_x_vec - BH2_x_vec) * (-1 * BH2_mass * G) / \
-        (np.linalg.norm(star_x_vec - BH2_x_vec) ** 3)
+    acc_star_1 = (star_x_hat - BH1_x_vec) * (-1 * BH1_mass * G) / \
+        (np.linalg.norm(star_x_hat - BH1_x_vec) ** 3)
+    acc_star_2 = (star_x_hat - BH2_x_vec) * (-1 * BH2_mass * G) / \
+        (np.linalg.norm(star_x_hat - BH2_x_vec) ** 3)
 
-    phi_dot = np.linalg.norm(np.cross(star_x_vec, star_v_vec)) / (np.linalg.norm(star_x_vec) ** 2)
+    phi_dot = np.linalg.norm(np.cross(star_x_hat, star_v_vec)) / (np.linalg.norm(star_x_hat) ** 2)
 
     acc_star = acc_star_1 + acc_star_2
     vel_star = star_v_vec
@@ -173,19 +173,9 @@ def main(argv):
     tmax = 100
     
     #Separation of Black Holes' initial position
-    r_x_vec = 2.0
-    r_y_vec = 0.0
-    r_z_vec = 0.0
-
-    # Black Hole 1's initial position
-    BH1x = 0.0
-    BH1y = 0.0
-    BH1z = 0.0
-
-    # Black Hole 2's initial position
-    BH2x = 0.0
-    BH2y = 0.0
-    BH2z = 0.0
+    r_x_hat = 2.0
+    r_y_hat = 0.0
+    r_z_hat = 0.0
 
     # Processing command line arguments
     # This will possibly change some of the default values
@@ -240,15 +230,15 @@ def main(argv):
                 #print('Star arguments')
                 if argv[i] == '--rx' or argv[i] == '-x':
                     i += 1
-                    r_x_vec = float(argv[i])
+                    r_x_hat = float(argv[i])
                     #print('X position  changed')
                 elif argv[i] == '--rz' or argv[i] == '-y':
                     i += 1
-                    r_y_vec = float(argv[i])
+                    r_y_hat = float(argv[i])
                     #print('Y position  changed')
                 elif argv[i] == '--rz' or argv[i] == '-z':
                     i += 1
-                    r_z_vec = float(argv[i])
+                    r_z_hat = float(argv[i])
                 else:
                     # If the *current* argument is not for a separation, counter the *next* increment
                     i -= 1
@@ -297,42 +287,35 @@ def main(argv):
     Y = np.concatenate((initial_position, initial_velocity))
     Y = np.append(Y, initial_phi)
 
-    # split r into the two Black Holes
-    half_seperation = r_x_vec / 2
-    BH1x = half_seperation
-    BH2x = -1 * half_seperation
+    # Puts separation parameters into an array
+    initial_separation = np.array((r_x_hat, r_y_hat, r_z_hat), dtype=np.float64)
 
-    half_seperation = r_y_vec / 2
-    BH1y = half_seperation
-    BH2y = -1 * half_seperation
-
-    half_seperation = r_z_vec / 2
-    BH1z = half_seperation
-    BH2z = -1 * half_seperation
+    r_vec = initial_separation
 
     # Puts black hole 1 position parameters into an array
-    initial_bh1_pos = np.array((BH1x, BH1y, BH1z), dtype=np.float64)
+    initial_bh1_pos = (r_vec/(1 + kwargs['q']))
 
     BH1 = initial_bh1_pos
 
     # Puts black hole 2 position parameters into an array
-    initial_bh2_pos = np.array((BH2x, BH2y, BH2z), dtype=np.float64)
+    initial_bh2_pos = ((-1 * kwargs['q'])/(1 + kwargs['q']))*r_vec
 
     BH2 = initial_bh2_pos
+
 
     kwargs['bh1'] = BH1
     kwargs['bh2'] = BH2
 
-    omega, BH_dist = calc_omega(kwargs['mass'], kwargs['G'], BH1, BH2)
+    omega, r_vec = calc_omega(kwargs['mass'], kwargs['G'], BH1, BH2)
     kwargs['omega'] = omega
-    kwargs['BH_dist'] = BH_dist
+    kwargs['BH_dist'] = r_vec
 
     if record_comment:
         print('# Star Position: x:', x0, ' y:', y0, ' z:', z0)
         print('# Star Velocity Components: vx0: ',
               vx0, ' vy0:', vy0, ' vz0:', vz0)
         print('# Time Step:', dt, '\tRun Time max:', tmax)
-        print('# Black hole separation:', abs(BH1x) * 2)
+        print('# Black hole separation:', abs(BH1[0]) * 2)
         print('')
 
     #phi_list = np.zeros(shape=2, dtype=np.float64)

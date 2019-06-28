@@ -173,9 +173,9 @@ def main(argv):
     tmax = 100
     
     #Separation of Black Holes' initial position
-    r_vec_x = 2.0
-    r_vec_y = 0.0
-    r_vec_z = 0.0
+    r_x_vec = 2.0
+    r_y_vec = 0.0
+    r_z_vec = 0.0
 
     # Black Hole 1's initial position
     BH1x = 0.0
@@ -297,7 +297,20 @@ def main(argv):
     Y = np.concatenate((initial_position, initial_velocity))
     Y = np.append(Y, initial_phi)
 
-    # Puts blach hole 1 position parameters into an array
+    # split r into the two Black Holes
+    half_seperation = r_x_vec / 2
+    BH1x = half_seperation
+    BH2x = -1 * half_seperation
+
+    half_seperation = r_y_vec / 2
+    BH1y = half_seperation
+    BH2y = -1 * half_seperation
+
+    half_seperation = r_z_vec / 2
+    BH1z = half_seperation
+    BH2z = -1 * half_seperation
+
+    # Puts black hole 1 position parameters into an array
     initial_bh1_pos = np.array((BH1x, BH1y, BH1z), dtype=np.float64)
 
     BH1 = initial_bh1_pos

@@ -4,6 +4,39 @@ from RK import RK4_Step, RK45_Step
 import sys
 import getopt
 
+def get_BHs_from_R(R, kwargs):
+    if 'q' in kwargs:
+        BH_ratio = kwargs['q']
+    else:
+        BH_ratio = 1.0  # equal mass default
+
+    r_vec = R[0:3]
+    BH1 = (r_vec/(1 + BH_ratio))
+    BH2 = ((-1 * BH_ratio)/(1 + BH_ratio))*r_vec
+    return BH1, BH2
+
+def calc_omega(mass, G, pos1, pos2):
+    total_vec = pos1 - pos2
+    mag_sum = np.linalg.norm(total_vec)
+
+    dist = abs(mag_sum)
+    dist3 = dist ** 3
+
+    if dist3 != 0:
+        omega = np.sqrt((mass * G) / dist3)
+    else:
+        omega = 0
+    return omega, dist
+
+def calc_vel(mass, G, r_vec):
+    BHS_vel_x = 0 if r_vec[0] == 0 else np.sqrt(
+        (mass * G)/r_vec[0])
+    BHS_vel_y = 0 if r_vec[1] == 0 else np.sqrt(
+        (mass * G)/r_vec[1])
+    BHS_vel_z = 0 if r_vec[2] == 0 else np.sqrt(
+        (mass * G)/r_vec[2])
+    BHS_vel = np.array((BHS_vel_x, BHS_vel_y, BHS_vel_z), dtype=np.float64)
+    return BHS_vel
 
 def calc_accel(mass, G, r_vec):
     dist = np.linalg.norm(r_vec)
@@ -12,6 +45,33 @@ def calc_accel(mass, G, r_vec):
     dist_cubed = dist ** 3
     
     return ((-mass * G)/dist_cubed) * r_vec
+
+def Black_Hole_System_RHS(t, R, **kwargs):
+    # fetch constants from kwargs
+    R_x_vec = R[0:3]
+    R_v_vec = R[3:6]
+
+    if 'mass' in kwargs:
+        combined_BH_mass = kwargs['mass']
+    else:
+        combined_BH_mass = 1.0
+
+    if 'G' in kwargs:
+        G = kwargs['G']
+    else:
+        G = 1.0
+
+    if 'q' in kwargs:
+        BH_ratio = kwargs['q']
+    else:
+        BH_ratio = 1.0  # equal mass default
+    
+    whole_accel = calc_accel(combined_BH_mass, G, R_x_vec)
+    vel_R = R_v_vec
+
+    pre_R = np.concatenate((vel_R, whole_accel))
+    return pre_R
+
 
 
 def Keppler_Binary_RHS(t, y0, **kwargs):
@@ -39,60 +99,47 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
     else:
         BH_ratio = 1.0  # equal mass default
 
-    if 'bh1' in kwargs:
+    if 'kwargs_R' in kwargs:
+        R = kwargs['kwargs_R']
+        # r_vec = R[0:3]
+        # BH1_x_vec = (r_vec/(1 + BH_ratio))
+        # BH2_x_vec = ((-1 * BH_ratio)/(1 + BH_ratio))*r_vec
+        BH1_x_vec, BH2_x_vec = get_BHs_from_R(R, kwargs)
+    elif 'bh1' in kwargs and 'bh2' in kwargs:
         BH1 = kwargs['bh1']
-    else:
-        print("Must have black hole data!!")
-        exit(2)
-
-    if 'bh2' in kwargs:
         BH2 = kwargs['bh2']
+        BH1_x_vec = BH1[0:3]
+        BH2_x_vec = BH2[0:3]
     else:
-        print("Must have black hole information!!")
+        print("Must have black hole data!!", file=sys.stderr)
         exit(2)
 
-    BH1_x_vec = BH1[0:3]
+    # # calculate the current position, but does not do the z coord??
+    # BH1_x_vec[0] = half_BH_dist * np.cos(omega * t)
+    # BH1_x_vec[1] = half_BH_dist * np.sin(omega * t)
+    # BH1_x_vec[2] = 0  # don't do z...
 
-    BH2_x_vec = BH2[0:3]
-
-    if 'BH_dist' in kwargs:
-        r_vec = kwargs['BH_dist']
-    else:
-        # reconstruct it from the BH data
-        r_vec = BH1_x_vec * ( 1 + BH_ratio)
-        kwargs['BH_dist'] = r_vec
-
-    half_BH_dist = 0.5 * r_vec
-
-    
-
-    # calculate the current position, but does not do the z coord??
-    BH1_x_vec[0] = half_BH_dist * np.cos(omega * t)
-    BH1_x_vec[1] = half_BH_dist * np.sin(omega * t)
-    BH1_x_vec[2] = 0  # don't do z...
-
-    # calculate the current position, but does not do the z coord??
-    BH2_x_vec[0] = -1 * half_BH_dist * np.cos(omega * t)
-    BH2_x_vec[1] = -1 * half_BH_dist * np.sin(omega * t)
-    BH2_x_vec[2] = 0  # don't do z...
+    # # calculate the current position, but does not do the z coord??
+    # BH2_x_vec[0] = -1 * half_BH_dist * np.cos(omega * t)
+    # BH2_x_vec[1] = -1 * half_BH_dist * np.sin(omega * t)
+    # BH2_x_vec[2] = 0  # don't do z...
 
     BH1_mass = combined_BH_mass / (BH_ratio + 1)
     # (-1 * combined_BH_mass * BH_ratio) / (BH_ratio + 1)
     BH2_mass = combined_BH_mass - BH1_mass
 
     # find the acceleration due to gravity from the respective black holes
-    acc_star_1 = (star_x_hat - BH1_x_vec) * (-1 * BH1_mass * G) / \
-        (np.linalg.norm(star_x_hat - BH1_x_vec) ** 3)
-    acc_star_2 = (star_x_hat - BH2_x_vec) * (-1 * BH2_mass * G) / \
-        (np.linalg.norm(star_x_hat - BH2_x_vec) ** 3)
+    acc_star_1 = calc_accel(BH1_mass, G, star_x_hat - BH1_x_vec)
+
+    acc_star_2 = calc_accel(BH2_mass, G, star_x_hat - BH2_x_vec)
 
     phi_dot = np.linalg.norm(np.cross(star_x_hat, star_v_vec)) / (np.linalg.norm(star_x_hat) ** 2)
 
     acc_star = acc_star_1 + acc_star_2
     vel_star = star_v_vec
 
-    kwargs['bh1'] = BH1_x_vec
-    kwargs['bh2'] = BH2_x_vec
+    # kwargs['bh1'] = BH1_x_vec
+    # kwargs['bh2'] = BH2_x_vec
 
     pre_y = np.concatenate((vel_star, acc_star))
     return np.append(pre_y, phi_dot)
@@ -284,29 +331,17 @@ def main(argv):
 
     # Puts separation parameters into an array
     initial_separation = np.array((r_x_hat, r_y_hat, r_z_hat), dtype=np.float64)
-
     r_vec = initial_separation
 
-    # Puts black hole 1 position parameters into an array
-    initial_bh1_pos = (r_vec/(1 + kwargs['q']))
+    # velocity of the black hole system
+    BHS_vel_x = 0 #if r_vec[0] == 0 else np.sqrt((kwargs['mass'] * kwargs['G'])/r_vec[0])
+    BHS_vel_y = np.sqrt((kwargs['mass'] * kwargs['G'])/np.linalg.norm(r_vec))
+    BHS_vel_z = 0 #if r_vec[2] == 0 else np.sqrt((kwargs['mass'] * kwargs['G'])/r_vec[2])
+    BHS_vel = np.array((BHS_vel_x, BHS_vel_y, BHS_vel_z), dtype=np.float64)
 
-    initial_bh1_vel = np.sqrt((kwargs['mass'] * kwargs['G'])/r_vec)
+    R = np.concatenate((r_vec, BHS_vel))
 
-    BH1 = np.concatenate(initial_bh1_pos, initial_bh1_vel)
-
-    # Puts black hole 2 position parameters into an array
-    initial_bh2_pos = ((-1 * kwargs['q'])/(1 + kwargs['q']))*r_vec
-
-    initial_bh2_vel = -np.sqrt((kwargs['mass'] * kwargs['G'])/r_vec)
-
-    BH2 = np.concatenate(initial_bh2_pos, initial_bh2_vel)
-
-    kwargs['bh1'] = BH1
-    kwargs['bh2'] = BH2
-
-    # omega, r_vec = calc_accel(kwargs['mass'], kwargs['G'], BH1, BH2)
-    #kwargs['omega'] = omega
-    kwargs['BH_dist'] = r_vec
+    #kwargs['kwargs_R'] = R
 
     if record_comment:
         print('# Star Position: x:', x0, ' y:', y0, ' z:', z0)
@@ -316,9 +351,6 @@ def main(argv):
         print('# Black hole separation:', np.linalg.norm(r_vec) / 2)
         print('')
 
-    #phi_list = np.zeros(shape=2, dtype=np.float64)
-    #phi_list[1] = np.linalg.norm(np.cross(Y[0:3], Y[3:])) /\
-        #(np.linalg.norm(Y[0:3]) ** 2)
     star_x_min_max = [Y[0], Y[0]]
     star_y_min_max = [Y[1], Y[1]]
     star_z_min_max = [Y[2], Y[2]]
@@ -327,13 +359,11 @@ def main(argv):
 
         pos_r = np.linalg.norm(Y[0:3])
 
-        # phi_list[0] = phi_list[1]
-        # #phi_list[1] = np.linalg.norm(np.cross(Y[0:3], Y[3:])) / (pos_r ** 2)
-        # phi_list[1] = np.arctan2(Y[1], Y[0])
-        # phi_list = np.unwrap(phi_list)
 
-        BH1 = kwargs['bh1']
-        BH2 = kwargs['bh2']
+        # BH_ratio = kwargs['q']
+        # BH1 = (R[0:3]/(1 + BH_ratio))
+        # BH2 = ((-1 * BH_ratio)/(1 + BH_ratio))*R[0:3]
+        BH1, BH2 = get_BHs_from_R(R, kwargs)
         print(t, Y[0], Y[1], Y[2], BH1[0], BH1[1],
               BH1[2], BH2[0], BH2[1], BH2[2], pos_r, Y[6])
 
@@ -341,9 +371,13 @@ def main(argv):
         # possibly updated value of dt
         if use_RK_45:
             # fine-tunes the dt
+            t, R, dt = RK45_Step(t, R, dt, Black_Hole_System_RHS, **kwargs)
+            kwargs['kwargs_R'] = R
             t, Y, dt = RK45_Step(t, Y, dt, Keppler_Binary_RHS, **kwargs)
         else:
             # does not change the dt
+            t, R, dt = RK4_Step(t, R, dt, Black_Hole_System_RHS, **kwargs)
+            kwargs['kwargs_R'] = R
             t, Y, dt = RK4_Step(t, Y, dt, Keppler_Binary_RHS, **kwargs)
         
         update_min_max(star_x_min_max, Y, 0)

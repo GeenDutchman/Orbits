@@ -104,6 +104,7 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
         # r_vec = R[0:3]
         # BH1_x_vec = (r_vec/(1 + BH_ratio))
         # BH2_x_vec = ((-1 * BH_ratio)/(1 + BH_ratio))*r_vec
+        #t, R, dt = RK4_Step(t, R, dt, Black_Hole_System_RHS, **kwargs)# HERE
         BH1_x_vec, BH2_x_vec = get_BHs_from_R(R, kwargs)
     elif 'bh1' in kwargs and 'bh2' in kwargs:
         BH1 = kwargs['bh1']
@@ -113,16 +114,6 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
     else:
         print("Must have black hole data!!", file=sys.stderr)
         exit(2)
-
-    # # calculate the current position, but does not do the z coord??
-    # BH1_x_vec[0] = half_BH_dist * np.cos(omega * t)
-    # BH1_x_vec[1] = half_BH_dist * np.sin(omega * t)
-    # BH1_x_vec[2] = 0  # don't do z...
-
-    # # calculate the current position, but does not do the z coord??
-    # BH2_x_vec[0] = -1 * half_BH_dist * np.cos(omega * t)
-    # BH2_x_vec[1] = -1 * half_BH_dist * np.sin(omega * t)
-    # BH2_x_vec[2] = 0  # don't do z...
 
     BH1_mass = combined_BH_mass / (BH_ratio + 1)
     # (-1 * combined_BH_mass * BH_ratio) / (BH_ratio + 1)
@@ -371,13 +362,13 @@ def main(argv):
         # possibly updated value of dt
         if use_RK_45:
             # fine-tunes the dt
-            t, R, dt = RK45_Step(t, R, dt, Black_Hole_System_RHS, **kwargs)
-            kwargs['kwargs_R'] = R
+            # t, R, dt = RK45_Step(t, R, dt, Black_Hole_System_RHS, **kwargs)# HERE
+            # kwargs['kwargs_R'] = R
             t, Y, dt = RK45_Step(t, Y, dt, Keppler_Binary_RHS, **kwargs)
         else:
             # does not change the dt
-            t, R, dt = RK4_Step(t, R, dt, Black_Hole_System_RHS, **kwargs)
-            kwargs['kwargs_R'] = R
+            # t, R, dt = RK4_Step(t, R, dt, Black_Hole_System_RHS, **kwargs)# HERE
+            # kwargs['kwargs_R'] = R
             t, Y, dt = RK4_Step(t, Y, dt, Keppler_Binary_RHS, **kwargs)
         
         update_min_max(star_x_min_max, Y, 0)

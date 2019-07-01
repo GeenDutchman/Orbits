@@ -72,15 +72,13 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
 
     half_BH_dist = 0.5 * r_vec
 
-    if 'var' in kwargs:
-        var = kwargs['var']
+    r_dot = -1 * y0[7]
 
+    Omega_dot = -2 * y0[8]
 
-        r_dot = -1 * var[0]
+    psi_dot = -3 * y0[9]
 
-        Omega_dot = -2 * var[1]
-
-        psi_dot = -3 * var[2]
+    dotty = np.array([r_dot, Omega_dot, psi_dot])
 
 
 
@@ -113,7 +111,9 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
     kwargs['bh2'] = BH2_x_vec
 
     pre_y = np.concatenate((vel_star, acc_star))
-    return np.append(pre_y, phi_dot)
+    pre_y = np.append(pre_y, phi_dot)
+    return np.append(pre_y, dotty)
+    
 
 
 def print_default():
@@ -327,9 +327,9 @@ def main(argv):
     Omega = 3
     psi = 4
 
-    var = [r, Omega, psi]
-    kwargs['var'] = var
-
+    var = np.array([r, Omega, psi])
+    Y = np.append(Y, var)
+    
     if record_comment:
         print('# Star Position: x:', x0, ' y:', y0, ' z:', z0)
         print('# Star Velocity Components: vx0: ',
@@ -348,8 +348,12 @@ def main(argv):
 
         BH1 = kwargs['bh1']
         BH2 = kwargs['bh2']
+<<<<<<< HEAD
 
         print(t, r_dot, Omega_dot, psi_dot)
+=======
+        print(t, Y[7], Y[8], Y[9])
+>>>>>>> dded058c1cf4aa95b64afb0192497d32a3465042
         #print(t, Y[0], Y[1], Y[2], BH1[0], BH1[1],
               #BH1[2], BH2[0], BH2[1], BH2[2], pos_r, Y[6])
 

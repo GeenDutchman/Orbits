@@ -3,7 +3,7 @@ import numpy as np
 from RK import RK4_Step, RK45_Step
 import sys
 import getopt
-import PN
+#import PN
 
 
 def calc_omega(mass, G, pos1, pos2):
@@ -348,8 +348,8 @@ def main(argv):
 
         BH1 = kwargs['bh1']
         BH2 = kwargs['bh2']
-        print('before')
-        print(t, r, Omega, psi)
+
+        print(t, r_dot, Omega_dot, psi_dot)
         #print(t, Y[0], Y[1], Y[2], BH1[0], BH1[1],
               #BH1[2], BH2[0], BH2[1], BH2[2], pos_r, Y[6])
 

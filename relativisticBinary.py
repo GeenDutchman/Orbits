@@ -3,7 +3,7 @@ import numpy as np
 from RK import RK4_Step, RK45_Step
 import sys
 import getopt
-#import PN
+from PN import PN_Orbit
 
 
 def calc_omega(mass, G, pos1, pos2):
@@ -40,8 +40,8 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
     else:
         G = 1.0
 
-    if 'q' in kwargs:
-        BH_ratio = kwargs['q']
+    if 'massratio' in kwargs:
+        BH_ratio = kwargs['massratio']
     else:
         BH_ratio = 1.0  # equal mass default
 
@@ -72,15 +72,7 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
 
     half_BH_dist = 0.5 * r_vec
 
-    r_dot = -1 * y0[7]
-
-    Omega_dot = -2 * y0[8]
-
-    psi_dot = -3 * y0[9]
-
-    dotty = np.array([r_dot, Omega_dot, psi_dot])
-
-
+    dotty = PN_Orbit(t, y0[7], y0[8], y0[9], **kwargs)
 
     # calculate the current position, but does not do the z coord??
     BH1_x_vec[0] = half_BH_dist * np.cos(omega * t)
@@ -166,7 +158,7 @@ def main(argv):
     # Initializing default parameters
 
     # Default mass, G, and q values
-    kwargs = {'mass': 1.0, 'G': 1.0, 'q': 1.0}
+    kwargs = {'mass': 1.0, 'G': 1.0, 'massratio': 1.0}
 
     x0 = 4.0
     y0 = 0.0
@@ -245,7 +237,7 @@ def main(argv):
                     i += 1
                     r_x_hat = float(argv[i])
                     #print('X position  changed')
-                elif argv[i] == '--rz' or argv[i] == '-y':
+                elif argv[i] == '--ry' or argv[i] == '-y':
                     i += 1
                     r_y_hat = float(argv[i])
                     #print('Y position  changed')
@@ -268,7 +260,7 @@ def main(argv):
             #print('Maximum run time changed')
         elif argv[i] == '--mratio' or argv[i] == '-q':
             i += 1
-            kwargs['q'] = float(argv[i])
+            kwargs['massratio'] = float(argv[i])
             #print('Mass ratio changed')
         elif argv[i] == '--help' or argv[i] == '-h':
             print_help()
@@ -306,12 +298,12 @@ def main(argv):
     r_vec = initial_separation
 
     # Puts black hole 1 position parameters into an array
-    initial_bh1_pos = (r_vec/(1 + kwargs['q']))
+    initial_bh1_pos = (r_vec/(1 + kwargs['massratio']))
 
     BH1 = initial_bh1_pos
 
     # Puts black hole 2 position parameters into an array
-    initial_bh2_pos = ((-1 * kwargs['q'])/(1 + kwargs['q']))*r_vec
+    initial_bh2_pos = ((-1 * kwargs['massratio'])/(1 + kwargs['massratio']))*r_vec
 
     BH2 = initial_bh2_pos
 
@@ -323,9 +315,9 @@ def main(argv):
     kwargs['omega'] = omega
     kwargs['BH_dist'] = r_vec
 
-    r = 2
-    Omega = 3
-    psi = 4
+    r = np.linalg.norm(r_vec)
+    Omega = 0
+    psi = 0
 
     var = np.array([r, Omega, psi])
     Y = np.append(Y, var)

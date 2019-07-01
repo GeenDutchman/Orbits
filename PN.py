@@ -1,7 +1,8 @@
 """
   PN EOM Based on Blanchet, "Gravitational Radiation from Post-Newtonian
   Sources and Inspiralling Compact Binaries", Living Rev. Relativity,
-  17, (2014), https://link.springer.com/article/10.12942/lrr-2014-2
+  17, (2014),
+
 """
 
 import numpy as np
@@ -40,10 +41,7 @@ def Omega_of_r(r, **kwargs):
 
   return np.sqrt(Omega2)
 
-def PN_Orbit(t, y, **kwargs):
-  r = y[0]
-  psi = y[1]
-  Omega = y[2]
+def PN_Orbit(t, r, psi, Omega, **kwargs):
   if 'G' in kwargs:
     G = kwargs['G']
   else:
@@ -121,29 +119,31 @@ def center_of_mass_coordinates_to_BH_positions(r, psi, **kwargs):
 
   return y1, y2
 
-M = 1.0
-G = 1.0
-C = 1.0
 
-R=100.0
+if __name__ == "__main__":
+  M = 1.0
+  G = 1.0
+  C = 1.0
 
-Q = 1.0
+  R=100.0
 
-kwargs={'G' : G, 'mass' : M, 'c_light' : C, 'massratio' : Q,
-    'max_step_size' : 100}
+  Q = 1.0
 
-Omega = Omega_of_r(R, **kwargs)
+  kwargs={'G' : G, 'mass' : M, 'c_light' : C, 'massratio' : Q,
+      'max_step_size' : 100}
 
-psi = 0.0
+  Omega = Omega_of_r(R, **kwargs)
 
-y = np.array((R, psi, Omega))
+  psi = 0.0
 
-t = 0.0
+  y = np.array((R, psi, Omega))
 
-dt = 1.0e-1
-while y[0] > 10:
-  x1, x2 = center_of_mass_coordinates_to_BH_positions(y[0], y[1], **kwargs)
-  print (t, x1[0] )
+  t = 0.0
 
-  t, y, dt = RK.RK45_Step(t, y, dt, PN_Orbit, **kwargs)
+  dt = 1.0e-1
+  while y[0] > 10:
+    x1, x2 = center_of_mass_coordinates_to_BH_positions(y[0], y[1], **kwargs)
+    print (t, x1[0] )
+
+    t, y, dt = RK.RK45_Step(t, y, dt, PN_Orbit, **kwargs)
 

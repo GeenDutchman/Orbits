@@ -362,13 +362,13 @@ def main(argv):
         # possibly updated value of dt
         if use_RK_45:
             # fine-tunes the dt
-            # t, R, dt = RK45_Step(t, R, dt, Black_Hole_System_RHS, **kwargs)# HERE
-            # kwargs['kwargs_R'] = R
+            t, R, dt = RK45_Step(t, R, dt, Black_Hole_System_RHS, **kwargs)# HERE
+            kwargs['kwargs_R'] = R
             t, Y, dt = RK45_Step(t, Y, dt, Keppler_Binary_RHS, **kwargs)
         else:
             # does not change the dt
-            # t, R, dt = RK4_Step(t, R, dt, Black_Hole_System_RHS, **kwargs)# HERE
-            # kwargs['kwargs_R'] = R
+            t, R, dt = RK4_Step(t, R, dt, Black_Hole_System_RHS, **kwargs)# HERE
+            kwargs['kwargs_R'] = R
             t, Y, dt = RK4_Step(t, Y, dt, Keppler_Binary_RHS, **kwargs)
         
         update_min_max(star_x_min_max, Y, 0)

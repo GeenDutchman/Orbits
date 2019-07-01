@@ -348,12 +348,7 @@ def main(argv):
 
         BH1 = kwargs['bh1']
         BH2 = kwargs['bh2']
-<<<<<<< HEAD
-
-        print(t, r_dot, Omega_dot, psi_dot)
-=======
         print(t, Y[7], Y[8], Y[9])
->>>>>>> dded058c1cf4aa95b64afb0192497d32a3465042
         #print(t, Y[0], Y[1], Y[2], BH1[0], BH1[1],
               #BH1[2], BH2[0], BH2[1], BH2[2], pos_r, Y[6])
 

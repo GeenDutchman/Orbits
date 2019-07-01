@@ -3,6 +3,7 @@ import numpy as np
 from RK import RK4_Step, RK45_Step
 import sys
 import getopt
+import PN
 
 
 def calc_omega(mass, G, pos1, pos2):
@@ -70,6 +71,18 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
         kwargs['BH_dist'] = r_vec
 
     half_BH_dist = 0.5 * r_vec
+
+    if 'var' in kwargs:
+        var = kwargs['var']
+
+
+        r_dot = -1 * var[0]
+
+        Omega_dot = -2 * var[1]
+
+        psi_dot = -3 * var[2]
+
+
 
     # calculate the current position, but does not do the z coord??
     BH1_x_vec[0] = half_BH_dist * np.cos(omega * t)
@@ -310,6 +323,13 @@ def main(argv):
     kwargs['omega'] = omega
     kwargs['BH_dist'] = r_vec
 
+    r = 2
+    Omega = 3
+    psi = 4
+
+    var = [r, Omega, psi]
+    kwargs['var'] = var
+
     if record_comment:
         print('# Star Position: x:', x0, ' y:', y0, ' z:', z0)
         print('# Star Velocity Components: vx0: ',
@@ -318,9 +338,6 @@ def main(argv):
         print('# Black hole separation:', abs(BH1[0]) * 2)
         print('')
 
-    #phi_list = np.zeros(shape=2, dtype=np.float64)
-    #phi_list[1] = np.linalg.norm(np.cross(Y[0:3], Y[3:])) /\
-        #(np.linalg.norm(Y[0:3]) ** 2)
     star_x_min_max = [Y[0], Y[0]]
     star_y_min_max = [Y[1], Y[1]]
     star_z_min_max = [Y[2], Y[2]]
@@ -329,15 +346,12 @@ def main(argv):
 
         pos_r = np.linalg.norm(Y[0:3])
 
-        # phi_list[0] = phi_list[1]
-        # #phi_list[1] = np.linalg.norm(np.cross(Y[0:3], Y[3:])) / (pos_r ** 2)
-        # phi_list[1] = np.arctan2(Y[1], Y[0])
-        # phi_list = np.unwrap(phi_list)
-
         BH1 = kwargs['bh1']
         BH2 = kwargs['bh2']
-        print(t, Y[0], Y[1], Y[2], BH1[0], BH1[1],
-              BH1[2], BH2[0], BH2[1], BH2[2], pos_r, Y[6])
+        print('before')
+        print(t, r, Omega, psi)
+        #print(t, Y[0], Y[1], Y[2], BH1[0], BH1[1],
+              #BH1[2], BH2[0], BH2[1], BH2[2], pos_r, Y[6])
 
         # The Runge-Kutta routine returns the new value of Y, t, and a
         # possibly updated value of dt

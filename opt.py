@@ -31,8 +31,8 @@ def extractor(data):
     phi_original = []
     r_original = []
     for row in range(len(data)):
-        phi_original.append(data[row][-1])
-        r_original.append(data[row][-2])
+        phi_original.append(data[row][-2])
+        r_original.append(data[row][-3])
     return phi_original, r_original
         
 data = np.loadtxt('binary1.dat', dtype=np.float64)

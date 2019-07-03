@@ -308,7 +308,7 @@ def main(argv):
     kwargs['BH_dist'] = r_vec
 
     r = np.linalg.norm(r_vec)
-    Omega = 0
+    Omega = omega
     psi = 0
 
     var = np.array([r, Omega, psi])

@@ -303,7 +303,6 @@ def main(argv):
     kwargs['BH_dist'] = r_vec
 
     r = np.linalg.norm(r_vec)
-
     if r <= 10:
         print("#The magnitude of the separation must be larger than 10 separations", file=sys.stderr)
         exit(2)

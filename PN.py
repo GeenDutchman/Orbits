@@ -1,7 +1,7 @@
 """
   PN EOM Based on Blanchet, "Gravitational Radiation from Post-Newtonian
   Sources and Inspiralling Compact Binaries", Living Rev. Relativity,
-  17, (2014),
+  17, (2014), https://link.springer.com/article/10.12942/lrr-2014-2#PartA
 
 """
 
@@ -118,7 +118,6 @@ def center_of_mass_coordinates_to_BH_positions(r, psi, **kwargs):
   y2 = rvec * (-X1 + 3 * gamma**2 * nu * Delta) # Eq.(224b)
 
   return y1, y2
-
 
 if __name__ == "__main__":
   M = 1.0

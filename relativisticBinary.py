@@ -3,7 +3,8 @@ import numpy as np
 from RK import RK4_Step, RK45_Step
 import sys
 import getopt
-from PN import PN_Orbit
+from PN import PN_Orbit, center_of_mass_coordinates_to_BH_positions
+
 
 
 def calc_omega(mass, G, pos1, pos2):
@@ -70,19 +71,10 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
         kwargs['omega'] = omega
         kwargs['BH_dist'] = r_vec
 
-    half_BH_dist = 0.5 * r_vec
-
     dotty = PN_Orbit(t, y0[7], y0[8], y0[9], **kwargs)
 
     # calculate the current position, but does not do the z coord??
-    BH1_x_vec[0] = half_BH_dist * np.cos(omega * t)
-    BH1_x_vec[1] = half_BH_dist * np.sin(omega * t)
-    BH1_x_vec[2] = 0  # don't do z...
-
-    # calculate the current position, but does not do the z coord??
-    BH2_x_vec[0] = -1 * half_BH_dist * np.cos(omega * t)
-    BH2_x_vec[1] = -1 * half_BH_dist * np.sin(omega * t)
-    BH2_x_vec[2] = 0  # don't do z...
+    BH1_x_vec[0:3], BH2_x_vec[0:3] = center_of_mass_coordinates_to_BH_positions(y0[7], y0[8], **kwargs)
 
     BH1_mass = combined_BH_mass / (BH_ratio + 1)
     # (-1 * combined_BH_mass * BH_ratio) / (BH_ratio + 1)
@@ -340,10 +332,10 @@ def main(argv):
 
         BH1 = kwargs['bh1']
         BH2 = kwargs['bh2']
-        print(t, Y[7], Y[8], Y[9])
+        #print(t, Y[7], Y[8], Y[9])
 
-        #print(t, Y[0], Y[1], Y[2], BH1[0], BH1[1],
-              #BH1[2], BH2[0], BH2[1], BH2[2], pos_r, Y[6])
+        print(t, Y[0], Y[1], Y[2], BH1[0], BH1[1],
+              BH1[2], BH2[0], BH2[1], BH2[2], pos_r, Y[6])
 
         # The Runge-Kutta routine returns the new value of Y, t, and a
         # possibly updated value of dt

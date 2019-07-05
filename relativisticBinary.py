@@ -115,7 +115,7 @@ def print_default():
 
 def print_help():
     print('\nThis program simulates a neutron star orbiting a binary black hole system')
-    print('\npython3 binaryNewton.py')
+    print('\npython3 relativisticBinary.py')
     print('\n--star\t\t\t\tFlag to begin changing star parameters')
     print('\t--x0,\t-x\t\tSets the x coordinate position of the star')
     print('\t--y0,\t-y\t\tSets the y coordinate position of the star')
@@ -127,6 +127,8 @@ def print_help():
     print('--tmax, -tm\t\t\tSets the maximum run time for the simulation data')
     print('--mratio, -q\t\t\tSets the mass ratio for the binary system')
     print('--sep, -s\t\t\tSets the separation distances of the black holes')
+    print('\t--rx,\t-x\t\tSets the x componet of the black hole separation')
+    print('\t--ry,\t-y\t\tSets the y componet of the black hole separation')
     print('--default, -d\t\t\tShows the default parameters')
     print('--record, -r\t\t\tPrints the initial conditions as a comment')
     print('--rk45, -45\t\t\tSets to auto adjust the time-step dynamically\n')

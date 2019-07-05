@@ -16,6 +16,6 @@ if result.returncode == 0:
     result = sbp.run(["mail -s 'Test run' GeenDutchman@mail.rit.edu larreu@rit.edu <<< 'The test is complete'"], shell=True)
 result = sbp.run(["which espeak"], shell=True, stdout=sbp.DEVNULL)
 if result.returncode == 0:
-    result = sbp.run(["espeak", "'This run is complete.'"], shell=True)
+    result = sbp.run(["espeak", "This run is complete."])
 print(result)
 # if neither goes off....oh well

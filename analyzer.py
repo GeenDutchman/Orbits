@@ -11,10 +11,10 @@ for i in range(100, 103, 1):
         ["./grScript.sh", "--star", "-x",  "200", "-vy", "0.05" ,"-45", "--tmax", "9e6", "--sep -x", (i).__str__()], stdout=sbp.DEVNULL, stderr=sbp.DEVNULL)
 
 # Alert the user that the code has finished
-result = sbp.run(["which mail"], shell=True)
+result = sbp.run(["which", "mail"], stdout=sbp.DEVNULL)
 if result.returncode == 0:
-    result = sbp.run(["mail -s 'Test run' GeenDutchman@mail.rit.edu larreu@rit.edu <<< 'The test is complete'"], shell=True)
-result = sbp.run(["which espeak"], shell=True, stdout=sbp.DEVNULL)
+    result = sbp.run(["mail", "-s 'Test run' GeenDutchman@mail.rit.edu larreu@rit.edu <<< 'The test is complete'"], shell=True)
+result = sbp.run(["which", "espeak"], stdout=sbp.DEVNULL)
 if result.returncode == 0:
     result = sbp.run(["espeak", "This run is complete."])
 print(result)

@@ -304,7 +304,7 @@ def main(argv):
 
     r = np.linalg.norm(r_vec)
     if r <= 10:
-        print("#The magnitude of the separation must be larger than 10 separations", file=sys.stderr)
+        print("# The magnitude of the separation must be larger than 10 separations!!")
         exit(2)
     Omega = 0
     psi = 0
@@ -317,7 +317,7 @@ def main(argv):
         print('# Star Velocity Components: vx0: ',
               vx0, ' vy0:', vy0, ' vz0:', vz0)
         print('# Time Step:', dt, '\tRun Time max:', tmax)
-        print('# Black hole separation:', abs(BH1[0]) * 2)
+        print('# Black hole separation:', abs(Y[7]))
         print('')
 
     star_x_min_max = [Y[0], Y[0]]

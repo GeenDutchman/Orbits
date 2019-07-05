@@ -119,7 +119,7 @@ function main {
     if [ $# == 0 ]; then
         date >> $log_file
         tee_print "Running with the default parameters. Example:\n"
-        tee_print "\t--star -x 4 -y 0 -vy 0.5 --tstep 1.0e-2 --tmax 100 --mratio 1 --sep 2\n"
+        tee_print "\t--star -x 5000 -y 0 -vy 0.014 --tstep 1.0e-2 --tmax 8.5e6 --mratio 1 --sep -x 100\n"
         write_success=$( python3 relativisticBinary.py > "$data_file")
     else
         # if not tee, then don't log the time

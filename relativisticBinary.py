@@ -6,7 +6,6 @@ import getopt
 from PN import PN_Orbit, center_of_mass_coordinates_to_BH_positions
 
 
-
 def calc_omega(mass, G, pos1, pos2):
     magnitude1 = np.linalg.norm(pos1)
     magnitude2 = np.linalg.norm(pos2)
@@ -102,15 +101,15 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
 
 def print_default():
     print('\nThese are the default parameters:')
-    print('\nDefault X position of Star:\t\t\t\t4.0')
+    print('\nDefault X position of Star:\t\t\t\t5000.0')
     print('Default Y position of Star:\t\t\t\t0.0')
     print('Default Z position of Star:\t\t\t\t0.0')
     print('Default X component of Velocity of the Star:\t\t0.0')
-    print('Default Y component of Velocity of the Star:\t\t0.5')
+    print('Default Y component of Velocity of the Star:\t\t0.014')
     print('Default Z component of Velocity of the Star:\t\t0.0')
     print('Default time step: \t\t\t\t\t1.0e-2')
-    print('Default maximum run time: \t\t\t\t100')
-    print('Default black hole separation: \t\t\t\t2')
+    print('Default maximum run time: \t\t\t\t8.5e6')
+    print('Default black hole separation: \t\t\t\t100')
     print('Default mass ratio: \t\t\t\t\t1.0\n')
 
 
@@ -152,12 +151,12 @@ def main(argv):
     # Default mass, G, and q values
     kwargs = {'mass': 1.0, 'G': 1.0, 'massratio': 1.0}
 
-    x0 = 4.0
+    x0 = 5000
     y0 = 0.0
     z0 = 0.0
 
     vx0 = 0.0
-    vy0 = 0.5
+    vy0 = 0.014
     vz0 = 0.0
 
     # dt is the timestep. The error will be proportional to dt**4
@@ -167,10 +166,10 @@ def main(argv):
     t = 0.0
 
     # max time
-    tmax = 100
+    tmax = 8.5e6
     
-    #Separation of Black Holes' initial position
-    r_x_hat = 2.0
+    # Separation of Black Holes' initial position
+    r_x_hat = 100.0
     r_y_hat = 0.0
     r_z_hat = 0.0
 
@@ -190,31 +189,31 @@ def main(argv):
         if argv[i] == '--star':
             i += 1
             while i < len(argv):  # while there are unprocessed star
-                #print('Star arguments')
+                # print('Star arguments')
                 if argv[i] == '--x0' or argv[i] == '-x':
                     i += 1
                     x0 = float(argv[i])
-                    #print('X position  changed')
+                    # print('X position  changed')
                 elif argv[i] == '--y0' or argv[i] == '-y':
                     i += 1
                     y0 = float(argv[i])
-                    #print('Y position  changed')
+                    # print('Y position  changed')
                 elif argv[i] == '--z0' or argv[i] == '-z':
                     i += 1
                     z0 = float(argv[i])
-                    #print('Z position  changed')
+                    # print('Z position  changed')
                 elif argv[i] == '--vx0' or argv[i] == '-vx':
                     i += 1
                     vx0 = float(argv[i])
-                    #print('Velocity x vector  changed')
+                    # print('Velocity x vector  changed')
                 elif argv[i] == '--vy0' or argv[i] == '-vy':
                     i += 1
                     vy0 = float(argv[i])
-                    #print('Velocity y vector  changed')
+                    # print('Velocity y vector  changed')
                 elif argv[i] == '--vz0' or argv[i] == '-vz':
                     i += 1
                     vz0 = float(argv[i])
-                    #print('Velocity z vector  changed')
+                    # print('Velocity z vector  changed')
                 else:
                     # If the *current* argument is not for a star, counter the *next* increment
                     i -= 1
@@ -224,18 +223,15 @@ def main(argv):
         elif argv[i] == '--sep':
             i += 1
             while i < len(argv):  # while there are unprocessed separation arguments
-                #print('Star arguments')
+                # print('Star arguments')
                 if argv[i] == '--rx' or argv[i] == '-x':
                     i += 1
                     r_x_hat = float(argv[i])
-                    #print('X position  changed')
+                    # print('X position  changed')
                 elif argv[i] == '--ry' or argv[i] == '-y':
                     i += 1
                     r_y_hat = float(argv[i])
-                    #print('Y position  changed')
-                elif argv[i] == '--rz' or argv[i] == '-z':
-                    i += 1
-                    r_z_hat = float(argv[i])
+                    # print('Y position  changed')
                 else:
                     # If the *current* argument is not for a separation, counter the *next* increment
                     i -= 1
@@ -245,15 +241,15 @@ def main(argv):
         elif argv[i] == '--tstep' or argv[i] == '-ts':
             i += 1
             dt = float(argv[i])
-            #print('Time step changed')
+            # print('Time step changed')
         elif argv[i] == '--tmax' or argv[i] == '-tm':
             i += 1
             tmax = float(argv[i])
-            #print('Maximum run time changed')
+            # print('Maximum run time changed')
         elif argv[i] == '--mratio' or argv[i] == '-q':
             i += 1
             kwargs['massratio'] = float(argv[i])
-            #print('Mass ratio changed')
+            # print('Mass ratio changed')
         elif argv[i] == '--help' or argv[i] == '-h':
             print_help()
             exit(0)
@@ -280,7 +276,7 @@ def main(argv):
     # TODO: need to check if this is the right initialization
     initial_phi = np.array(np.arctan2(y0, x0), dtype=np.float64) 
 
-    # Concatanate star parameters
+    # Concatenate star parameters
     Y = np.concatenate((initial_position, initial_velocity))
     Y = np.append(Y, initial_phi)
 
@@ -299,7 +295,6 @@ def main(argv):
 
     BH2 = initial_bh2_pos
 
-
     kwargs['bh1'] = BH1
     kwargs['bh2'] = BH2
 
@@ -308,7 +303,10 @@ def main(argv):
     kwargs['BH_dist'] = r_vec
 
     r = np.linalg.norm(r_vec)
-    Omega = omega
+    if r <= 10:
+        print("#The magnitude of the separation must be larger than 10 separations", file=sys.stderr)
+        exit(2)
+    Omega = 0
     psi = 0
 
     var = np.array([r, Omega, psi])
@@ -326,16 +324,23 @@ def main(argv):
     star_y_min_max = [Y[1], Y[1]]
     star_z_min_max = [Y[2], Y[2]]
 
-    while t < tmax:
+    while t < tmax and Y[7] > 10:
 
-        pos_r = np.linalg.norm(Y[0:3])
+        pos_r = np.linalg.norm(Y[0:3])  # Stars distance from the origin
 
         BH1 = kwargs['bh1']
         BH2 = kwargs['bh2']
-        #print(t, Y[7], Y[8], Y[9])
 
+        # Prints time, separation, psi angle, and Omega f
+        # print(t, Y[7], Y[8], Y[9])
+
+        # Prints out Time, Star x position, Star y position, Star z Position
+        # Black hole 1 x position, Black hole 1 y position, Black hole 1 z position
+        # Black hole 2 x position, Black hole 2 y position, Black hole 2 z position
+        # Stars distance from origin, Star theta angle relative to origin
+        # Black holes' separation distance from each other
         print(t, Y[0], Y[1], Y[2], BH1[0], BH1[1],
-              BH1[2], BH2[0], BH2[1], BH2[2], pos_r, Y[6])
+              BH1[2], BH2[0], BH2[1], BH2[2], pos_r, Y[6], Y[7])
 
         # The Runge-Kutta routine returns the new value of Y, t, and a
         # possibly updated value of dt

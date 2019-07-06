@@ -8,7 +8,7 @@ for i in range(100, 103, 1):
     # as a process in the background
     # also make sure to not run any plates or the movie
     result = sbp.run(
-        ["./grScript.sh", "--star", "-x",  "200", "-vy", "0.05" ,"-45", "--tmax", "9e6", "--sep -x", (i).__str__()], stdout=sbp.DEVNULL, stderr=sbp.DEVNULL)
+        ["./grScript.sh", "--star", "-x",  "200", "-vy", "0.05" ,"-45", "--tmax", "9e6", "--sep", "-x", (i).__str__()]) #, stdout=sbp.DEVNULL, stderr=sbp.DEVNULL)
 
 # Alert the user that the code has finished
 result = sbp.run(["which", "mail"], stdout=sbp.DEVNULL)

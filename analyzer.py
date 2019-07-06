@@ -17,5 +17,5 @@ if result.returncode == 0:
 result = sbp.run(["which", "espeak"], stdout=sbp.DEVNULL)
 if result.returncode == 0:
     result = sbp.run(["espeak", "This run is complete."])
-print(result)
+# print(result)
 # if neither goes off....oh well

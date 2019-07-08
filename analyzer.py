@@ -3,7 +3,7 @@
 import numpy as np
 import subprocess as sbp
 
-for i in range(100, 103, 1):
+for i in range(100, 102, 1):
     # this is meant to run a series of values
     # as a process in the background
     # also make sure to not run any plates or the movie

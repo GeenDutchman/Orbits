@@ -31,7 +31,7 @@ def extractor(data):
     phi_original = []
     r_original = []
     for row in range(len(data)):
-        phi_original.append(data[row][-2]) # this will now only work for GR
+        phi_original.append(data[row][-2])
         r_original.append(data[row][-3])
     return phi_original, r_original
         
@@ -50,7 +50,6 @@ def opt(epsilon, *args):
 
 num_orbits = phi_original[-1] / (2 * np.pi)
 print('The star does', num_orbits, 'orbits.')
-for nOrbits in range(1, int(num_orbits)):
     try:
         result = minimize(opt, 0.005 , method='Powell', args=(nOrbits,))
         if result.success:

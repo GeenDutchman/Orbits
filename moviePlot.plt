@@ -54,7 +54,7 @@ set zrange[z_min:z_max]
 set size square
 
 do for [i=0:length] {
-splot 'binary1.dat' u 2:3:4 every ::i::i ps 1 pt 7 title "Neutron Star", 'binary1.dat' u 5:6:7 every ::i::i ps 3 pt 7 title "Black Hole 1", 'binary1.dat' u 8:9:10 every ::i::i ps 3 pt 7 title "Black Hole 2"
+splot 'binary1.dat' u 2:3:4 every ::i::i ps 1 pt 7 title "Neutron Star", 'binary1.dat' u 5:6:7 every ::i::i ps 2 pt 7 title "Black Hole 1", 'binary1.dat' u 8:9:10 every ::i::i ps 2 pt 7 title "Black Hole 2"
 }
 
 pause -1 "Hit enter to continue"

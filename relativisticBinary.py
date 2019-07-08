@@ -108,7 +108,7 @@ def print_default():
     print('Default Y component of Velocity of the Star:\t\t0.014')
     print('Default Z component of Velocity of the Star:\t\t0.0')
     print('Default time step: \t\t\t\t\t1.0e-2')
-    print('Default maximum run time: \t\t\t\t8.5e6')
+    print('Default maximum run time: \t\t\t\t1.0e12')
     print('Default black hole separation: \t\t\t\t100')
     print('Default mass ratio: \t\t\t\t\t1.0\n')
 
@@ -168,7 +168,7 @@ def main(argv):
     t = 0.0
 
     # max time
-    tmax = 8.5e6
+    tmax = 1.0e12
     
     # Separation of Black Holes' initial position
     r_x_hat = 100.0

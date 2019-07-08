@@ -31,7 +31,7 @@ def extractor(data):
     phi_original = []
     r_original = []
     for row in range(len(data)):
-        phi_original.append(data[row][-2])
+        phi_original.append(data[row][-2]) # this will now only work for GR
         r_original.append(data[row][-3])
     return phi_original, r_original
         
@@ -43,6 +43,8 @@ def opt(epsilon):
     epsilon = epsilon[0]
     phi_shifted = shifter(phi_original, epsilon)
     phi_new, r_new = copy_piece(phi_shifted, r_original, (np.pi/2), ((7*np.pi)/2))
+    num_orbits = phi_original[-1] / (2 * np.pi)
+    print('The star does', num_orbits, 'orbits.')
     if phi_old[-1] >= phi_new[-1]:
         raise ValueError('The data needs to have more orbits!!')
     return find_residual(phi_old, r_old, phi_new, r_new)

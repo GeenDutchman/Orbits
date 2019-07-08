@@ -335,6 +335,7 @@ def main(argv):
         update_min_max(star_y_min_max, Y, 1)
         update_min_max(star_z_min_max, Y, 2)
 
+    print('# The star does', Y[6] / (2 * np.pi), 'orbits.')
     print("# Xmin\tXmax\tYmin\tYmax\tZmin\tZmax")
     print("#", star_x_min_max[0], " ", star_x_min_max[1], " ", star_y_min_max[0], " ", star_y_min_max[1], " ", star_z_min_max[0], " ", star_z_min_max[1])
 

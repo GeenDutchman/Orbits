@@ -312,15 +312,15 @@ def main(argv):
 
         pos_r = np.linalg.norm(Y[0:3])
 
-        # phi_list[0] = phi_list[1]
-        # #phi_list[1] = np.linalg.norm(np.cross(Y[0:3], Y[3:])) / (pos_r ** 2)
-        # phi_list[1] = np.arctan2(Y[1], Y[0])
-        # phi_list = np.unwrap(phi_list)
-
+        # Prints out Time, Star x position, Star y position, Star z Position
+        # Black hole 1 x position, Black hole 1 y position, Black hole 1 z position
+        # Black hole 2 x position, Black hole 2 y position, Black hole 2 z position
+        # Stars distance from origin, Star theta angle relative to origin
+        # Black holes' separation distance from each other
         BH1 = kwargs['bh1']
         BH2 = kwargs['bh2']
         print(t, Y[0], Y[1], Y[2], BH1[0], BH1[1],
-              BH1[2], BH2[0], BH2[1], BH2[2], pos_r, Y[6])
+              BH1[2], BH2[0], BH2[1], BH2[2], pos_r, Y[6], BH_dist)
 
         # The Runge-Kutta routine returns the new value of Y, t, and a
         # possibly updated value of dt

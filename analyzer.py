@@ -13,7 +13,9 @@ for i in range(100, 103, 1):
 # Alert the user that the code has finished
 result = sbp.run(["which", "mail"], stdout=sbp.DEVNULL)
 if result.returncode == 0:
-    result = sbp.run(["mail", "-s 'Test run' GeenDutchman@mail.rit.edu larreu@rit.edu <<< 'The test is complete'"], shell=True)
+    msg = sbp.Popen(['echo', 'The test is complete.'], stdout=sbp.PIPE)
+    result = sbp.run(["mail", "-s", "Test run", "GeenDutchman@mail.rit.edu", "larreu@rit.edu"], stdin=msg.stdout)
+    msg.wait()
 result = sbp.run(["which", "espeak"], stdout=sbp.DEVNULL)
 if result.returncode == 0:
     result = sbp.run(["espeak", "This run is complete."])

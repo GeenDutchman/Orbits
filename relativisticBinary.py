@@ -307,6 +307,10 @@ def main(argv):
     var = np.array([r, Omega, psi])
     Y = np.append(Y, var)
 
+    print('#', 'time', 'star_x', 'star_y', 'star_z', 'bh1_x', 'bh1_y', 'bh1_z',
+          'bh2_x', 'bh2_y', 'bh2_z', 'star_r', 'star_angle', 'bh_r')
+
+
     star_x_min_max = [Y[0], Y[0]]
     star_y_min_max = [Y[1], Y[1]]
     star_z_min_max = [Y[2], Y[2]]

@@ -301,9 +301,6 @@ def main(argv):
         print('# Black hole separation:', abs(BH1x) * 2)
         print('')
 
-    #phi_list = np.zeros(shape=2, dtype=np.float64)
-    #phi_list[1] = np.linalg.norm(np.cross(Y[0:3], Y[3:])) /\
-        #(np.linalg.norm(Y[0:3]) ** 2)
     star_x_min_max = [Y[0], Y[0]]
     star_y_min_max = [Y[1], Y[1]]
     star_z_min_max = [Y[2], Y[2]]
@@ -311,16 +308,20 @@ def main(argv):
     while t < tmax:
 
         pos_r = np.linalg.norm(Y[0:3])
+        
+        r_dot = (np.dot(Y[3:6],Y[0:3]))/pos_r #Dot product are velocity and position of star divided by
+                                              #norm of star position vector
 
         # Prints out Time, Star x position, Star y position, Star z Position
         # Black hole 1 x position, Black hole 1 y position, Black hole 1 z position
         # Black hole 2 x position, Black hole 2 y position, Black hole 2 z position
         # Stars distance from origin, Star theta angle relative to origin
         # Black holes' separation distance from each other
+        # r(star position) as it changes with respect to time 
         BH1 = kwargs['bh1']
         BH2 = kwargs['bh2']
         print(t, Y[0], Y[1], Y[2], BH1[0], BH1[1],
-              BH1[2], BH2[0], BH2[1], BH2[2], pos_r, Y[6], BH_dist)
+              BH1[2], BH2[0], BH2[1], BH2[2], pos_r, Y[6], BH_dist, r_dot)
 
         # The Runge-Kutta routine returns the new value of Y, t, and a
         # possibly updated value of dt

@@ -50,13 +50,15 @@ phi_old, r_old = copy_piece(
 phi_original, r_original, 2*np.pi - np.pi, 2*np.pi + np.pi)
 num_orbits = phi_original[-1] / (2 * np.pi)
 print('The star does', num_orbits, 'orbits.')
+prev_precession = 0
 for nOrbits in range(int(num_orbits)):
     try:
         result = minimize(opt, 0.005 , method='Powell', args=(nOrbits,))
         if result.success:
             print(result.message)
-            print('For orbit:',nOrbits + 1,'Accumulative angle of precession:', result.x)
+            print('For orbit:',nOrbits + 1,'Accumulative angle of precession:', result.x, 'Just this orbit:', result.x - prev_precession)
             print()
+            prev_precession = result.x
         else:
             print('An error occured:')
             print(result.message)

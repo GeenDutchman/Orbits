@@ -50,7 +50,7 @@ def opt(epsilon, *args):
 
 num_orbits = phi_original[-1] / (2 * np.pi)
 print('The star does', num_orbits, 'orbits.')
-for nOrbits in range(num_orbits):
+for nOrbits in range(int(num_orbits)):
     try:
         result = minimize(opt, 0.005 , method='Powell', args=(nOrbits,))
         if result.success:

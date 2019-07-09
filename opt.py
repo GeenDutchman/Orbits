@@ -34,10 +34,6 @@ def extractor(data):
         phi_original.append(data[row][-2])
         r_original.append(data[row][-3])
     return phi_original, r_original
-        
-data = np.loadtxt('binary1.dat', dtype=np.float64)
-phi_original, r_original = extractor(data)
-phi_old, r_old = copy_piece(phi_original, r_original, 2*np.pi - np.pi, 2*np.pi + np.pi)
 
 def opt(epsilon, *args):
     nOrbits = args[0]
@@ -48,6 +44,10 @@ def opt(epsilon, *args):
         raise ValueError('The data needs to have more orbits!!')
     return find_residual(phi_old, r_old, phi_new, r_new)
 
+data = np.loadtxt('binary1.dat', dtype=np.float64)
+phi_original, r_original = extractor(data)
+phi_old, r_old = copy_piece(
+phi_original, r_original, 2*np.pi - np.pi, 2*np.pi + np.pi)
 num_orbits = phi_original[-1] / (2 * np.pi)
 print('The star does', num_orbits, 'orbits.')
 for nOrbits in range(int(num_orbits)):
@@ -55,7 +55,7 @@ for nOrbits in range(int(num_orbits)):
         result = minimize(opt, 0.005 , method='Powell', args=(nOrbits,))
         if result.success:
             print(result.message)
-            print('For orbit:',nOrbits + 1,'Angle of precession:', result.x)
+            print('For orbit:',nOrbits + 1,'Accumulative angle of precession:', result.x)
             print()
         else:
             print('An error occured:')

@@ -132,7 +132,6 @@ def print_help():
     print('--mratio, -q\t\t\tSets the mass ratio for the binary system')
     print('--sep, -s\t\t\tSets the separation distances of the black holes')
     print('--default, -d\t\t\tShows the default parameters')
-    print('--record, -r\t\t\tPrints the initial conditions as a comment')
     print('--rk45, -45\t\t\tSets to auto adjust the time-step dynamically\n')
 
 def update_min_max(min_max_list, Y, index):
@@ -186,11 +185,7 @@ def main(argv):
     # This will possibly change some of the default values
 
     i = 0
-    record_comment = False
     use_RK_45 = False
-
-    if len(argv) == 0:
-        print('# Running with default settings')
 
     # for better options menu https://docs.python.org/3/library/argparse.html#sub-commands
 
@@ -252,8 +247,6 @@ def main(argv):
         elif argv[i] == '--default' or argv[i] == '-d':
             print_default()
             exit(0)
-        elif argv[i] == '-r' or argv[i] == '--record':
-            record_comment = True
         elif argv[i] == '-45' or argv[i] == '--rk45':
             use_RK_45 = True
         else:
@@ -293,13 +286,7 @@ def main(argv):
     kwargs['omega'] = omega
     kwargs['BH_dist'] = BH_dist
 
-    if record_comment:
-        print('# Star Position: x:', x0, ' y:', y0, ' z:', z0)
-        print('# Star Velocity Components: vx0: ',
-              vx0, ' vy0:', vy0, ' vz0:', vz0)
-        print('# Time Step:', dt, '\tRun Time max:', tmax)
-        print('# Black hole separation:', abs(BH1x) * 2)
-        print('')
+    print('#', 'time', 'star_x', 'star_y', 'star_z', 'bh1_x', 'bh1_y', 'bh1_z', 'bh2_x', 'bh2_y', 'bh2_z', 'star_r', 'star_angle', 'bh_r', 'star_r_dot')
 
     star_x_min_max = [Y[0], Y[0]]
     star_y_min_max = [Y[1], Y[1]]

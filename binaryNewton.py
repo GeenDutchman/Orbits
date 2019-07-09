@@ -325,7 +325,8 @@ def main(argv):
 
     print('# The star does', Y[6] / (2 * np.pi), 'orbits.')
     print("# Xmin\tXmax\tYmin\tYmax\tZmin\tZmax")
-    print("#", star_x_min_max[0], "\t", star_x_min_max[1], "\t", star_y_min_max[0], "\t", star_y_min_max[1], "\t", star_z_min_max[0], "\t", star_z_min_max[1])
+    print("#", star_x_min_max[0], "\t", star_x_min_max[1], "\t", star_y_min_max[0],
+      "\t", star_y_min_max[1], "\t", star_z_min_max[0], "\t", star_z_min_max[1])
 
 
 if __name__ == "__main__":

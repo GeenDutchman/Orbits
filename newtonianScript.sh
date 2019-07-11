@@ -5,7 +5,7 @@ NO_TEE="0"
 ADJUST_MIN_MAX="1"
 
 err_file="errors.log.txt"
-#err_flag=0
+err_flag=0
 log_file="hist.log.txt"
 #log_flag=0
 data_file="binary1.dat"
@@ -23,8 +23,11 @@ function tee_print() {
         # echo "normal echo"
         if [ "$1" == "-p" ] || [ "$1" == "--prob" ]; then     
             shift
-            date_string=$(date)
-            printf "$date_string\" : \"" >> $err_file
+            if [ $err_flag == 0 ]; then
+                date_string=$(date)
+                printf "$date_string\n" | tee -a $err_file
+                err_flag=1
+            fi
             printf "$@" | tee -a $log_file $err_file
         else
             printf "$@" | tee -a $log_file
@@ -68,7 +71,7 @@ function pre_checks {
 
 function display_animation {
     if [ -e "$data_file" ]; then
-        tee_print -nt 'Displaying animation\n'
+        tee_print -nt "Displaying animation\n"
         # find length of data and ignore comments
         BIN_LEN=$( wc -l < $data_file )
         NUM_COMMENTS=$(grep -c "#" $data_file)
@@ -81,7 +84,7 @@ function display_animation {
         fi
         gnuplot -c 'moviePlot.plt' $((BIN_LEN - NUM_COMMENTS)) ${MIN_MAXs[@]}
     else
-        tee_print -p 'No data file for the animation!\n'
+        tee_print -p "No data file for the animation!\n"
     fi
 
     # how to make a movie
@@ -101,7 +104,7 @@ function display_plate {
         fi
         gnuplot -c 'platePlot.plt' ${MIN_MAXs[@]}
     else
-        tee_print -p 'No data file for the plate!\n'
+        tee_print -p "No data file for the plate!\n"
     fi
 }
 
@@ -110,7 +113,7 @@ function display_angplate {
         tee_print -nt "Displaying r vs theta\n"
         gnuplot -c 'r_phi_plot.plt'
     else
-        tee_print -p 'No data file for the plate!\n'
+        tee_print -p "No data file for the plate!\n"
     fi
 }
 
@@ -147,14 +150,19 @@ function main {
     # echo $write_success
     # if it ran incorrectly
     if [ $? != 0 ]; then
-        tee_print -p 'An error occured during python execution!\n'
+        tee_print -p "An error occured during python execution!\n"
+        err_flag=1
         err_msg=$(grep '!!' "$data_file")
-        tee_print -nt 'Logging the error\n'
-        tee_print -p $err_msg        
-        tee_print -nt 'Removing the errant file\n'
+        tee_print -nt "Logging the error\n"
+        if [ -n "$err_msg" ]; then
+            tee_print -p "$err_msg\n"
+        else
+            tee_print -p "No error message found!!\n"
+        fi
+        tee_print -nt "Removing the errant file\n"
         rm ./"$data_file"
     else # it ran correctly
-        tee_print 'The data was produced and written successfully.\n'
+        tee_print "The data was produced and written successfully.\n"
         min_max_info=$( tail -n 2 "$data_file")
         tee_print "$min_max_info\n"
         display_animation

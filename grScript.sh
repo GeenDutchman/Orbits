@@ -167,7 +167,7 @@ function main {
         tee_print "$min_max_info\n"
         # display_animation
         # display_plate
-       	# display_angplate
+        # display_angplate
         tee_print "Analyzing data for precession\n"
         precession_analysis=$( python3 opt.py )
         if [ $? != 0 ]; then

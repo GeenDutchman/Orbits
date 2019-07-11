@@ -14,7 +14,7 @@ def interpolate(x_coords, y_coords):
                 if iter != skipped_index:
                     product *= x - x_coords[iter]
             return product
-        sum = 0
+        sum = 0.0
         for i in range(_ORDER):
             sum += (y_coords[i]*_skip_term(x, i))/_skip_term(x_coords[i], i)
         return sum

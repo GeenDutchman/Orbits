@@ -57,16 +57,14 @@ phi_original = data['star_angle']
 r_original = data['star_r']
 num_orbits = phi_original[-1] / (2 * np.pi)
 print('The star does', num_orbits, 'orbits.')
-prev_precession = 0
 for window_count in range(1, int(num_orbits)):
     try:
         result = minimize(opt, 0.0005, method='Powell', args=(window_count,))
         if result.success:
-            print(result.message)
+            # print(result.message)
             print('For orbit:', window_count, 'Angle of precession:',
                   result.x)
-            print()
-            prev_precession = result.x
+            # print()
         else:
             print('An error occured:')
             print(result.message)
@@ -76,3 +74,4 @@ for window_count in range(1, int(num_orbits)):
         print('An exception was caught:')
         print(e)
         exit(1)
+print() # to compress the output

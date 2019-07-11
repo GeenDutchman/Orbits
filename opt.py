@@ -52,18 +52,18 @@ def opt(epsilon, *args):
     return find_residual(phi_old, r_old, phi_new, r_new)
 
 
-data = np.genfromtxt('smaller.dat', dtype=np.float64, names=True)
+data = np.genfromtxt('binary1.dat', dtype=np.float64, names=True)
 phi_original = data['star_angle']
 r_original = data['star_r']
 num_orbits = phi_original[-1] / (2 * np.pi)
 print('The star does', num_orbits, 'orbits.')
 prev_precession = 0
-for window_count in range(1, int(num_orbits) - 1):
+for window_count in range(1, int(num_orbits)):
     try:
         result = minimize(opt, 0.0005, method='Powell', args=(window_count,))
         if result.success:
             print(result.message)
-            print('For orbit:', window_count + 1, 'Angle of precession:',
+            print('For orbit:', window_count, 'Angle of precession:',
                   result.x)
             print()
             prev_precession = result.x

@@ -5,7 +5,6 @@ import sys
 import getopt
 from PN import PN_Orbit, center_of_mass_coordinates_to_BH_positions
 
-
 def calc_omega(mass, G, pos1, pos2):
     magnitude1 = np.linalg.norm(pos1)
     magnitude2 = np.linalg.norm(pos2)
@@ -110,7 +109,8 @@ def print_default():
     print('Default time step: \t\t\t\t\t1.0e-2')
     print('Default maximum run time: \t\t\t\t1.0e12')
     print('Default black hole separation: \t\t\t\t100')
-    print('Default mass ratio: \t\t\t\t\t1.0\n')
+    print('Default mass ratio: \t\t\t\t\t1.0')
+    print('Default maximum orbits: \t\t\tinfinite\n')
 
 
 def print_help():
@@ -125,6 +125,7 @@ def print_help():
     print('\t--vz0,\t-vz\t\tSets the Vz velocity component of the star')
     print('--tstep, -ts\t\t\tSets the time step for the simulation data')
     print('--tmax, -tm\t\t\tSets the maximum run time for the simulation data')
+    print('--omax, -om\t\t\tSets the maximum number of orbits for the simulation data')
     print('--mratio, -q\t\t\tSets the mass ratio for the binary system')
     print('--sep, -s\t\t\tSets the separation distances of the black holes')
     print('\t--rx,\t-x\t\tSets the x componet of the black hole separation')
@@ -168,6 +169,9 @@ def main(argv):
 
     # max time
     tmax = 1.0e12
+
+    # max orbits
+    MAX_ORBITS = -1
     
     # Separation of Black Holes' initial position
     r_x_hat = 100.0
@@ -243,6 +247,10 @@ def main(argv):
             i += 1
             tmax = float(argv[i])
             # print('Maximum run time changed')
+        elif argv[i] == '--omax' or argv[i] == '-om':
+            i += 1
+            MAX_ORBITS = float(argv[i])
+            # print('Maximum number of orbits changed')
         elif argv[i] == '--mratio' or argv[i] == '-q':
             i += 1
             kwargs['massratio'] = float(argv[i])
@@ -345,6 +353,11 @@ def main(argv):
         update_min_max(star_x_min_max, Y, 0)
         update_min_max(star_y_min_max, Y, 1)
         update_min_max(star_z_min_max, Y, 2)
+
+        # only do MAX_ORBITS of...well...orbits
+        if MAX_ORBITS > 0 and Y[6] / (2 * np.pi) >= MAX_ORBITS:
+            print('# Maximum orbits: ', MAX_ORBITS, 'reached!!')
+            break
 
     print('# The star does', Y[6] / (2 * np.pi), 'orbits.')
     print("# Xmin\tXmax\tYmin\tYmax\tZmin\tZmax")

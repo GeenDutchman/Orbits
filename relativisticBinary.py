@@ -5,6 +5,19 @@ import sys
 import getopt
 from PN import PN_Orbit, center_of_mass_coordinates_to_BH_positions, Omega_of_r
 
+def addY(values, keys, Y, key_dict):
+    if isinstance(values, (list, tuple, np.ndarray)) and isinstance(keys, (list, tuple, np.ndarray)):
+        if len(values) != len(keys):
+            raise IndexError('The length of values must match the length of keys!!')
+        for index in range(len(values)):
+            Y_len = len(Y)
+            Y = np.append(Y, values[index])
+            key_dict[keys[index]] = Y_len
+    else:
+        Y_len = len(Y)
+        Y = np.append(Y, values)
+        key_dict[keys] = Y_len
+    return Y, key_dict
 
 def Keppler_Binary_RHS(t, y0, **kwargs):
     star_x_hat = y0[0:3]  # star position stored in first 3 elements
@@ -43,6 +56,12 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
         print("Must have black hole information!!")
         exit(2)
 
+    if 'Y_dict' in kwargs:
+        Y_dict = kwargs['Y_dict']
+    else:
+        print('Must have the dictionary!!')
+        exit(2)
+
     BH1_x_vec = BH1[0:3]
 
     BH2_x_vec = BH2[0:3]
@@ -52,10 +71,10 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
     else:
         kwargs['BH_dist'] = r_vec
 
-    dotty = PN_Orbit(t, y0[7], y0[8], y0[9], **kwargs)
+    dotty = PN_Orbit(t, y0[Y_dict['bh_r']], y0[Y_dict['bh_psi']], y0[Y_dict['bh_Omega']], **kwargs)
 
     # calculate the current position, but does not do the z coord??
-    BH1_x_vec[0:3], BH2_x_vec[0:3] = center_of_mass_coordinates_to_BH_positions(y0[7], y0[8], **kwargs)
+    BH1_x_vec[0:3], BH2_x_vec[0:3] = center_of_mass_coordinates_to_BH_positions(y0[Y_dict['bh_r']], y0[Y_dict['bh_psi']], **kwargs)
 
     BH1_mass = combined_BH_mass / (BH_ratio + 1)
     # (-1 * combined_BH_mass * BH_ratio) / (BH_ratio + 1)
@@ -263,8 +282,11 @@ def main(argv):
     initial_phi = np.array(np.arctan2(y0, x0), dtype=np.float64) 
 
     # Concatenate star parameters
-    Y = np.concatenate((initial_position, initial_velocity))
-    Y = np.append(Y, initial_phi)
+    Y = []
+    Y_dict = {}
+    Y, Y_dict = addY(initial_position, ['star_x', 'star_y', 'star_z'], Y, Y_dict)
+    Y, Y_dict = addY(initial_velocity,['star_vx', 'star_vy', 'star_vz'], Y, Y_dict)
+    Y, Y_dict = addY(initial_phi, 'star_angle', Y, Y_dict)
 
     # Puts separation parameters into an array
     initial_separation = np.array((r_x_hat, r_y_hat, r_z_hat), dtype=np.float64)
@@ -295,29 +317,30 @@ def main(argv):
     Omega = Omega_of_r(bh_r, **kwargs)
     psi = 0
 
-    var = np.array([bh_r, psi, Omega])
-    Y = np.append(Y, var)
+    Y, Y_dict = addY([bh_r, psi, Omega], ['bh_r', 'bh_psi', 'bh_Omega'], Y, Y_dict)
 
     print('#', 'time', 'star_x', 'star_y', 'star_z', 'bh1_x', 'bh1_y', 'bh1_z',
           'bh2_x', 'bh2_y', 'bh2_z', 'star_r', 'star_angle', 'bh_r')
     # print('#', 'time', 'bh1_mass', 'bh2_mass', 'q', 'bh1_x', 'bh1_y', 'bh1_z',
     #       'bh2_x', 'bh2_y', 'bh2_z', 'Omega')
 
-    star_x_min_max = [Y[0], Y[0]]
-    star_y_min_max = [Y[1], Y[1]]
-    star_z_min_max = [Y[2], Y[2]]
+    star_x_min_max = [Y[Y_dict['star_x']], Y[Y_dict['star_x']]]
+    star_y_min_max = [Y[Y_dict['star_y']], Y[Y_dict['star_y']]]
+    star_z_min_max = [Y[Y_dict['star_z']], Y[Y_dict['star_z']]]
+
+    kwargs['Y_dict'] = Y_dict
 
     # while time less than max and bh_separation more than 10
-    while t < tmax and Y[7] > 10:
+    while t < tmax and Y[Y_dict['bh_r']] > 10:
 
-        star_r = np.linalg.norm(Y[0:3])  # Stars distance from the origin
+        star_r = np.linalg.norm([Y[Y_dict['star_x']], Y[Y_dict['star_y']], Y[Y_dict['star_z']]])  # Stars distance from the origin
 
         BH1 = kwargs['bh1']
         BH2 = kwargs['bh2']
 
-        BH1_mass = kwargs['mass'] / (kwargs['massratio'] + 1)
-        # (-1 * combined_BH_mass * BH_ratio) / (BH_ratio + 1)
-        BH2_mass = kwargs['mass'] - BH1_mass
+        # BH1_mass = kwargs['mass'] / (kwargs['massratio'] + 1)
+        # # (-1 * combined_BH_mass * BH_ratio) / (BH_ratio + 1)
+        # BH2_mass = kwargs['mass'] - BH1_mass
 
         # Prints time, separation, psi angle, and Omega f
         # print(t, Y[7], Y[8], Y[9])
@@ -327,8 +350,8 @@ def main(argv):
         # Black hole 2 x position, Black hole 2 y position, Black hole 2 z position
         # Stars distance from origin, Star theta angle relative to origin
         # Black holes' separation distance from each other
-        print(t, Y[0], Y[1], Y[2], BH1[0], BH1[1],
-              BH1[2], BH2[0], BH2[1], BH2[2], star_r, Y[6], Y[7])
+        print(t, Y[Y_dict['star_x']], Y[Y_dict['star_y']], Y[Y_dict['star_z']], BH1[0], BH1[1],
+              BH1[2], BH2[0], BH2[1], BH2[2], star_r, Y[Y_dict['star_angle']], Y[Y_dict['bh_r']])
 
         # print(t, BH1_mass, BH2_mass, kwargs['massratio'], BH1[0], BH1[1],
         #       BH1[2], BH2[0], BH2[1], BH2[2], Y[9])
@@ -342,16 +365,16 @@ def main(argv):
             # does not change the dt
             t, Y, dt = RK4_Step(t, Y, dt, Keppler_Binary_RHS, **kwargs)
         
-        update_min_max(star_x_min_max, Y, 0)
-        update_min_max(star_y_min_max, Y, 1)
-        update_min_max(star_z_min_max, Y, 2)
+        update_min_max(star_x_min_max, Y, Y_dict['star_x'])
+        update_min_max(star_y_min_max, Y, Y_dict['star_y'])
+        update_min_max(star_z_min_max, Y, Y_dict['star_z'])
 
         # only do MAX_ORBITS of...well...orbits
-        if MAX_ORBITS > 0 and Y[6] / (2 * np.pi) >= MAX_ORBITS:
+        if MAX_ORBITS > 0 and Y[Y_dict['star_angle']] / (2 * np.pi) >= MAX_ORBITS:
             print('# Maximum orbits: ', MAX_ORBITS, 'reached!!')
             break
 
-    print('# The star does', Y[6] / (2 * np.pi), 'orbits.')
+    print('# The star does', Y[Y_dict['star_angle']] / (2 * np.pi), 'orbits.')
     print("# Xmin\tXmax\tYmin\tYmax\tZmin\tZmax")
     print("#", star_x_min_max[0], "\t", star_x_min_max[1], "\t", star_y_min_max[0],
           "\t", star_y_min_max[1], "\t", star_z_min_max[0], "\t", star_z_min_max[1])

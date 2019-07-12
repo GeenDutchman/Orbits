@@ -166,6 +166,8 @@ def main(argv):
 
     i = 0
     use_RK_45 = False
+    
+    file_name = "R100.dat"
 
     # for better options menu https://docs.python.org/3/library/argparse.html#sub-commands
 
@@ -244,8 +246,11 @@ def main(argv):
         elif argv[i] == '--default' or argv[i] == '-d':
             print_default()
             exit(0)
-        elif argv[i] == '-45' or argv[i] == '--rk45':
+        elif argv[i] == '--rk45' or argv[i] == '-45':
             use_RK_45 = True
+        elif argv[i] == '--file' or argv[i] == '-f':
+            i += 1
+            file_name = argv[i]
         else:
             print('\n "', argv[i], '" is not an option!!')
             print_help()
@@ -288,9 +293,11 @@ def main(argv):
     # kwargs['omega'] = omega
     kwargs['BH_dist'] = r_vec
 
+    f = open(file_name, "a") #Open a file
+
     bh_r = np.linalg.norm(r_vec)
     if bh_r <= 10:
-        print("# The magnitude of the separation must be larger than 10 separations!!")
+        print("# The magnitude of the separation must be larger than 10 separations!!", file=f)
         exit(2)
     Omega = Omega_of_r(bh_r, **kwargs)
     psi = 0
@@ -299,13 +306,15 @@ def main(argv):
     Y = np.append(Y, var)
 
     print('#', 'time', 'star_x', 'star_y', 'star_z', 'bh1_x', 'bh1_y', 'bh1_z',
-          'bh2_x', 'bh2_y', 'bh2_z', 'star_r', 'star_angle', 'bh_r')
+          'bh2_x', 'bh2_y', 'bh2_z', 'star_r', 'star_angle', 'bh_r', file=f)
     # print('#', 'time', 'bh1_mass', 'bh2_mass', 'q', 'bh1_x', 'bh1_y', 'bh1_z',
     #       'bh2_x', 'bh2_y', 'bh2_z', 'Omega')
 
     star_x_min_max = [Y[0], Y[0]]
     star_y_min_max = [Y[1], Y[1]]
     star_z_min_max = [Y[2], Y[2]]
+
+    
 
     # while time less than max and bh_separation more than 10
     while t < tmax and Y[7] > 10:
@@ -328,7 +337,7 @@ def main(argv):
         # Stars distance from origin, Star theta angle relative to origin
         # Black holes' separation distance from each other
         print(t, Y[0], Y[1], Y[2], BH1[0], BH1[1],
-              BH1[2], BH2[0], BH2[1], BH2[2], star_r, Y[6], Y[7])
+              BH1[2], BH2[0], BH2[1], BH2[2], star_r, Y[6], Y[7], file=f)
 
         # print(t, BH1_mass, BH2_mass, kwargs['massratio'], BH1[0], BH1[1],
         #       BH1[2], BH2[0], BH2[1], BH2[2], Y[9])
@@ -348,14 +357,15 @@ def main(argv):
 
         # only do MAX_ORBITS of...well...orbits
         if MAX_ORBITS > 0 and Y[6] / (2 * np.pi) >= MAX_ORBITS:
-            print('# Maximum orbits: ', MAX_ORBITS, 'reached!!')
+            print('# Maximum orbits: ', MAX_ORBITS, 'reached!!', file=f)
             break
 
-    print('# The star does', Y[6] / (2 * np.pi), 'orbits.')
-    print("# Xmin\tXmax\tYmin\tYmax\tZmin\tZmax")
+    print('# The star does', Y[6] / (2 * np.pi), 'orbits.', file=f)
+    print("# Xmin\tXmax\tYmin\tYmax\tZmin\tZmax", file=f)
     print("#", star_x_min_max[0], "\t", star_x_min_max[1], "\t", star_y_min_max[0],
-          "\t", star_y_min_max[1], "\t", star_z_min_max[0], "\t", star_z_min_max[1])
-
-
+          "\t", star_y_min_max[1], "\t", star_z_min_max[0], "\t", star_z_min_max[1], file=f)
+    
+    f.close()
+    
 if __name__ == "__main__":
     main(sys.argv[1:])

@@ -47,7 +47,7 @@ function file_exists() {
 }
 
 function pre_checks {
-    declare -a files=("relativisticBinary.py" "RK.py" "opt.py")
+    declare -a files=("relativisticBinary.py" "RK.py" "PN.py" "opt.py")
     for file_name in ${files[@]}
     do
         file_exists $file_name
@@ -133,6 +133,8 @@ function main {
         for arg in "$@";
         do
             case $arg in
+                -f|--file)
+                    python3 
                 -h|--help)
                     python3 relativisticBinary.py --help
                     return 0

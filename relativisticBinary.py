@@ -3,20 +3,7 @@ import numpy as np
 from RK import RK4_Step, RK45_Step
 import sys
 import getopt
-from PN import PN_Orbit, center_of_mass_coordinates_to_BH_positions
-
-def calc_omega(mass, G, pos1, pos2):
-    magnitude1 = np.linalg.norm(pos1)
-    magnitude2 = np.linalg.norm(pos2)
-    mag_sum = magnitude1 + magnitude2
-    dist = abs(mag_sum)
-    dist3 = dist ** 3
-
-    if dist3 != 0:
-        omega = np.sqrt((mass * G) / dist3)
-    else:
-        omega = 0
-    return omega, dist
+from PN import PN_Orbit, center_of_mass_coordinates_to_BH_positions, Omega_of_r
 
 
 def Keppler_Binary_RHS(t, y0, **kwargs):
@@ -60,13 +47,9 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
 
     BH2_x_vec = BH2[0:3]
 
-    if 'omega' in kwargs and 'BH_dist' in kwargs:
-        omega = kwargs['omega']
+    if 'BH_dist' in kwargs:
         r_vec = kwargs['BH_dist']
     else:
-        print('# Calculating omega')
-        omega, r_vec = calc_omega(combined_BH_mass, G, BH1_x_vec, BH2_x_vec)
-        kwargs['omega'] = omega
         kwargs['BH_dist'] = r_vec
 
     dotty = PN_Orbit(t, y0[7], y0[8], y0[9], **kwargs)
@@ -301,32 +284,33 @@ def main(argv):
     kwargs['bh1'] = BH1
     kwargs['bh2'] = BH2
 
-    omega, r_vec = calc_omega(kwargs['mass'], kwargs['G'], BH1, BH2)
-    kwargs['omega'] = omega
+    # omega, r_vec = calc_omega(kwargs['mass'], kwargs['G'], BH1, BH2)
+    # kwargs['omega'] = omega
     kwargs['BH_dist'] = r_vec
 
-    r = np.linalg.norm(r_vec)
-    if r <= 10:
+    bh_r = np.linalg.norm(r_vec)
+    if bh_r <= 10:
         print("# The magnitude of the separation must be larger than 10 separations!!")
         exit(2)
-    Omega = omega
+    Omega = Omega_of_r(bh_r, **kwargs)
     psi = 0
 
-    var = np.array([r, Omega, psi])
+    var = np.array([bh_r, psi, Omega])
     Y = np.append(Y, var)
 
-    # print('#', 'time', 'star_x', 'star_y', 'star_z', 'bh1_x', 'bh1_y', 'bh1_z',
-    #       'bh2_x', 'bh2_y', 'bh2_z', 'star_r', 'star_angle', 'bh_r')
-    print('#', 'time', 'bh1_mass', 'bh2_mass', 'q', 'bh1_x', 'bh1_y', 'bh1_z',
-          'bh2_x', 'bh2_y', 'bh2_z', 'Omega')
+    print('#', 'time', 'star_x', 'star_y', 'star_z', 'bh1_x', 'bh1_y', 'bh1_z',
+          'bh2_x', 'bh2_y', 'bh2_z', 'star_r', 'star_angle', 'bh_r')
+    # print('#', 'time', 'bh1_mass', 'bh2_mass', 'q', 'bh1_x', 'bh1_y', 'bh1_z',
+    #       'bh2_x', 'bh2_y', 'bh2_z', 'Omega')
 
     star_x_min_max = [Y[0], Y[0]]
     star_y_min_max = [Y[1], Y[1]]
     star_z_min_max = [Y[2], Y[2]]
 
+    # while time less than max and bh_separation more than 10
     while t < tmax and Y[7] > 10:
 
-        pos_r = np.linalg.norm(Y[0:3])  # Stars distance from the origin
+        star_r = np.linalg.norm(Y[0:3])  # Stars distance from the origin
 
         BH1 = kwargs['bh1']
         BH2 = kwargs['bh2']
@@ -343,11 +327,11 @@ def main(argv):
         # Black hole 2 x position, Black hole 2 y position, Black hole 2 z position
         # Stars distance from origin, Star theta angle relative to origin
         # Black holes' separation distance from each other
-        # print(t, Y[0], Y[1], Y[2], BH1[0], BH1[1],
-        #       BH1[2], BH2[0], BH2[1], BH2[2], pos_r, Y[6], Y[7])
+        print(t, Y[0], Y[1], Y[2], BH1[0], BH1[1],
+              BH1[2], BH2[0], BH2[1], BH2[2], star_r, Y[6], Y[7])
 
-        print(t, BH1_mass, BH2_mass, kwargs['massratio'], BH1[0], BH1[1],
-              BH1[2], BH2[0], BH2[1], BH2[2], Y[9])
+        # print(t, BH1_mass, BH2_mass, kwargs['massratio'], BH1[0], BH1[1],
+        #       BH1[2], BH2[0], BH2[1], BH2[2], Y[9])
 
         # The Runge-Kutta routine returns the new value of Y, t, and a
         # possibly updated value of dt

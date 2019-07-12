@@ -309,15 +309,16 @@ def main(argv):
     if r <= 10:
         print("# The magnitude of the separation must be larger than 10 separations!!")
         exit(2)
-    Omega = 0
+    Omega = omega
     psi = 0
 
     var = np.array([r, Omega, psi])
     Y = np.append(Y, var)
 
-    print('#', 'time', 'star_x', 'star_y', 'star_z', 'bh1_x', 'bh1_y', 'bh1_z',
-          'bh2_x', 'bh2_y', 'bh2_z', 'star_r', 'star_angle', 'bh_r')
-
+    # print('#', 'time', 'star_x', 'star_y', 'star_z', 'bh1_x', 'bh1_y', 'bh1_z',
+    #       'bh2_x', 'bh2_y', 'bh2_z', 'star_r', 'star_angle', 'bh_r')
+    print('#', 'time', 'bh1_mass', 'bh2_mass', 'q', 'bh1_x', 'bh1_y', 'bh1_z',
+          'bh2_x', 'bh2_y', 'bh2_z', 'Omega')
 
     star_x_min_max = [Y[0], Y[0]]
     star_y_min_max = [Y[1], Y[1]]
@@ -330,6 +331,10 @@ def main(argv):
         BH1 = kwargs['bh1']
         BH2 = kwargs['bh2']
 
+        BH1_mass = kwargs['mass'] / (kwargs['massratio'] + 1)
+        # (-1 * combined_BH_mass * BH_ratio) / (BH_ratio + 1)
+        BH2_mass = kwargs['mass'] - BH1_mass
+
         # Prints time, separation, psi angle, and Omega f
         # print(t, Y[7], Y[8], Y[9])
 
@@ -338,8 +343,11 @@ def main(argv):
         # Black hole 2 x position, Black hole 2 y position, Black hole 2 z position
         # Stars distance from origin, Star theta angle relative to origin
         # Black holes' separation distance from each other
-        print(t, Y[0], Y[1], Y[2], BH1[0], BH1[1],
-              BH1[2], BH2[0], BH2[1], BH2[2], pos_r, Y[6], Y[7])
+        # print(t, Y[0], Y[1], Y[2], BH1[0], BH1[1],
+        #       BH1[2], BH2[0], BH2[1], BH2[2], pos_r, Y[6], Y[7])
+
+        print(t, BH1_mass, BH2_mass, kwargs['massratio'], BH1[0], BH1[1],
+              BH1[2], BH2[0], BH2[1], BH2[2], Y[9])
 
         # The Runge-Kutta routine returns the new value of Y, t, and a
         # possibly updated value of dt

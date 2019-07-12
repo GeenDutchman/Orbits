@@ -179,11 +179,13 @@ def main(argv):
     BH1x = 1.0
     BH1y = 0.0
     BH1z = 0.0
+    BH1_mass = 0.5
 
     # Black Hole 2's initial position
     BH2x = -1.0
     BH2y = 0.0
     BH2z = 0.0
+    BH2_mass = 0.5
 
     # Processing command line arguments
     # This will possibly change some of the default values
@@ -287,6 +289,10 @@ def main(argv):
 
     BH2 = initial_bh2_pos
 
+    BH1_mass = kwargs['mass'] / (kwargs['q'] + 1)
+    # (-1 * combined_BH_mass * BH_ratio) / (BH_ratio + 1)
+    BH2_mass = kwargs['mass'] - BH1_mass
+
     kwargs['bh1'] = BH1
     kwargs['bh2'] = BH2
 
@@ -294,8 +300,10 @@ def main(argv):
     kwargs['omega'] = omega
     kwargs['BH_dist'] = BH_dist
 
-    print('#', 'time', 'star_x', 'star_y', 'star_z', 'bh1_x', 'bh1_y', 'bh1_z',
-          'bh2_x', 'bh2_y', 'bh2_z', 'star_r', 'star_angle', 'bh_r', 'star_r_dot')
+    # print('#', 'time', 'star_x', 'star_y', 'star_z', 'bh1_x', 'bh1_y', 'bh1_z',
+    #       'bh2_x', 'bh2_y', 'bh2_z', 'star_r', 'star_angle', 'bh_r', 'star_r_dot')
+    print('#', 'time', 'bh1_mass', 'bh2_mass', 'q', 'bh1_x', 'bh1_y', 'bh1_z',
+          'bh2_x', 'bh2_y', 'bh2_z', 'omega')
 
     star_x_min_max = [Y[0], Y[0]]
     star_y_min_max = [Y[1], Y[1]]
@@ -316,8 +324,11 @@ def main(argv):
         # r(star position) as it changes with respect to time 
         BH1 = kwargs['bh1']
         BH2 = kwargs['bh2']
-        print(t, Y[0], Y[1], Y[2], BH1[0], BH1[1],
-              BH1[2], BH2[0], BH2[1], BH2[2], pos_r, Y[6], BH_dist, r_dot)
+    
+        print(t, BH1_mass, BH2_mass, kwargs['q'], BH1[0], BH1[1],
+              BH1[2], BH2[0], BH2[1], BH2[2], omega)
+        # print(t, Y[0], Y[1], Y[2], BH1[0], BH1[1],
+        #       BH1[2], BH2[0], BH2[1], BH2[2], pos_r, Y[6], BH_dist, r_dot)
 
         # The Runge-Kutta routine returns the new value of Y, t, and a
         # possibly updated value of dt

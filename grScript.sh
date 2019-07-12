@@ -8,7 +8,7 @@ err_file="errors.log.txt"
 err_flag=0
 log_file="hist.log.txt"
 #log_flag=0
-data_file="binary1.dat"
+data_file="R100.dat"
 
 function tee_print() {
     if  { { [ "$1" == "-nt" ] || [ "$1" == "--no-tee" ]; } && shift; } || [ "$NO_TEE" != "0" ]; then
@@ -130,11 +130,14 @@ function main {
             date >> $log_file
         fi
         # this is for processing the exceptions
-        for arg in "$@";
+        for (( index=1; index<=$#; index++ ));
         do
-            case $arg in
+            case "${!index}" in
                 -f|--file)
-                    python3 
+                    ((index++))
+                    data_file="${!index}"
+                    tee_print "Writing to $data_file\n"
+                    ;;
                 -h|--help)
                     python3 relativisticBinary.py --help
                     return 0
@@ -171,7 +174,7 @@ function main {
         # display_plate
         # display_angplate
         tee_print "Analyzing data for precession\n"
-        precession_analysis=$( python3 opt.py )
+        precession_analysis=$( python3 opt.py --read "$data_file")
         if [ $? != 0 ]; then
             tee_print -p "$precession_analysis\n"
             return 1

@@ -60,7 +60,7 @@ while i < len(sys.argv):
         i += 1
         file_name = sys.argv[i]
     else:
-        print('\n "', sys.argv[i], '" is not an option!!')
+        print('\n"', sys.argv[i], '" is not an option!!')
         exit(1)
     i += 1    
 data = np.genfromtxt(file_name, dtype=np.float64, names=True)

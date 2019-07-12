@@ -185,6 +185,8 @@ def main(argv):
 
     i = 0
     use_RK_45 = False
+    
+    file_name = "R100.dat"
 
     # for better options menu https://docs.python.org/3/library/argparse.html#sub-commands
 
@@ -263,8 +265,11 @@ def main(argv):
         elif argv[i] == '--default' or argv[i] == '-d':
             print_default()
             exit(0)
-        elif argv[i] == '-45' or argv[i] == '--rk45':
+        elif argv[i] == '--rk45' or argv[i] == '-45':
             use_RK_45 = True
+        elif argv[i] == '--file' or argv[i] == '-f':
+            i += 1
+            file_name = argv[i]
         else:
             print('\n "', argv[i], '" is not an option!!')
             print_help()
@@ -310,9 +315,11 @@ def main(argv):
     # kwargs['omega'] = omega
     kwargs['BH_dist'] = r_vec
 
+    f = open(file_name, "a") #Open a file
+
     bh_r = np.linalg.norm(r_vec)
     if bh_r <= 10:
-        print("# The magnitude of the separation must be larger than 10 separations!!")
+        print("# The magnitude of the separation must be larger than 10 separations!!", file=f)
         exit(2)
     Omega = Omega_of_r(bh_r, **kwargs)
     psi = 0
@@ -320,7 +327,7 @@ def main(argv):
     Y, Y_dict = addY([bh_r, psi, Omega], ['bh_r', 'bh_psi', 'bh_Omega'], Y, Y_dict)
 
     print('#', 'time', 'star_x', 'star_y', 'star_z', 'bh1_x', 'bh1_y', 'bh1_z',
-          'bh2_x', 'bh2_y', 'bh2_z', 'star_r', 'star_angle', 'bh_r')
+          'bh2_x', 'bh2_y', 'bh2_z', 'star_r', 'star_angle', 'bh_r', file=f)
     # print('#', 'time', 'bh1_mass', 'bh2_mass', 'q', 'bh1_x', 'bh1_y', 'bh1_z',
     #       'bh2_x', 'bh2_y', 'bh2_z', 'Omega')
 
@@ -329,6 +336,8 @@ def main(argv):
     star_z_min_max = [Y[Y_dict['star_z']], Y[Y_dict['star_z']]]
 
     kwargs['Y_dict'] = Y_dict
+
+    
 
     # while time less than max and bh_separation more than 10
     while t < tmax and Y[Y_dict['bh_r']] > 10:
@@ -377,8 +386,9 @@ def main(argv):
     print('# The star does', Y[Y_dict['star_angle']] / (2 * np.pi), 'orbits.')
     print("# Xmin\tXmax\tYmin\tYmax\tZmin\tZmax")
     print("#", star_x_min_max[0], "\t", star_x_min_max[1], "\t", star_y_min_max[0],
-          "\t", star_y_min_max[1], "\t", star_z_min_max[0], "\t", star_z_min_max[1])
-
-
+          "\t", star_y_min_max[1], "\t", star_z_min_max[0], "\t", star_z_min_max[1], file=f)
+    
+    f.close()
+    
 if __name__ == "__main__":
     main(sys.argv[1:])

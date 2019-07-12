@@ -52,14 +52,25 @@ def opt(epsilon, *args):
     return find_residual(phi_old, r_old, phi_new, r_new)
 
 
-data = np.genfromtxt('binary1.dat', dtype=np.float64, names=True)
+i = 1
+
+file_name = "R100.dat"
+while i < len(sys.argv):
+    if sys.argv[i] == "--read" or sys.argv[i] == "-r":
+        i += 1
+        file_name = sys.argv[i]
+    else:
+        print('\n"', sys.argv[i], '" is not an option!!')
+        exit(1)
+    i += 1    
+data = np.genfromtxt(file_name, dtype=np.float64, names=True)
 phi_original = data['star_angle']
 r_original = data['star_r']
 num_orbits = phi_original[-1] / (2 * np.pi)
 print('The star does', num_orbits, 'orbits.')
 for window_count in range(1, int(num_orbits)):
     try:
-        result = minimize(opt, 0.0005, method='Powell', args=(window_count,))
+        result = minimize(opt, 0.005, method='Powell', args=(window_count,))
         if result.success:
             # print(result.message)
             print('For orbit:', window_count, 'Angle of precession:',
@@ -75,3 +86,4 @@ for window_count in range(1, int(num_orbits)):
         print(e)
         exit(1)
 print() # to compress the output
+

@@ -373,7 +373,7 @@ def main(argv):
         # Black holes' separation distance from each other
         # r(star position) as it changes with respect to time
         print(t, Y[Y_dict['star_x']], Y[Y_dict['star_y']], Y[Y_dict['star_z']], BH1[0], BH1[1],
-              BH1[2], BH2[0], BH2[1], BH2[2], star_r, Y[Y_dict['star_angle']], Y[Y_dict['bh_r']], star_r_dot, file=f)
+              BH1[2], BH2[0], BH2[1], BH2[2], star_r, Y[Y_dict['star_angle']], kwargs['BH_dist'], star_r_dot, file=f)
 
         # The Runge-Kutta routine returns the new value of Y, t, and a
         # possibly updated value of dt

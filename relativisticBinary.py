@@ -20,9 +20,18 @@ def addY(values, keys, Y, key_dict):
     return Y, key_dict
 
 def Keppler_Binary_RHS(t, y0, **kwargs):
-    star_x_hat = y0[0:3]  # star position stored in first 3 elements
-    star_v_vec = y0[3:6]  # star velocity stored in the next 3 elements
-    star_phi_vec = y0[6]  # star angle position stored in the last element
+    if 'Y_dict' in kwargs:
+        Y_dict = kwargs['Y_dict']
+    else:
+        print('Must have the dictionary!!')
+        exit(2)
+    
+    star_x_hat = [y0[Y_dict['star_x']],
+                  y0[Y_dict['star_y']], y0[Y_dict['star_z']]]  # star position
+    star_v_vec = [y0[Y_dict['star_vx']],
+                  y0[Y_dict['star_vy']], y0[Y_dict['star_vz']]]  # star velocity
+    # star angle position
+    #star_phi_vec = y0[Y_dict['star_angle']]
 
     # star position vector norm, such that
     # star_r = (star_x**2 + star_y**2 + star_z**2)**1/2
@@ -54,12 +63,6 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
         BH2 = kwargs['bh2']
     else:
         print("Must have black hole information!!")
-        exit(2)
-
-    if 'Y_dict' in kwargs:
-        Y_dict = kwargs['Y_dict']
-    else:
-        print('Must have the dictionary!!')
         exit(2)
 
     BH1_x_vec = BH1[0:3]
@@ -289,8 +292,10 @@ def main(argv):
     # Concatenate star parameters
     Y = []
     Y_dict = {}
-    Y, Y_dict = addY(initial_position, ['star_x', 'star_y', 'star_z'], Y, Y_dict)
-    Y, Y_dict = addY(initial_velocity,['star_vx', 'star_vy', 'star_vz'], Y, Y_dict)
+    Y, Y_dict = addY(initial_position, [
+                     'star_x', 'star_y', 'star_z'], Y, Y_dict)
+    Y, Y_dict = addY(initial_velocity, [
+                     'star_vx', 'star_vy', 'star_vz'], Y, Y_dict)
     Y, Y_dict = addY(initial_phi, 'star_angle', Y, Y_dict)
 
     # Puts separation parameters into an array
@@ -327,9 +332,7 @@ def main(argv):
     Y, Y_dict = addY([bh_r, psi, Omega], ['bh_r', 'bh_psi', 'bh_Omega'], Y, Y_dict)
 
     print('#', 'time', 'star_x', 'star_y', 'star_z', 'bh1_x', 'bh1_y', 'bh1_z',
-          'bh2_x', 'bh2_y', 'bh2_z', 'star_r', 'star_angle', 'bh_r', file=f)
-    # print('#', 'time', 'bh1_mass', 'bh2_mass', 'q', 'bh1_x', 'bh1_y', 'bh1_z',
-    #       'bh2_x', 'bh2_y', 'bh2_z', 'Omega')
+          'bh2_x', 'bh2_y', 'bh2_z', 'star_r', 'star_angle', 'bh_r', 'star_r_dot', file=f)
 
     star_x_min_max = [Y[Y_dict['star_x']], Y[Y_dict['star_x']]]
     star_y_min_max = [Y[Y_dict['star_y']], Y[Y_dict['star_y']]]
@@ -337,33 +340,34 @@ def main(argv):
 
     kwargs['Y_dict'] = Y_dict
 
-    
-
     # while time less than max and bh_separation more than 10
     while t < tmax and Y[Y_dict['bh_r']] > 10:
 
-        star_r = np.linalg.norm([Y[Y_dict['star_x']], Y[Y_dict['star_y']], Y[Y_dict['star_z']]])  # Stars distance from the origin
+        # star position
+        star_pos = [Y[Y_dict['star_x']],
+                    Y[Y_dict['star_y']], Y[Y_dict['star_z']]]
+        # star velocity
+        star_vel = [Y[Y_dict['star_vx']],
+                    Y[Y_dict['star_vy']], Y[Y_dict['star_vz']]]
+
+        # Star's distance from the origin
+        star_r = np.linalg.norm(star_pos)
+
+        #Dot product are velocity and position of star divided by
+        #norm of star position vector
+        star_r_dot = (np.dot(star_vel, star_pos))/star_r
 
         BH1 = kwargs['bh1']
         BH2 = kwargs['bh2']
-
-        # BH1_mass = kwargs['mass'] / (kwargs['massratio'] + 1)
-        # # (-1 * combined_BH_mass * BH_ratio) / (BH_ratio + 1)
-        # BH2_mass = kwargs['mass'] - BH1_mass
-
-        # Prints time, separation, psi angle, and Omega f
-        # print(t, Y[7], Y[8], Y[9])
 
         # Prints out Time, Star x position, Star y position, Star z Position
         # Black hole 1 x position, Black hole 1 y position, Black hole 1 z position
         # Black hole 2 x position, Black hole 2 y position, Black hole 2 z position
         # Stars distance from origin, Star theta angle relative to origin
         # Black holes' separation distance from each other
+        # r(star position) as it changes with respect to time
         print(t, Y[Y_dict['star_x']], Y[Y_dict['star_y']], Y[Y_dict['star_z']], BH1[0], BH1[1],
-              BH1[2], BH2[0], BH2[1], BH2[2], star_r, Y[Y_dict['star_angle']], Y[Y_dict['bh_r']])
-
-        # print(t, BH1_mass, BH2_mass, kwargs['massratio'], BH1[0], BH1[1],
-        #       BH1[2], BH2[0], BH2[1], BH2[2], Y[9])
+              BH1[2], BH2[0], BH2[1], BH2[2], star_r, Y[Y_dict['star_angle']], Y[Y_dict['bh_r']], star_r_dot, file=f)
 
         # The Runge-Kutta routine returns the new value of Y, t, and a
         # possibly updated value of dt
@@ -380,15 +384,17 @@ def main(argv):
 
         # only do MAX_ORBITS of...well...orbits
         if MAX_ORBITS > 0 and Y[Y_dict['star_angle']] / (2 * np.pi) >= MAX_ORBITS:
-            print('# Maximum orbits: ', MAX_ORBITS, 'reached!!')
+            print('# Maximum orbits: ', MAX_ORBITS, 'reached!!', file=f)
             break
 
-    print('# The star does', Y[Y_dict['star_angle']] / (2 * np.pi), 'orbits.')
-    print("# Xmin\tXmax\tYmin\tYmax\tZmin\tZmax")
+    print('# The star does', Y[Y_dict['star_angle']
+                               ] / (2 * np.pi), 'orbits.', file=f)
+    print("# Xmin\tXmax\tYmin\tYmax\tZmin\tZmax", file=f)
     print("#", star_x_min_max[0], "\t", star_x_min_max[1], "\t", star_y_min_max[0],
           "\t", star_y_min_max[1], "\t", star_z_min_max[0], "\t", star_z_min_max[1], file=f)
-    
+
     f.close()
-    
+
+
 if __name__ == "__main__":
     main(sys.argv[1:])

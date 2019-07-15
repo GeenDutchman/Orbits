@@ -36,6 +36,19 @@ function tee_print() {
 
 }
 
+function prepend_filename() {
+    fullFilePath=$1
+    addition=$2
+    ffp_len=${#fullFilePath}
+    a_len=${#addition}
+    fileName="${fullFilePath##*'/'}"
+    fn_len=${#fileName}
+    star_len=${#fullFilePath}
+    len=$((star_len-fn_len))
+    filePath=${fullFilePath:0:len}
+    return "$filePath$addition$fileName"
+}
+
 function file_exists() {
     tee_print -nt "Checking for \"$1\" in this directory..."
     exists=$( ls | grep -c $1 )
@@ -174,7 +187,7 @@ function main {
         # display_plate
         # display_angplate
         tee_print "Analyzing data for precession\n"
-        precession_out="p$data_file"
+        precession_out=prepend_filename "$data_file" "p"
         precession_analysis=$( python3 opt.py --read "$data_file" --write "$precession_out")
         if [ $? != 0 ]; then
             tee_print -p "$precession_analysis\n"

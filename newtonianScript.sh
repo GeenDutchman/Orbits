@@ -174,7 +174,8 @@ function main {
         # display_plate
         # display_angplate
         tee_print "Analyzing data for precession\n"
-        precession_analysis=$( python3 opt.py --read "$data_file")
+        precession_out="p$data_file"
+        precession_analysis=$( python3 opt.py --read "$data_file" --write "$precession_out")
         if [ $? != 0 ]; then
             tee_print -p "$precession_analysis\n"
             return 1

@@ -54,36 +54,43 @@ def opt(epsilon, *args):
 
 i = 1
 
-file_name = "R100.dat"
+# defaults
+read_file_name = "R100.dat"
+write_file_name = "pR100.dat"
 while i < len(sys.argv):
     if sys.argv[i] == "--read" or sys.argv[i] == "-r":
         i += 1
-        file_name = sys.argv[i]
+        read_file_name = sys.argv[i]
+    elif sys.argv[i] == "--write" or sys.argv[i] == "-w":
+        i += 1
+        write_file_name = sys.argv[i]
     else:
         print('\n"', sys.argv[i], '" is not an option!!')
         exit(1)
     i += 1    
-data = np.genfromtxt(file_name, dtype=np.float64, names=True)
+data = np.genfromtxt(read_file_name, dtype=np.float64, names=True)
 phi_original = data['star_angle']
 r_original = data['star_r']
+w_file = open(write_file_name, 'a')
 num_orbits = phi_original[-1] / (2 * np.pi)
-print('The star does', num_orbits, 'orbits.')
+print("# Orbit Precession", file=w_file)
 for window_count in range(1, int(num_orbits)):
     try:
         result = minimize(opt, 0.005, method='Powell', args=(window_count,))
         if result.success:
             # print(result.message)
-            print('For orbit:', window_count, 'Angle of precession:',
-                  result.x)
+            print(window_count, result.x, file=w_file)
             # print()
         else:
-            print('An error occured:')
-            print(result.message)
-            print()
+            print('# An error occured:', file=w_file)
+            print('#', result.message, file=w_file)
+            print(file=w_file)
             exit(1)
     except ValueError as e:
-        print('An exception was caught:')
-        print(e)
+        print('# An exception was caught:', file=w_file)
+        print('#', e, file=w_file)
         exit(1)
-print() # to compress the output
+print('# The star does', num_orbits, 'orbits.', file=w_file)
+print(file=w_file) # to compress the output
+w_file.close()
 

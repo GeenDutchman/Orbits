@@ -15,8 +15,10 @@ base_bh_sep = 200
 for bh_sep in range(base_bh_sep, base_bh_sep * 5, int(base_bh_sep * 0.1)):
     star_dist = bh_sep * 50 # double check this scaling
     star_y_vel = 1 / np.sqrt(star_dist) # for a circular orbit
-    result = sbp.run(
+    Rresult = sbp.run(
         ["./grScript.sh", "--star", "-x",  str(star_dist), "-vy", str(star_y_vel), "-45", "--omax", "100", "--tmax", "1e12", "--sep", "-x", str(bh_sep), "-f", "./relativistic/R" + str(bh_sep) + ".dat"])
+    Nresult = sbp.run(
+        ["./newtonianScript.sh", "--star", "-x", str(star_dist), "-vy", str(star_y_vel), "-45", "--omax", "100", "--tmax", "1e12", "--sep", str(bh_sep), "-f", "./newtonian/N" + str(bh_sep) + ".dat"])
 
 # Alert the user that the code has finished
 result = sbp.run(["which", "mail"], stdout=sbp.DEVNULL)

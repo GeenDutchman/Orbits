@@ -16,10 +16,16 @@ star_y_vel = 0.05
 for bh_sep in range(start_bh_sep_dist, max_sep_dist + 1, increments):
     star_dist = bh_sep * 50 # double check this scaling
     star_y_vel = 1 / np.sqrt(star_dist) # for a circular orbit
-    #Rresult = sbp.run(
-       # ["./grScript.sh", "--star", "-x",  str(star_dist), "-vy", str(star_y_vel), "-45", "--omax", "100", "--tmax", "1e12", "--sep", "-x", str(bh_sep), "-f", "./relativistic/R" + str(bh_sep) + ".dat"])
+    # Rresult = sbp.run(
+    #    ["./grScript.sh", "--star", "-x",  str(star_dist), "-vy", str(star_y_vel), "-45", "--omax", "100", "--tmax", "1e12", "--sep", "-x", str(bh_sep), "-f", "./relativistic/R" + str(bh_sep) + ".dat"])
+    # if Rresult.returncode != 0:
+    #     print('There was an error!!')
+    #     print(Rresult)
     Nresult = sbp.run(
         ["./newtonianScript.sh", "--star", "-x", str(star_dist), "-vy", str(star_y_vel), "-45", "--omax", "100", "--tmax", "1e12", "--sep", str(bh_sep), "-f", "./newtonian/N" + str(bh_sep) + ".dat"])
+    if Nresult.returncode != 0:
+        print('There was an error!!')
+        print(Nresult)
 
 # Alert the user that the code has finished
 result = sbp.run(["which", "mail"], stdout=sbp.DEVNULL)

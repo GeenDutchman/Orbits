@@ -7,16 +7,17 @@ import subprocess as sbp
 # as a process in the background
 # also make sure to not run any plates or the movie
 
-star_dist = 200
+start_bh_sep_dist = 200
+max_sep_dist = 1000
+increments = 100
 star_y_vel = 0.05
-base_bh_sep = 200
 
 # increments in terms of a tenth of the base, up to 2 * the base
-for bh_sep in range(base_bh_sep, base_bh_sep * 5, int(base_bh_sep * 0.1)):
+for bh_sep in range(start_bh_sep_dist, max_sep_dist + 1, increments):
     star_dist = bh_sep * 50 # double check this scaling
     star_y_vel = 1 / np.sqrt(star_dist) # for a circular orbit
-    Rresult = sbp.run(
-        ["./grScript.sh", "--star", "-x",  str(star_dist), "-vy", str(star_y_vel), "-45", "--omax", "100", "--tmax", "1e12", "--sep", "-x", str(bh_sep), "-f", "./relativistic/R" + str(bh_sep) + ".dat"])
+    #Rresult = sbp.run(
+       # ["./grScript.sh", "--star", "-x",  str(star_dist), "-vy", str(star_y_vel), "-45", "--omax", "100", "--tmax", "1e12", "--sep", "-x", str(bh_sep), "-f", "./relativistic/R" + str(bh_sep) + ".dat"])
     Nresult = sbp.run(
         ["./newtonianScript.sh", "--star", "-x", str(star_dist), "-vy", str(star_y_vel), "-45", "--omax", "100", "--tmax", "1e12", "--sep", str(bh_sep), "-f", "./newtonian/N" + str(bh_sep) + ".dat"])
 

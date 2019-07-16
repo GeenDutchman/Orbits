@@ -4,6 +4,7 @@ import numpy as np
 
 NEWTON = True
 
+
 def acceleration(star, bh1, bh2, **kwargs):
     if 'G' in kwargs:
         G = kwargs['G']
@@ -15,7 +16,6 @@ def acceleration(star, bh1, bh2, **kwargs):
     else:
         c_light = 1.0
 
-
     if 'mass' in kwargs:
         mass = kwargs['mass']
     else:
@@ -25,10 +25,10 @@ def acceleration(star, bh1, bh2, **kwargs):
         q = kwargs['massratio']
     else:
         q = 1.0
-        
+
     dist_star_bh1 = star.pos - bh1.pos
     dist_star_bh2 = star.pos - bh2.pos
-    
+
     acc_from_bh1 = (dist_star_bh1) * (-1 * bh1.mass * G) / \
         (np.linalg.norm(dist_star_bh1) ** 3)
     acc_from_bh2 = (dist_star_bh2) * (-1 * bh2.mass * G) / \
@@ -63,12 +63,13 @@ def acceleration(star, bh1, bh2, **kwargs):
     fourth_acc_from_bh2 = 7 / (2 * c_light ** 2) * G * bh2.mass * bh2.acc / \
         np.linalg.norm(dist_star_bh1) + 0.0  # less significant terms
 
-    
     # done with terms, now sum it all
 
     acc_from_bh1 += second_acc_from_bh1 + third_acc_from_bh1 + fourth_acc_from_bh1
     acc_from_bh2 += second_acc_from_bh2 + third_acc_from_bh2 + fourth_acc_from_bh2
 
     return acc_from_bh1 + acc_from_bh2
+
+
 if __name__ == "__main__":
     pass

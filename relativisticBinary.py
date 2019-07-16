@@ -26,10 +26,10 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
         print('Must have the dictionary!!')
         exit(2)
     
-    star_x_vec = [y0[Y_dict['star_x']],
-                  y0[Y_dict['star_y']], y0[Y_dict['star_z']]]  # star position
-    star_v_vec = [y0[Y_dict['star_vx']],
-                  y0[Y_dict['star_vy']], y0[Y_dict['star_vz']]]  # star velocity
+    star_x_vec = np.array([y0[Y_dict['star_x']],
+                  y0[Y_dict['star_y']], y0[Y_dict['star_z']]], dtype=np.float64)  # star position
+    star_v_vec = np.array([y0[Y_dict['star_vx']],
+                  y0[Y_dict['star_vy']], y0[Y_dict['star_vz']]], dtype=np.float64)  # star velocity
     # star angle position
     #star_phi_vec = y0[Y_dict['star_angle']]
 
@@ -285,8 +285,8 @@ def main(argv):
     initial_phi = np.array(np.arctan2(y0, x0), dtype=np.float64) 
 
     # Concatenate star parameters
-    Y = []
-    Y_dict = {}
+    Y = [] # contains the things to be integrated
+    Y_dict = {} # uses a key:index pairing to keep track of where what values are in Y
     Y, Y_dict = addY(initial_position, [
                      'star_x', 'star_y', 'star_z'], Y, Y_dict)
     Y, Y_dict = addY(initial_velocity, [

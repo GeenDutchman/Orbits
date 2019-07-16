@@ -3,7 +3,7 @@ import numpy as np
 from RK import RK4_Step, RK45_Step
 import sys
 import getopt
-from PN import PN_Orbit, center_of_mass_coordinates_to_BH_positions, Omega_of_r
+from PN import PN_Orbit, center_of_mass_coordinates_to_BH_positions, Omega_of_r, PN_Acceleration
 
 def addY(values, keys, Y, key_dict):
     if isinstance(values, (list, tuple, np.ndarray)) and isinstance(keys, (list, tuple, np.ndarray)):
@@ -26,7 +26,7 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
         print('Must have the dictionary!!')
         exit(2)
     
-    star_x_hat = [y0[Y_dict['star_x']],
+    star_x_vec = [y0[Y_dict['star_x']],
                   y0[Y_dict['star_y']], y0[Y_dict['star_z']]]  # star position
     star_v_vec = [y0[Y_dict['star_vx']],
                   y0[Y_dict['star_vy']], y0[Y_dict['star_vz']]]  # star velocity
@@ -36,7 +36,7 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
     # star position vector norm, such that
     # star_r = (star_x**2 + star_y**2 + star_z**2)**1/2
     # or the distance from the origin
-    # star_r = np.linalg.norm(star_x_hat)
+    # star_r = np.linalg.norm(star_x_vec)
 
     if 'mass' in kwargs:
         combined_BH_mass = kwargs['mass']
@@ -72,9 +72,10 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
     if 'BH_dist' in kwargs:
         r_vec = kwargs['BH_dist']
     else:
-        kwargs['BH_dist'] = r_vec
+        print("Must have black hole information!!")
+        exit(2)
 
-    dotty = PN_Orbit(t, y0[Y_dict['bh_r']], y0[Y_dict['bh_psi']], y0[Y_dict['bh_Omega']], **kwargs)
+    corrections = PN_Acceleration(star_x_vec, star_v_vec, y0[Y_dict['bh_r']], y0[Y_dict['bh_psi']], y0[Y_dict['bh_Omega']], **kwargs)
 
     # calculate the current position, but does not do the z coord??
     BH1_x_vec[0:3], BH2_x_vec[0:3] = center_of_mass_coordinates_to_BH_positions(y0[Y_dict['bh_r']], y0[Y_dict['bh_psi']], **kwargs)
@@ -83,15 +84,9 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
     # (-1 * combined_BH_mass * BH_ratio) / (BH_ratio + 1)
     BH2_mass = combined_BH_mass - BH1_mass
 
-    # find the acceleration due to gravity from the respective black holes
-    acc_star_1 = (star_x_hat - BH1_x_vec) * (-1 * BH1_mass * G) / \
-        (np.linalg.norm(star_x_hat - BH1_x_vec) ** 3)
-    acc_star_2 = (star_x_hat - BH2_x_vec) * (-1 * BH2_mass * G) / \
-        (np.linalg.norm(star_x_hat - BH2_x_vec) ** 3)
+    phi_dot = np.linalg.norm(np.cross(star_x_vec, star_v_vec)) / (np.linalg.norm(star_x_vec) ** 2)
 
-    phi_dot = np.linalg.norm(np.cross(star_x_hat, star_v_vec)) / (np.linalg.norm(star_x_hat) ** 2)
-
-    acc_star = acc_star_1 + acc_star_2
+    acc_star = corrections[0]
     vel_star = star_v_vec
 
     kwargs['bh1'] = BH1_x_vec
@@ -99,7 +94,7 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
 
     pre_y = np.concatenate((vel_star, acc_star))
     pre_y = np.append(pre_y, phi_dot)
-    return np.append(pre_y, dotty)
+    return np.append(pre_y, corrections)
     
 
 
@@ -320,7 +315,7 @@ def main(argv):
     # kwargs['omega'] = omega
     kwargs['BH_dist'] = r_vec
 
-    f = open(file_name, "a") #Open a file
+    f = open(file_name, "a")    # Open a file
 
     bh_r = np.linalg.norm(r_vec)
     if bh_r <= 10:

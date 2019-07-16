@@ -82,7 +82,7 @@ def PN_Orbit(t, r, psi, Omega, **kwargs):
     return np.array((rdot, psidot, Omegadot))
 
 
-def PN_Acceleration(Xstar, Vstar, rBH, psiBH, OmegaBH, **kwargs):
+def PN_Acceleration(Xstar, Vstar, rBH, psiBH, Omega, **kwargs):
     if 'G' in kwargs:
         G = kwargs['G']
     else:

@@ -67,10 +67,12 @@ while i < len(sys.argv):
     else:
         print('\n"', sys.argv[i], '" is not an option!!')
         exit(1)
-    i += 1    
+    i += 1
+print('Reading from', read_file_name) 
 data = np.genfromtxt(read_file_name, dtype=np.float64, names=True)
 phi_original = data['star_angle']
 r_original = data['star_r']
+print('Writing to', write_file_name)
 w_file = open(write_file_name, 'a')
 num_orbits = phi_original[-1] / (2 * np.pi)
 print("# Orbit Precession", file=w_file)

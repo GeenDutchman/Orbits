@@ -46,7 +46,7 @@ function prepend_filename() {
     star_len=${#fullFilePath}
     len=$((star_len-fn_len))
     filePath=${fullFilePath:0:len}
-    return "$filePath$addition$fileName"
+    echo "$filePath$addition$fileName"
 }
 
 function file_exists() {
@@ -187,7 +187,8 @@ function main {
         # display_plate
         # display_angplate
         tee_print "Analyzing data for precession\n"
-        precession_out=prepend_filename "$data_file" "p"
+        precession_out=$(prepend_filename "$data_file" "p")
+        echo $precession_out
         precession_analysis=$( python3 opt.py --read "$data_file" --write "$precession_out")
         if [ $? != 0 ]; then
             tee_print -p "$precession_analysis\n"

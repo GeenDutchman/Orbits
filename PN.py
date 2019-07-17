@@ -223,6 +223,10 @@ def PN_Acceleration(Xstar, Vstar, rBH, psiBH, Omega, **kwargs):
 
     aPN3 = 7.0 / 2.0 * (G * M1 * A1 / rs1 + G * M2 * A2 / rs2)
 
+    aPN1 *= 0
+    aPN2 *= 0
+    aPN3 *= 0
+
     return aNewton + (aPN1 + aPN2 + aPN3)/c_light**2, rdot, Omegadot
 
 

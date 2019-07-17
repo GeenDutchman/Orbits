@@ -68,8 +68,9 @@ while i < len(sys.argv):
         print('\n"', sys.argv[i], '" is not an option!!')
         exit(1)
     i += 1
-print('Reading from', read_file_name) 
-data = np.genfromtxt(read_file_name, dtype=np.float64, names=True)
+print('Reading from', read_file_name)
+# fetch only the relevant columns
+data = np.genfromtxt(read_file_name, dtype=np.float64, names=True, usecols=('star_angle', 'star_r'))
 phi_original = data['star_angle']
 r_original = data['star_r']
 
@@ -98,7 +99,5 @@ try:
     print(file=w_file) # to compress the output
     w_file.close()
 except FileExistsError:
-    if not w_file.closed:
-        w_file.close()
     print('A file already exists with that data!!')
 

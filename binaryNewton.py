@@ -348,70 +348,73 @@ def main(argv):
     kwargs['omega'] = omega
     kwargs['BH_dist'] = BH_dist
 
-    f = open(file_name, "a") #Open a file
+    try:
+        f = open(file_name, "x") #Open a file
 
-    print('#', 'time', 'star_x', 'star_y', 'star_z', 'bh1_x', 'bh1_y', 'bh1_z',
-          'bh2_x', 'bh2_y', 'bh2_z', 'star_r', 'star_angle', 'bh_r', 'star_r_dot', file=f)
+        print('#', 'time', 'star_x', 'star_y', 'star_z', 'bh1_x', 'bh1_y', 'bh1_z',
+            'bh2_x', 'bh2_y', 'bh2_z', 'star_r', 'star_angle', 'bh_r', 'star_r_dot', file=f)
 
-    star_x_min_max = [Y[Y_dict['star_x']], Y[Y_dict['star_x']]]
-    star_y_min_max = [Y[Y_dict['star_y']], Y[Y_dict['star_y']]]
-    star_z_min_max = [Y[Y_dict['star_z']], Y[Y_dict['star_z']]]
+        star_x_min_max = [Y[Y_dict['star_x']], Y[Y_dict['star_x']]]
+        star_y_min_max = [Y[Y_dict['star_y']], Y[Y_dict['star_y']]]
+        star_z_min_max = [Y[Y_dict['star_z']], Y[Y_dict['star_z']]]
 
-    kwargs['Y_dict'] = Y_dict
+        kwargs['Y_dict'] = Y_dict
 
-    while t < tmax:
+        while t < tmax:
 
-        # star position
-        star_pos = [Y[Y_dict['star_x']],
-                    Y[Y_dict['star_y']], Y[Y_dict['star_z']]]
-        # star velocity
-        star_vel = [Y[Y_dict['star_vx']],
-                    Y[Y_dict['star_vy']], Y[Y_dict['star_vz']]]
+            # star position
+            star_pos = [Y[Y_dict['star_x']],
+                        Y[Y_dict['star_y']], Y[Y_dict['star_z']]]
+            # star velocity
+            star_vel = [Y[Y_dict['star_vx']],
+                        Y[Y_dict['star_vy']], Y[Y_dict['star_vz']]]
 
-        # Star's distance from the origin
-        star_r = np.linalg.norm(star_pos)
+            # Star's distance from the origin
+            star_r = np.linalg.norm(star_pos)
 
-        #Dot product are velocity and position of star divided by
-        #norm of star position vector
-        star_r_dot = (np.dot(star_vel, star_pos))/star_r
+            #Dot product are velocity and position of star divided by
+            #norm of star position vector
+            star_r_dot = (np.dot(star_vel, star_pos))/star_r
 
-        BH1 = kwargs['bh1']
-        BH2 = kwargs['bh2']
+            BH1 = kwargs['bh1']
+            BH2 = kwargs['bh2']
 
-        # Prints out Time, Star x position, Star y position, Star z Position
-        # Black hole 1 x position, Black hole 1 y position, Black hole 1 z position
-        # Black hole 2 x position, Black hole 2 y position, Black hole 2 z position
-        # Stars distance from origin, Star theta angle relative to origin
-        # Black holes' separation distance from each other
-        # r(star position) as it changes with respect to time
-        print(t, Y[Y_dict['star_x']], Y[Y_dict['star_y']], Y[Y_dict['star_z']], BH1[0], BH1[1],
-              BH1[2], BH2[0], BH2[1], BH2[2], star_r, Y[Y_dict['star_angle']], kwargs['BH_dist'], star_r_dot, file=f)
+            # Prints out Time, Star x position, Star y position, Star z Position
+            # Black hole 1 x position, Black hole 1 y position, Black hole 1 z position
+            # Black hole 2 x position, Black hole 2 y position, Black hole 2 z position
+            # Stars distance from origin, Star theta angle relative to origin
+            # Black holes' separation distance from each other
+            # r(star position) as it changes with respect to time
+            print(t, Y[Y_dict['star_x']], Y[Y_dict['star_y']], Y[Y_dict['star_z']], BH1[0], BH1[1],
+                BH1[2], BH2[0], BH2[1], BH2[2], star_r, Y[Y_dict['star_angle']], kwargs['BH_dist'], star_r_dot, file=f)
 
-        # The Runge-Kutta routine returns the new value of Y, t, and a
-        # possibly updated value of dt
-        if use_RK_45:
-            # fine-tunes the dt
-            t, Y, dt = RK45_Step(t, Y, dt, Keppler_Binary_RHS, **kwargs)
-        else:
-            # does not change the dt
-            t, Y, dt = RK4_Step(t, Y, dt, Keppler_Binary_RHS, **kwargs)
-        
-        update_min_max(star_x_min_max, Y, Y_dict['star_x'])
-        update_min_max(star_y_min_max, Y, Y_dict['star_y'])
-        update_min_max(star_z_min_max, Y, Y_dict['star_z'])
+            # The Runge-Kutta routine returns the new value of Y, t, and a
+            # possibly updated value of dt
+            if use_RK_45:
+                # fine-tunes the dt
+                t, Y, dt = RK45_Step(t, Y, dt, Keppler_Binary_RHS, **kwargs)
+            else:
+                # does not change the dt
+                t, Y, dt = RK4_Step(t, Y, dt, Keppler_Binary_RHS, **kwargs)
+            
+            update_min_max(star_x_min_max, Y, Y_dict['star_x'])
+            update_min_max(star_y_min_max, Y, Y_dict['star_y'])
+            update_min_max(star_z_min_max, Y, Y_dict['star_z'])
 
-        # only do MAX_ORBITS of...well...orbits
-        if MAX_ORBITS > 0 and Y[Y_dict['star_angle']] / (2 * np.pi) >= MAX_ORBITS:
-            print('# Maximum orbits: ', MAX_ORBITS, 'reached!!', file=f)
-            break
+            # only do MAX_ORBITS of...well...orbits
+            if MAX_ORBITS > 0 and Y[Y_dict['star_angle']] / (2 * np.pi) >= MAX_ORBITS:
+                print('# Maximum orbits: ', MAX_ORBITS, 'reached!!', file=f)
+                break
 
-    print('# The star does', Y[Y_dict['star_angle']
-                               ] / (2 * np.pi), 'orbits.', file=f)
-    print("# Xmin\tXmax\tYmin\tYmax\tZmin\tZmax", file=f)
-    print("#", star_x_min_max[0], "\t", star_x_min_max[1], "\t", star_y_min_max[0],
-          "\t", star_y_min_max[1], "\t", star_z_min_max[0], "\t", star_z_min_max[1], file=f)
+        print('# The star does', Y[Y_dict['star_angle']
+                                ] / (2 * np.pi), 'orbits.', file=f)
+        print("# Xmin\tXmax\tYmin\tYmax\tZmin\tZmax", file=f)
+        print("#", star_x_min_max[0], "\t", star_x_min_max[1], "\t", star_y_min_max[0],
+            "\t", star_y_min_max[1], "\t", star_z_min_max[0], "\t", star_z_min_max[1], file=f)
 
-    f.close()
+        f.close()
+    except FileExistsError:
+        print('A file already exists with that data!!')
 
 
 if __name__ == "__main__":

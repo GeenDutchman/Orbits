@@ -72,27 +72,31 @@ print('Reading from', read_file_name)
 data = np.genfromtxt(read_file_name, dtype=np.float64, names=True)
 phi_original = data['star_angle']
 r_original = data['star_r']
-print('Writing to', write_file_name)
-w_file = open(write_file_name, 'a')
-num_orbits = phi_original[-1] / (2 * np.pi)
-print("# Orbit Precession", file=w_file)
-for window_count in range(1, int(num_orbits)):
-    try:
-        result = minimize(opt, 0.005, method='Powell', args=(window_count,))
-        if result.success:
-            # print(result.message)
-            print(window_count, result.x, file=w_file)
-            # print()
-        else:
-            print('# An error occured:', file=w_file)
-            print('#', result.message, file=w_file)
-            print(file=w_file)
+
+try:
+    print('Writing to', write_file_name)
+    w_file = open(write_file_name, 'x')
+    num_orbits = phi_original[-1] / (2 * np.pi)
+    print("# Orbit Precession", file=w_file)
+    for window_count in range(1, int(num_orbits)):
+        try:
+            result = minimize(opt, 0.005, method='Powell', args=(window_count,))
+            if result.success:
+                # print(result.message)
+                print(window_count, result.x, file=w_file)
+                # print()
+            else:
+                print('# An error occured:', file=w_file)
+                print('#', result.message, file=w_file)
+                print(file=w_file)
+                exit(1)
+        except ValueError as e:
+            print('# An exception was caught:', file=w_file)
+            print('#', e, file=w_file)
             exit(1)
-    except ValueError as e:
-        print('# An exception was caught:', file=w_file)
-        print('#', e, file=w_file)
-        exit(1)
-print('# The star does', num_orbits, 'orbits.', file=w_file)
-print(file=w_file) # to compress the output
-w_file.close()
+    print('# The star does', num_orbits, 'orbits.', file=w_file)
+    print(file=w_file) # to compress the output
+    w_file.close()
+except FileExistsError:
+    print('A file already exists with that data!!')
 

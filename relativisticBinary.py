@@ -144,6 +144,7 @@ def print_help():
     print('\t--rx,\t-x\t\tSets the x componet of the black hole separation')
     print('\t--ry,\t-y\t\tSets the y componet of the black hole separation')
     print('--default, -d\t\t\tShows the default parameters')
+    print('--extended, -e\t\t\tWill print extra data to the file')
     print('--rk45, -45\t\t\tSets to auto adjust the time-step dynamically\n')
 
 def update_min_max(min_max_list, Y, index):
@@ -196,6 +197,7 @@ def main(argv):
 
     i = 0
     use_RK_45 = False
+    extended = False
     
     file_name = "R100.dat"
 
@@ -281,6 +283,8 @@ def main(argv):
         elif argv[i] == '--file' or argv[i] == '-f':
             i += 1
             file_name = argv[i]
+        elif argv[i] == '--extended' or argv[i] == '-e':
+            extended = True
         else:
             print('\n "', argv[i], '" is not an option!!')
             print_help()
@@ -341,7 +345,12 @@ def main(argv):
         Y, Y_dict = addY([bh_r, psi, Omega], ['bh_r', 'bh_psi', 'bh_Omega'], Y, Y_dict)
 
         print('#', 'time', 'star_x', 'star_y', 'star_z', 'bh1_x', 'bh1_y', 'bh1_z',
-            'bh2_x', 'bh2_y', 'bh2_z', 'star_r', 'star_angle', 'bh_r', 'star_r_dot', file=f)
+            'bh2_x', 'bh2_y', 'bh2_z', 'star_r', 'star_angle', 'bh_r', 'star_r_dot', end=' ', file=f)
+        if extended:
+            print('star_vx', 'star_vy', 'star_vz', 'bh_psi', 'bh_Omega', file=f)
+        else:
+            # prints the newline if it has not yet been printed
+            print('', file=f)
 
         star_x_min_max = [Y[Y_dict['star_x']], Y[Y_dict['star_x']]]
         star_y_min_max = [Y[Y_dict['star_y']], Y[Y_dict['star_y']]]
@@ -376,7 +385,16 @@ def main(argv):
             # Black holes' separation distance from each other
             # r(star position) as it changes with respect to time
             print(t, Y[Y_dict['star_x']], Y[Y_dict['star_y']], Y[Y_dict['star_z']], BH1[0], BH1[1],
-                BH1[2], BH2[0], BH2[1], BH2[2], star_r, Y[Y_dict['star_angle']], Y[Y_dict['bh_r']], star_r_dot, file=f)
+                BH1[2], BH2[0], BH2[1], BH2[2], star_r, Y[Y_dict['star_angle']], Y[Y_dict['bh_r']], star_r_dot, end=' ', file=f)
+            
+            # will print out extra data
+            if extended:
+                print(Y[Y_dict['star_vx']], Y[Y_dict['star_vy']], Y[Y_dict['star_vz']],
+                    Y[Y_dict['bh_psi']], Y[Y_dict['bh_Omega']], file=f)
+            else:
+                # prints the newline if it has not yet been printed
+                print('', file=f)
+
 
             # The Runge-Kutta routine returns the new value of Y, t, and a
             # possibly updated value of dt
@@ -404,8 +422,6 @@ def main(argv):
 
         f.close()
     except FileExistsError:
-        if not f.closed:
-            f.close()
         print('A file already exists with that data!!')
 
 

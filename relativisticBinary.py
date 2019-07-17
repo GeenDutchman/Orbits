@@ -2,8 +2,7 @@ from __future__ import print_function
 import numpy as np
 from RK import RK4_Step, RK45_Step
 import sys
-import getopt
-from PN import PN_Orbit, center_of_mass_coordinates_to_BH_positions, Omega_of_r, PN_Acceleration
+from PN import center_of_mass_coordinates_to_BH_positions, Omega_of_r, PN_Acceleration
 
 def addY(values, keys, Y, key_dict):
     if isinstance(values, (list, tuple, np.ndarray)) and isinstance(keys, (list, tuple, np.ndarray)):
@@ -75,7 +74,8 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
         print("Must have black hole information!!")
         exit(2)
 
-    corrections = PN_Acceleration(star_x_vec, star_v_vec, y0[Y_dict['bh_r']], y0[Y_dict['bh_psi']], y0[Y_dict['bh_Omega']], **kwargs)
+    # corrections: star_acc, bh_r_dot, bh_Omega_dot
+    star_v_dot, bh_r_dot, bh_Omega_dot = PN_Acceleration(star_x_vec, star_v_vec, y0[Y_dict['bh_r']], y0[Y_dict['bh_psi']], y0[Y_dict['bh_Omega']], **kwargs)
 
     # calculate the current position, but does not do the z coord??
     BH1_x_vec[0:3], BH2_x_vec[0:3] = center_of_mass_coordinates_to_BH_positions(y0[Y_dict['bh_r']], y0[Y_dict['bh_psi']], **kwargs)
@@ -86,15 +86,28 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
 
     phi_dot = np.linalg.norm(np.cross(star_x_vec, star_v_vec)) / (np.linalg.norm(star_x_vec) ** 2)
 
-    acc_star = corrections[0]
-    vel_star = star_v_vec
-
     kwargs['bh1'] = BH1_x_vec
     kwargs['bh2'] = BH2_x_vec
 
-    pre_y = np.concatenate((vel_star, acc_star))
-    pre_y = np.append(pre_y, phi_dot)
-    return np.append(pre_y, corrections)
+    # holds all the changes
+    deltas = np.array([None] * len(y0))
+
+    # put the dot where the original goes
+    deltas[Y_dict['star_x']] = star_v_vec[0]
+    deltas[Y_dict['star_y']] = star_v_vec[1]
+    deltas[Y_dict['star_z']] = star_v_vec[2]
+
+    deltas[Y_dict['star_vx']] = star_v_dot[0]
+    deltas[Y_dict['star_vy']] = star_v_dot[1]
+    deltas[Y_dict['star_vz']] = star_v_dot[2]
+
+    deltas[Y_dict['star_angle']] = phi_dot
+
+    deltas[Y_dict['bh_r']] = bh_r_dot
+    deltas[Y_dict['bh_psi']] = y0[Y_dict['bh_Omega']] # bh_psi_dot is bh_Omega
+    deltas[Y_dict['bh_Omega']] = bh_Omega_dot
+
+    return deltas
     
 
 

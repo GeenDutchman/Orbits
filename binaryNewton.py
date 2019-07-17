@@ -118,14 +118,26 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
 
     phi_dot = np.linalg.norm(np.cross(star_x_vec, star_v_vec)) / (np.linalg.norm(star_x_vec) ** 2)
 
-    acc_star = acc_star_1 + acc_star_2
-    vel_star = star_v_vec
+    star_v_dot = acc_star_1 + acc_star_2
 
     kwargs['bh1'] = BH1_x_vec
     kwargs['bh2'] = BH2_x_vec
 
-    pre_y = np.concatenate((vel_star, acc_star))
-    return np.append(pre_y, phi_dot)
+    # holds all the changes
+    deltas = np.array([None] * len(y0))
+
+    # put the dot where the original goes
+    deltas[Y_dict['star_x']] = star_v_vec[0]
+    deltas[Y_dict['star_y']] = star_v_vec[1]
+    deltas[Y_dict['star_z']] = star_v_vec[2]
+
+    deltas[Y_dict['star_vx']] = star_v_dot[0]
+    deltas[Y_dict['star_vy']] = star_v_dot[1]
+    deltas[Y_dict['star_vz']] = star_v_dot[2]
+
+    deltas[Y_dict['star_angle']] = phi_dot
+
+    return deltas
 
 
 def print_default():

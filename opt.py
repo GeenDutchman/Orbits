@@ -98,5 +98,7 @@ try:
     print(file=w_file) # to compress the output
     w_file.close()
 except FileExistsError:
+    if not w_file.closed:
+        w_file.close()
     print('A file already exists with that data!!')
 

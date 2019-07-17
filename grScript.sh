@@ -163,7 +163,7 @@ function main {
             tee_print "%s " "$arg"
         done
         tee_print "\n"
-        write_success=$( python3 relativisticBinary.py "$@" > "$data_file" )
+        write_success=$( python3 relativisticBinary.py "$@" )
     fi
     # echo $write_success
     # if it ran incorrectly

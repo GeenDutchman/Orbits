@@ -329,7 +329,7 @@ def main(argv):
     kwargs['BH_dist'] = r_vec
 
     try:
-        f = open(file_name, "a")    # Open a file
+        f = open(file_name, "x")    # Open a file
 
         bh_r = np.linalg.norm(r_vec)
         if bh_r <= 10:
@@ -404,6 +404,8 @@ def main(argv):
 
         f.close()
     except FileExistsError:
+        if not f.closed:
+            f.close()
         print('A file already exists with that data!!')
 
 

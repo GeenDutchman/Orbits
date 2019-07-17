@@ -17,20 +17,21 @@ separations_tested = []
 start_bh_sep_dist = 200
 max_sep_dist = 1000
 increments = 100
-star_y_vel = 0.05
+
+# for paralell ideas: https://stackoverflow.com/a/23616229
 
 # increments in terms of a tenth of the base, up to 2 * the base
 for bh_sep in range(start_bh_sep_dist, max_sep_dist + 1, increments):
     star_dist = bh_sep * 50 # double check this scaling
     star_y_vel = 1 / np.sqrt(star_dist) # for a circular orbit
     separations_tested.append(bh_sep)
-    # Rresult = sbp.run(
-    #    ["./grScript.sh", "--star", "-x",  str(star_dist), "-vy", str(star_y_vel), "-45", "--omax", "100", "--tmax", "1e12", "--sep", "-x", str(bh_sep), "-f", "./relativistic/R" + str(bh_sep) + ".dat"])
-    # rel_tests += 1
-    # if Rresult.returncode != 0:
-    #     print('There was an error!!', file=sys.stderr)
-    #     rel_err_count += 1
-    #     print(Rresult, file=sys.stderr, flush=True)
+    Rresult = sbp.run(
+       ["./grScript.sh", "--star", "-x",  str(star_dist), "-vy", str(star_y_vel), "-45", "--omax", "100", "--tmax", "1e12", "--sep", "-x", str(bh_sep), "-f", "./relativistic/R" + str(bh_sep) + ".dat"])
+    rel_tests += 1
+    if Rresult.returncode != 0:
+        print('There was an error!!', file=sys.stderr)
+        rel_err_count += 1
+        print(Rresult, file=sys.stderr, flush=True)
     Nresult = sbp.run(
         ["./newtonianScript.sh", "--star", "-x", str(star_dist), "-vy", str(star_y_vel), "-45", "--omax", "100", "--tmax", "1e12", "--sep", str(bh_sep), "-f", "./newtonian/N" + str(bh_sep) + ".dat"])
     newt_tests += 1

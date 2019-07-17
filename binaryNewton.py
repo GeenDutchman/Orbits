@@ -414,6 +414,8 @@ def main(argv):
 
         f.close()
     except FileExistsError:
+        if not f.closed:
+            f.close()
         print('A file already exists with that data!!')
 
 

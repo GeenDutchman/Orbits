@@ -2,8 +2,7 @@ from __future__ import print_function
 import numpy as np
 from RK import RK4_Step, RK45_Step
 import sys
-import getopt
-from PN import PN_Orbit, center_of_mass_coordinates_to_BH_positions, Omega_of_r, PN_Acceleration
+from PN import, center_of_mass_coordinates_to_BH_positions, Omega_of_r, PN_Acceleration
 
 def addY(values, keys, Y, key_dict):
     if isinstance(values, (list, tuple, np.ndarray)) and isinstance(keys, (list, tuple, np.ndarray)):

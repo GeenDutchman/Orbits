@@ -25,15 +25,19 @@ for bh_sep in range(start_bh_sep_dist, max_sep_dist + 1, increments):
     star_dist = bh_sep * 50 # double check this scaling
     star_y_vel = 1 / np.sqrt(star_dist) # for a circular orbit
     separations_tested.append(bh_sep)
+    
+    Rfile = "./relativistic/R" + str(bh_sep) + ".dat"
     Rresult = sbp.run(
-       ["./grScript.sh", "--star", "-x",  str(star_dist), "-vy", str(star_y_vel), "-45", "--omax", "100", "--tmax", "1e12", "--sep", "-x", str(bh_sep), "-f", "./relativistic/R" + str(bh_sep) + ".dat"], stdout=sbp.PIPE, stderr=sbp.PIPE, universal_newlines=True)
+       ["./grScript.sh", "--star", "-x",  str(star_dist), "-vy", str(star_y_vel), "-45", "--omax", "100", "--tmax", "1e12", "--sep", "-x", str(bh_sep), "-f", Rfile], stdout=sbp.PIPE, stderr=sbp.PIPE, universal_newlines=True)
     rel_tests += 1
     if Rresult.returncode != 0:
         print('There was an error!!', file=sys.stderr)
         rel_err_count += 1
         print(Rresult, file=sys.stderr, flush=True)
+
+    Nfile = "./newtonian/N" + str(bh_sep) + ".dat"
     Nresult = sbp.run(
-        ["./newtonianScript.sh", "--star", "-x", str(star_dist), "-vy", str(star_y_vel), "-45", "--omax", "100", "--tmax", "1e12", "--sep", str(bh_sep), "-f", "./newtonian/N" + str(bh_sep) + ".dat"], stdout=sbp.PIPE, stderr=sbp.PIPE, universal_newlines=True)
+        ["./newtonianScript.sh", "--star", "-x", str(star_dist), "-vy", str(star_y_vel), "-45", "--omax", "100", "--tmax", "1e12", "--sep", str(bh_sep), "-f", Nfile], stdout=sbp.PIPE, stderr=sbp.PIPE, universal_newlines=True)
     newt_tests += 1
     if Nresult.returncode != 0:
         print('There was an error!!', file=sys.stderr)

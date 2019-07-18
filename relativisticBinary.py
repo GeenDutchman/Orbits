@@ -358,6 +358,11 @@ def main(argv):
 
         kwargs['Y_dict'] = Y_dict
 
+        kwargs['use_newtonian_acceleration_in_PN'] = True
+        kwargs['use_newtonian_velocities_in_PN'] = True
+        # Note that this will override use_newtonian_velocities_in_PN and use_newtonian_acceleration_in_PN if set to False
+        kwargs['use_post_newtonian_corrections_in_PN'] = True
+
         # while time less than max and bh_separation more than 10
         while t < tmax and Y[Y_dict['bh_r']] > 10:
 

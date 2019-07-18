@@ -201,6 +201,22 @@ def PN_Acceleration(Xstar, Vstar, rBH, psiBH, Omega, **kwargs):
 
     r12 = np.linalg.norm(X12)
 
+    V1Newton = Q2 * rBH * Omega * np.array((-sinpsi, cospsi, 0))
+    V2Newton = -Q1 * rBH * Omega * np.array((-sinpsi, cospsi,0))
+
+    A1Newton = G * M2 / rBH**3 * X21
+    A2Newton = G * M1 / rBH**3 * X12
+
+    if 'use_newtonian_acceleration_in_PN' in kwargs:
+        if kwargs['use_newtonian_acceleration_in_PN']:
+            A1 = A1Newton
+            A2 = A2Newton
+    
+    if 'use_newtonian_velocities_in_PN' in kwargs:
+        if kwargs['use_newtonian_velocities_in_PN']:
+            V1 = V1Newton
+            V2 = V2Newton
+
     # see https://en.wikipedia.org/wiki/Einstein%E2%80%93Infeld%E2%80%93Hoffmann_equations
     aNewton = G * M1 * n1s / rs1**2 + G * M2 * n2s / rs2**2
     aPN1 = (
@@ -223,9 +239,11 @@ def PN_Acceleration(Xstar, Vstar, rBH, psiBH, Omega, **kwargs):
 
     aPN3 = 7.0 / 2.0 * (G * M1 * A1 / rs1 + G * M2 * A2 / rs2)
 
-    aPN1 *= 0
-    aPN2 *= 0
-    aPN3 *= 0
+    if 'use_post_newtonian_corrections_in_PN' in kwargs:
+        if kwargs['use_post_newtonian_corrections_in_PN']:
+            aPN1 *= 0
+            aPN2 *= 0
+            aPN3 *= 0
 
     return aNewton + (aPN1 + aPN2 + aPN3)/c_light**2, rdot, Omegadot
 

@@ -239,8 +239,9 @@ def PN_Acceleration(Xstar, Vstar, rBH, psiBH, Omega, **kwargs):
 
     aPN3 = 7.0 / 2.0 * (G * M1 * A1 / rs1 + G * M2 * A2 / rs2)
 
+    # Note that this will override use_newtonian_velocities_in_PN and use_newtonian_acceleration_in_PN
     if 'use_post_newtonian_corrections_in_PN' in kwargs:
-        if kwargs['use_post_newtonian_corrections_in_PN']:
+        if kwargs['use_post_newtonian_corrections_in_PN'] is False:
             aPN1 *= 0
             aPN2 *= 0
             aPN3 *= 0

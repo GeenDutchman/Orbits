@@ -331,6 +331,7 @@ def main(argv):
     # omega, r_vec = calc_omega(kwargs['mass'], kwargs['G'], BH1, BH2)
     # kwargs['omega'] = omega
     kwargs['BH_dist'] = r_vec
+    kwargs['tol'] = 1e-8
 
     try:
         f = open(file_name, "x")    # Open a file
@@ -359,7 +360,7 @@ def main(argv):
         kwargs['Y_dict'] = Y_dict
 
         kwargs['use_newtonian_acceleration_in_PN'] = True
-        kwargs['use_newtonian_velocities_in_PN'] = True
+        kwargs['use_newtonian_velocities_in_PN'] = False
         # Note that this will override use_newtonian_velocities_in_PN and use_newtonian_acceleration_in_PN if set to False
         kwargs['use_post_newtonian_corrections_in_PN'] = True
 

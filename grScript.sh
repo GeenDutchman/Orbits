@@ -178,7 +178,7 @@ function main {
             tee_print -p "No error message found!!\n"
         fi
         tee_print -nt "Removing the errant file\n"
-        rm ./"$data_file"
+        rm "$data_file"
     else # it ran correctly
         tee_print "The data was produced and written successfully.\n"
         min_max_info=$( tail -n 2 "$data_file")

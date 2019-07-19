@@ -351,6 +351,8 @@ def main(argv):
     omega, BH_dist = calc_omega(kwargs['mass'], kwargs['G'], BH1, BH2)
     kwargs['omega'] = omega
     kwargs['BH_dist'] = BH_dist
+    
+    kwargs['tol'] = 2e-9
 
     try:
         f = open(file_name, "x") #Open a file

@@ -136,7 +136,7 @@ function main {
         date >> $log_file
         tee_print "Running with the default parameters. Example:\n"
         tee_print "\t--star -x 4 -y 0 -vy 0.5 --tstep 1.0e-2 --tmax 100 --mratio 1 --sep 2\n"
-        write_success=$( python3 binaryNewton.py > "$data_file")
+        write_success=$( python3 binaryNewton.py -f "$data_file")
     else
         # if not tee, then don't log the time
         if [ "$NO_TEE" == "0" ]; then

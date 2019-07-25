@@ -351,18 +351,20 @@ def main(argv):
     omega, BH_dist = calc_omega(kwargs['mass'], kwargs['G'], BH1, BH2)
     kwargs['omega'] = omega
     kwargs['BH_dist'] = BH_dist
-    kwargs['tol'] = 1e-6
+    kwargs['tol'] = 1e-8
 
     try:
         f = open(file_name, "x") #Open a file
+        
+        print('#', 'time', 'star_x', 'star_angle', 'star_r', 'bh_r' file=f)
 
-        print('#', 'time', 'star_x', 'star_y', 'star_z', 'bh1_x', 'bh1_y', 'bh1_z',
-            'bh2_x', 'bh2_y', 'bh2_z', 'star_r', 'star_angle', 'bh_r', 'star_r_dot', end=' ', file=f)
-        if extended:
-            print('star_vx', 'star_vy', 'star_vz', file=f)
-        else:
-            # prints the newline if it has not yet been printed
-            print('', file=f)
+        # print('#', 'time', 'star_x', 'star_y', 'star_z', 'bh1_x', 'bh1_y', 'bh1_z',
+        #     'bh2_x', 'bh2_y', 'bh2_z', 'star_r', 'star_angle', 'bh_r', 'star_r_dot', end=' ', file=f)
+        # if extended:
+        #     print('star_vx', 'star_vy', 'star_vz', file=f)
+        # else:
+        #     # prints the newline if it has not yet been printed
+        #     print('', file=f)
 
         star_x_min_max = [Y[Y_dict['star_x']], Y[Y_dict['star_x']]]
         star_y_min_max = [Y[Y_dict['star_y']], Y[Y_dict['star_y']]]
@@ -395,15 +397,17 @@ def main(argv):
             # Stars distance from origin, Star theta angle relative to origin
             # Black holes' separation distance from each other
             # r(star position) as it changes with respect to time
-            print(t, Y[Y_dict['star_x']], Y[Y_dict['star_y']], Y[Y_dict['star_z']], BH1[0], BH1[1],
-                BH1[2], BH2[0], BH2[1], BH2[2], star_r, Y[Y_dict['star_angle']], kwargs['BH_dist'], star_r_dot, end=' ', file=f)
+            # print(t, Y[Y_dict['star_x']], Y[Y_dict['star_y']], Y[Y_dict['star_z']], BH1[0], BH1[1],
+            #     BH1[2], BH2[0], BH2[1], BH2[2], star_r, Y[Y_dict['star_angle']], kwargs['BH_dist'], star_r_dot, end=' ', file=f)
 
             # will print out extra data
-            if extended:
-                print(Y[Y_dict['star_vx']], Y[Y_dict['star_vy']], Y[Y_dict['star_vz']], file=f)
-            else:
-                # prints the newline if it has not yet been printed
-                print('', file=f)
+            # if extended:
+            #     print(Y[Y_dict['star_vx']], Y[Y_dict['star_vy']], Y[Y_dict['star_vz']], file=f)
+            # else:
+            #     # prints the newline if it has not yet been printed
+            #     print('', file=f)
+                
+            print(t, Y[Y_dict['star_x']], Y[Y_dict['star_angle']], star_r, kwargs['BH_dist'], file=f)
 
             # The Runge-Kutta routine returns the new value of Y, t, and a
             # possibly updated value of dt

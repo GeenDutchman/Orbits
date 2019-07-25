@@ -202,7 +202,7 @@ def PN_Acceleration(Xstar, Vstar, rBH, psiBH, Omega, **kwargs):
     r12 = np.linalg.norm(X12)
 
     V1Newton = Q2 * rBH * Omega * np.array((-sinpsi, cospsi, 0))
-    V2Newton = -Q1 * rBH * Omega * np.array((-sinpsi, cospsi,0))
+    V2Newton = -Q1 * rBH * Omega * np.array((-sinpsi, cospsi, 0))
 
     A1Newton = G * M2 / rBH**3 * X21
     A2Newton = G * M1 / rBH**3 * X12
@@ -211,7 +211,7 @@ def PN_Acceleration(Xstar, Vstar, rBH, psiBH, Omega, **kwargs):
         if kwargs['use_newtonian_acceleration_in_PN']:
             A1 = A1Newton
             A2 = A2Newton
-    
+
     if 'use_newtonian_velocities_in_PN' in kwargs:
         if kwargs['use_newtonian_velocities_in_PN']:
             V1 = V1Newton

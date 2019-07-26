@@ -356,7 +356,7 @@ def main(argv):
     try:
         f = open(file_name, "x") #Open a file
         
-        print('#', 'time', 'star_x', 'star_angle', 'star_r', 'bh_r' file=f)
+        print('#', 'time', 'star_x', 'star_angle', 'star_r', 'bh_r', file=f)
 
         # print('#', 'time', 'star_x', 'star_y', 'star_z', 'bh1_x', 'bh1_y', 'bh1_z',
         #     'bh2_x', 'bh2_y', 'bh2_z', 'star_r', 'star_angle', 'bh_r', 'star_r_dot', end=' ', file=f)

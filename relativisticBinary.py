@@ -283,6 +283,9 @@ def main(argv):
         elif argv[i] == '--file' or argv[i] == '-f':
             i += 1
             file_name = argv[i]
+        elif argv[i] == '--tol':
+            i += 1
+            kwargs['tol'] = argv[i]
         elif argv[i] == '--extended' or argv[i] == '-e':
             extended = True
         else:
@@ -331,7 +334,7 @@ def main(argv):
     # omega, r_vec = calc_omega(kwargs['mass'], kwargs['G'], BH1, BH2)
     # kwargs['omega'] = omega
     kwargs['BH_dist'] = r_vec
-    kwargs['tol'] = 1e-8
+    #kwargs['tol'] = 1e-8
 
     try:
         f = open(file_name, "x")    # Open a file

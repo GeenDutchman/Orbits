@@ -7,12 +7,15 @@ import sys
 time_out = 60 * 15 # 15 minute timeout
 exponent_min = -5
 
-def relativistic_func(bh_sep, star_x, star_vel, stats):
+def relativistic_func(bh_sep, scale, stats):
     # STARTS a separate process runing grScript, and then counts the error if any when the process is done
 
     exponet = -9
 
-    Rfile = "./relativistic/R" + str(bh_sep) + ".dat"
+    star_dist = bh_sep * scale  # double check this scaling
+    star_y_vel = 1 / np.sqrt(star_dist) # for a circular orbit
+
+    Rfile = "./relativistic/R" + "{:.1e}".format(bh_sep) + "x" + str(scale) + 'T' + str(exponet) + ".analyzer.dat"
     stats['rel_tests'] += 1
 
     while True:
@@ -39,13 +42,15 @@ def relativistic_func(bh_sep, star_x, star_vel, stats):
                 print(Rresult)
             return
 
-def newtonian_func(bh_sep, star_x, star_vel, stats):
+def newtonian_func(bh_sep, scale, stats):
     # STARTS a separate process running grScript, and then counts the error if any when the process is done
 
     exponet = -9
 
+    star_dist = bh_sep * scale  # double check this scaling
+    star_y_vel = 1 / np.sqrt(star_dist) # for a circular orbit
 
-    Nfile = "./newtonian/N" + str(bh_sep) + ".dat"
+    Nfile = "./newtonian/N" + "{:.1e}".format(bh_sep) + "x" + str(scale) + 'T' + str(exponet) + ".analyzer.dat"
     stats['newt_tests'] += 1
 
     while True:
@@ -97,12 +102,9 @@ while bh_sep < max_sep_dist + 1:
     scale = scale_start
     stats['sep_tested'].append(bh_sep)
     while scale < max_scale + 1:
-
-        star_dist = bh_sep * scale # double check this scaling
-        star_y_vel = 1 / np.sqrt(star_dist) # for a circular orbit
         
-        relativistic_func(bh_sep, star_dist, star_y_vel, stats)
-        newtonian_func(bh_sep, star_dist, star_y_vel, stats)
+        relativistic_func(bh_sep, scale, stats)
+        newtonian_func(bh_sep, scale, stats)
 
         # now increment scale
         scale *= scale_increments

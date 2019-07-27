@@ -176,6 +176,7 @@ function main {
             tee_print -p "$err_msg\n"
         else
             tee_print -p "No error message found!!\n"
+            tee_print -p write_success
         fi
         tee_print -nt "Removing the errant file\n"
         rm "$data_file"

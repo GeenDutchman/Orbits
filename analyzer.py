@@ -95,11 +95,11 @@ scale = scale_start
 # increments in terms of a tenth of the base, up to 2 * the base
 while bh_sep < max_sep_dist + 1:
     scale = scale_start
+    stats['sep_tested'].append(bh_sep)
     while scale < max_scale + 1:
 
         star_dist = bh_sep * scale # double check this scaling
         star_y_vel = 1 / np.sqrt(star_dist) # for a circular orbit
-        stats['sep_tested'].append(bh_sep)
         
         relativistic_func(bh_sep, star_dist, star_y_vel, stats)
         newtonian_func(bh_sep, star_dist, star_y_vel, stats)

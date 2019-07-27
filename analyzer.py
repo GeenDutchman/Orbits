@@ -36,6 +36,7 @@ def relativistic_func(bh_sep, star_x, star_vel, stats):
                 print(Rresult, file=sys.stderr, flush=True)
             else:
                 print('Ran successfully...check the output.')
+                print(Rresult)
             return
 
 def newtonian_func(bh_sep, star_x, star_vel, stats):
@@ -68,6 +69,7 @@ def newtonian_func(bh_sep, star_x, star_vel, stats):
                 print(Nresult, file=sys.stderr, flush=True)                
             else:
                 print('Ran successfully...check the output')
+                print(Nresult)
             return
         
 

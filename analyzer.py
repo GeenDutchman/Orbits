@@ -21,7 +21,7 @@ def relativistic_func(bh_sep, scale, stats):
     while True:
         try:
             Rresult = sbp.run(
-                ["./grScript.sh", "--star", "-x",  str(star_dist), "-vy", str(star_y_vel), "-45", "--omax", "100", "--tmax", "1e20", "-ts", "1", "--sep", "-x", str(bh_sep), "-f", Rfile, "--tol", str(1.0 * 10.0 ** exponet)], stdout=sbp.PIPE, stderr=sbp.PIPE, universal_newlines=True)
+                ["./grScript.sh", "--star", "-x",  str(star_dist), "-vy", str(star_y_vel), "-45", "--omax", "10", "--tmax", "1e20", "-ts", "1", "--sep", "-x", str(bh_sep), "-f", Rfile, "--tol", str(1.0 * 10.0 ** exponet)], stdout=sbp.PIPE, stderr=sbp.PIPE, universal_newlines=True)
         except TimeoutError as e:
             print('This run went for too long...')
             print(e)
@@ -61,7 +61,7 @@ def newtonian_func(bh_sep, scale, stats):
     while True:
         try:
             Nresult = sbp.run(
-                ["./newtonianScript.sh", "--star", "-x", str(star_dist), "-vy", str(star_y_vel), "-45", "--omax", "100", "--tmax", "1e20", "-ts", "1", "--sep", str(bh_sep), "-f", Nfile, "--tol", str(1.0 * 10.0 ** exponet)], stdout=sbp.PIPE, stderr=sbp.PIPE, universal_newlines=True)
+                ["./newtonianScript.sh", "--star", "-x", str(star_dist), "-vy", str(star_y_vel), "-45", "--omax", "10", "--tmax", "1e20", "-ts", "1", "--sep", str(bh_sep), "-f", Nfile, "--tol", str(1.0 * 10.0 ** exponet)], stdout=sbp.PIPE, stderr=sbp.PIPE, universal_newlines=True)
         except TimeoutError as e:
             print('This run went for too long...')
             print(e)

@@ -306,7 +306,7 @@ def main(argv):
             file_name = argv[i]
         elif argv[i] == '--tol':
             i += 1
-            kwargs['tol'] = argv[i]
+            kwargs['tol'] = float(argv[i])
         elif argv[i] == '--extended' or argv[i] == '-e':
             extended = True
         else:

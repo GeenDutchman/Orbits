@@ -2,9 +2,9 @@
 
 import numpy as np
 import subprocess as sbp
-import sys
+import sys, os
 
-time_out = 60 * 15 # 15 minute timeout
+time_out = 60 * 10 # 10 minute timeout
 exponent_min = -5
 
 def relativistic_func(bh_sep, scale, stats):
@@ -21,16 +21,20 @@ def relativistic_func(bh_sep, scale, stats):
     while True:
         try:
             Rresult = sbp.run(
-                ["./grScript.sh", "--star", "-x",  str(star_dist), "-vy", str(star_y_vel), "-45", "--omax", "100", "--tmax", "1e12", "-tm", "1", "--sep", "-x", str(bh_sep), "-f", Rfile, "--tol", str(1.0 * 10.0 ** exponet)], stdout=sbp.PIPE, stderr=sbp.PIPE, universal_newlines=True)
+                ["./grScript.sh", "--star", "-x",  str(star_dist), "-vy", str(star_y_vel), "-45", "--omax", "100", "--tmax", "1e20", "-ts", "1", "--sep", "-x", str(bh_sep), "-f", Rfile, "--tol", str(1.0 * 10.0 ** exponet)], stdout=sbp.PIPE, stderr=sbp.PIPE, universal_newlines=True)
         except TimeoutError as e:
             print('This run went for too long...')
             print(e)
             stats['rel_timeouts'] += 1
             exponet += 1
+            if os.path.isfile(Rfile):
+                print('Removing file.', Rfile)
+                os.remove(Rfile)
             if exponet <= exponent_min:
                 print('Trying again with exponet', exponet)
             else:
                 print("Cannot go lower than", exponent_min, "as exponet.")
+                print()
                 return
         else:
             if Rresult.returncode != 0:
@@ -40,6 +44,7 @@ def relativistic_func(bh_sep, scale, stats):
             else:
                 print('Ran successfully...check the output.')
                 print(Rresult)
+            print()
             return
 
 def newtonian_func(bh_sep, scale, stats):
@@ -56,16 +61,20 @@ def newtonian_func(bh_sep, scale, stats):
     while True:
         try:
             Nresult = sbp.run(
-                ["./newtonianScript.sh", "--star", "-x", str(star_dist), "-vy", str(star_y_vel), "-45", "--omax", "100", "--tmax", "1e12", "-tm", "1", "--sep", str(bh_sep), "-f", Nfile, "--tol", str(1.0 * 10.0 ** exponet)], stdout=sbp.PIPE, stderr=sbp.PIPE, universal_newlines=True)
+                ["./newtonianScript.sh", "--star", "-x", str(star_dist), "-vy", str(star_y_vel), "-45", "--omax", "100", "--tmax", "1e20", "-ts", "1", "--sep", str(bh_sep), "-f", Nfile, "--tol", str(1.0 * 10.0 ** exponet)], stdout=sbp.PIPE, stderr=sbp.PIPE, universal_newlines=True)
         except TimeoutError as e:
             print('This run went for too long...')
             print(e)
             stats['newt_timeouts'] += 1
             exponet += 1
+            if os.path.isfile(Nfile):
+                print('Removing file.', Nfile)
+                os.remove(Nfile)
             if exponet <= exponent_min:
                 print('Trying again with exponet', exponet)
             else:
                 print("Cannot go lower than", exponent_min, "as exponet.")
+                print()
                 return
         else:
             if Nresult.returncode != 0:
@@ -75,6 +84,7 @@ def newtonian_func(bh_sep, scale, stats):
             else:
                 print('Ran successfully...check the output')
                 print(Nresult)
+            print()
             return
         
 
@@ -82,14 +92,14 @@ def newtonian_func(bh_sep, scale, stats):
 # as a process in the background
 # also make sure to not run any plates or the movie
 
-stats = { "rel_tests": 0, "newt_tests": 0, "rel_err_count": 0, "newt_err_count": 0, "sep_tested": [], "newt_timeouts": 0, "rel_timeouts": 0}
+stats = { "rel_tests": 0, "newt_tests": 0, "rel_err_count": 0, "newt_err_count": 0, "sep_tested": {}, "newt_timeouts": 0, "rel_timeouts": 0}
 
 start_bh_sep_dist = 100
-max_sep_dist = 100#1000
+max_sep_dist = 1000
 sep_increments = 10 # multiplies, does not add
 
 scale_start = 10
-max_scale = 100#10000
+max_scale = 10000
 scale_increments = 10 # multiplies, does not add
 
 bh_sep = start_bh_sep_dist
@@ -100,9 +110,9 @@ scale = scale_start
 # increments in terms of a tenth of the base, up to 2 * the base
 while bh_sep < max_sep_dist + 1:
     scale = scale_start
-    stats['sep_tested'].append(bh_sep)
+    stats['sep_tested'][str(bh_sep)] = []
     while scale < max_scale + 1:
-        
+        stats['sep_tested'][str(bh_sep)].append(scale)
         relativistic_func(bh_sep, scale, stats)
         newtonian_func(bh_sep, scale, stats)
 

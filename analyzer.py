@@ -121,5 +121,5 @@ if result.returncode == 0:
 result = sbp.run(["which", "espeak"], stdout=sbp.DEVNULL)
 if result.returncode == 0:
     result = sbp.run(["espeak", msg_string])
-# print(result)
+print(msg_string)
 # if neither goes off....oh well

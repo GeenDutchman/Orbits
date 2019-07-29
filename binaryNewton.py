@@ -209,7 +209,7 @@ def main(argv):
     t = 0.0
 
     # max time
-    tmax = 100
+    tmax = 1e300
 
     # max orbits
     MAX_ORBITS = -1
@@ -245,6 +245,7 @@ def main(argv):
                 if argv[i] == '--x0' or argv[i] == '-x':
                     i += 1
                     x0 = float(argv[i])
+                    vy0 = 1/(np.sqrt(x0)) * 0.99
                     #print('X position  changed')
                 elif argv[i] == '--y0' or argv[i] == '-y':
                     i += 1
@@ -351,12 +352,12 @@ def main(argv):
     omega, BH_dist = calc_omega(kwargs['mass'], kwargs['G'], BH1, BH2)
     kwargs['omega'] = omega
     kwargs['BH_dist'] = BH_dist
-    kwargs['tol'] = 1e-8
+    kwargs['tol'] = 1e-7
 
     try:
         f = open(file_name, "x") #Open a file
         
-        print('#', 'time', 'star_x', 'star_angle', 'star_r', 'bh_r' file=f)
+        print('#', 'time', 'star_x', 'star_angle', 'star_r', 'bh_r', file=f)
 
         # print('#', 'time', 'star_x', 'star_y', 'star_z', 'bh1_x', 'bh1_y', 'bh1_z',
         #     'bh2_x', 'bh2_y', 'bh2_z', 'star_r', 'star_angle', 'bh_r', 'star_r_dot', end=' ', file=f)

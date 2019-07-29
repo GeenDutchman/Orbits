@@ -182,7 +182,7 @@ def main(argv):
     t = 0.0
 
     # max time
-    tmax = 1.0e12
+    tmax = 1.0e0300
 
     # max orbits
     MAX_ORBITS = -1
@@ -211,6 +211,7 @@ def main(argv):
                 if argv[i] == '--x0' or argv[i] == '-x':
                     i += 1
                     x0 = float(argv[i])
+                    vy0 = 1/(np.sqrt(x0)) * 0.99
                     # print('X position  changed')
                 elif argv[i] == '--y0' or argv[i] == '-y':
                     i += 1
@@ -331,7 +332,7 @@ def main(argv):
     # omega, r_vec = calc_omega(kwargs['mass'], kwargs['G'], BH1, BH2)
     # kwargs['omega'] = omega
     kwargs['BH_dist'] = r_vec
-    kwargs['tol'] = 1e-8
+    kwargs['tol'] = 1e-7
 
     try:
         f = open(file_name, "x")    # Open a file

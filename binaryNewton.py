@@ -289,10 +289,26 @@ def main(argv):
             i += 1
             kwargs['massratio'] = float(argv[i])
             #print('Mass ratio changed')
-        elif argv[i] == '--sep' or argv[i] == '-s':
+        elif argv[i] == '--sep':
             i += 1
-            BH1x = float(argv[i])/2
-            BH2x = -1.0*BH1x
+            while i < len(argv):  # while there are unprocessed separation arguments
+                # print('Star arguments')
+                if argv[i] == '--rx' or argv[i] == '-x':
+                    i += 1
+                    BH1x = float(argv[i])/2
+                    BH2x = -1.0*BH1x
+                    # H'X position  changed')
+                elif argv[i] == '--ry' or argv[i] == '-y':
+                    i += 1
+                    BH1x = float(argv[i])/2
+                    BH2x = -1.0*BH1x
+                    # print('Y position  changed')
+                else:
+                    # If the *current* argument is not for a separation, counter the *next* increment
+                    i -= 1
+                    break
+                # move to the next argument
+                i += 1
             # Print('Seperation distance of black holes changes)
         elif argv[i] == '--help' or argv[i] == '-h':
             print_help()

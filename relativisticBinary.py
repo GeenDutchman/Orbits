@@ -199,6 +199,8 @@ def main(argv):
     use_RK_45 = False
     extended = False
     
+    kwargs['tol'] = 1e-8
+    
     file_name = "R100.dat"
 
     # for better options menu https://docs.python.org/3/library/argparse.html#sub-commands
@@ -335,7 +337,6 @@ def main(argv):
     # omega, r_vec = calc_omega(kwargs['mass'], kwargs['G'], BH1, BH2)
     # kwargs['omega'] = omega
     kwargs['BH_dist'] = r_vec
-    kwargs['tol'] = 1e-8
 
     try:
         f = open(file_name, "x")    # Open a file

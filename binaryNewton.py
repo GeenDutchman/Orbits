@@ -232,6 +232,8 @@ def main(argv):
     i = 0
     use_RK_45 = False
     extended = False
+     
+    kwargs['tol'] = 1e-10
 
     file_name = "N2.dat"
 
@@ -268,7 +270,7 @@ def main(argv):
                     vz0 = float(argv[i])
                     #print('Velocity z vector  changed')
                 else:
-                    # If the *current* argument is not for a star, counter the *next* increment
+                    # If the *current* argument is not for a star, counter the *next* increment 
                     i -= 1
                     break
                 # move to the next argument
@@ -370,8 +372,6 @@ def main(argv):
     omega, BH_dist = calc_omega(kwargs['mass'], kwargs['G'], BH1, BH2)
     kwargs['omega'] = omega
     kwargs['BH_dist'] = BH_dist
-
-    kwargs['tol'] = 1e-4
 
     try:
         f = open(file_name, "x") #Open a file

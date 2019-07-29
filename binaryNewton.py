@@ -209,7 +209,7 @@ def main(argv):
     t = 0.0
 
     # max time
-    tmax = 100
+    tmax = 1e300
 
     # max orbits
     MAX_ORBITS = -1
@@ -245,6 +245,7 @@ def main(argv):
                 if argv[i] == '--x0' or argv[i] == '-x':
                     i += 1
                     x0 = float(argv[i])
+                    vy0 = 1/(np.sqrt(x0)) * 0.99
                     #print('X position  changed')
                 elif argv[i] == '--y0' or argv[i] == '-y':
                     i += 1
@@ -272,6 +273,26 @@ def main(argv):
                     break
                 # move to the next argument
                 i += 1
+        elif argv[i] == '--sep':
+            i += 1
+            while i < len(argv):  # while there are unprocessed separation arguments
+                # print('Star arguments')
+                if argv[i] == '-rx' or argv[i] == '-x':
+                    i += 1
+                    BH1x = float(argv[i])/2
+                    BH2x = -1.0*BH1x
+                    # print('X position  changed')
+                elif argv[i] == '--ry' or argv[i] == '-y':
+                    i += 1
+                    BH1x = float(argv[i])/2
+                    BH2x = -1.0*BH1x
+                    # print('Y position  changed')
+                else:
+                    # If the *current* argument is not for a separation, counter the *next* increment
+                    i -= 1
+                    break
+                # move to the next argument
+                i += 1
         elif argv[i] == '--tstep' or argv[i] == '-ts':
             i += 1
             dt = float(argv[i])
@@ -288,11 +309,6 @@ def main(argv):
             i += 1
             kwargs['massratio'] = float(argv[i])
             #print('Mass ratio changed')
-        elif argv[i] == '--sep' or argv[i] == '-s':
-            i += 1
-            BH1x = float(argv[i])/2
-            BH2x = -1.0*BH1x
-            # Print('Seperation distance of black holes changes)
         elif argv[i] == '--help' or argv[i] == '-h':
             print_help()
             exit(0)
@@ -304,7 +320,7 @@ def main(argv):
         elif argv[i] == '--file' or argv[i] == '-f':
             i += 1
             file_name = argv[i]
-        elif argv[i] == '--tol':
+        elif argv[i] == '--tol' or argv[i] == '-to':
             i += 1
             kwargs['tol'] = float(argv[i])
         elif argv[i] == '--extended' or argv[i] == '-e':
@@ -354,7 +370,8 @@ def main(argv):
     omega, BH_dist = calc_omega(kwargs['mass'], kwargs['G'], BH1, BH2)
     kwargs['omega'] = omega
     kwargs['BH_dist'] = BH_dist
-    # kwargs['tol'] = 1e-4
+
+    kwargs['tol'] = 1e-4
 
     try:
         f = open(file_name, "x") #Open a file

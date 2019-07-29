@@ -284,7 +284,7 @@ def main(argv):
         elif argv[i] == '--file' or argv[i] == '-f':
             i += 1
             file_name = argv[i]
-        elif argv[i] == '--tol':
+        elif argv[i] == '--tol' or argv[i] == '-to':
             i += 1
             kwargs['tol'] = float(argv[i])
         elif argv[i] == '--extended' or argv[i] == '-e':

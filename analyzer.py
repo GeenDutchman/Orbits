@@ -13,15 +13,17 @@ def relativistic_func(bh_sep, scale, stats):
     exponet = -9
 
     star_dist = bh_sep * scale  # double check this scaling
-    star_y_vel = 1 / np.sqrt(star_dist) # for a circular orbit
 
-    Rfile = "./relativistic/R" + "{:.1e}".format(bh_sep) + "x" + str(scale) + 'T' + str(exponet) + ".analyzer.dat"
     stats['rel_tests'] += 1
 
     while True:
         try:
+            Rfile = "./relativistic/R" + \
+                "{:.1e}".format(bh_sep) + "x" + str(scale) + \
+                'T' + str(exponet) + ".analyzer.dat"
+            # This will run as a separate process, and will timeout beyond time_out
             Rresult = sbp.run(
-                ["./grScript.sh", "--star", "-x",  str(star_dist), "-vy", str(star_y_vel), "-45", "--omax", "10", "--tmax", "1e20", "-ts", "1", "--sep", "-x", str(bh_sep), "-f", Rfile, "--tol", str(1.0 * 10.0 ** exponet)], stdout=sbp.PIPE, stderr=sbp.PIPE, universal_newlines=True)
+                ["./grScript.sh", "--star", "-x",  str(star_dist), "-45", "--omax", "10", "--tmax", "1e20", "-ts", "1", "--sep", "-x", str(bh_sep), "-f", Rfile, "--tol", str(1.0 * 10.0 ** exponet)], stdout=sbp.PIPE, stderr=sbp.PIPE, universal_newlines=True, timeout=time_out)
         except TimeoutError as e:
             print('This run went for too long...')
             print(e)
@@ -55,13 +57,16 @@ def newtonian_func(bh_sep, scale, stats):
     star_dist = bh_sep * scale  # double check this scaling
     star_y_vel = 1 / np.sqrt(star_dist) # for a circular orbit
 
-    Nfile = "./newtonian/N" + "{:.1e}".format(bh_sep) + "x" + str(scale) + 'T' + str(exponet) + ".analyzer.dat"
     stats['newt_tests'] += 1
 
     while True:
         try:
+            Nfile = "./newtonian/N" + \
+                "{:.1e}".format(bh_sep) + "x" + str(scale) + \
+                'T' + str(exponet) + ".analyzer.dat"
+            # runs as a separate process and will timeout after time_out
             Nresult = sbp.run(
-                ["./newtonianScript.sh", "--star", "-x", str(star_dist), "-vy", str(star_y_vel), "-45", "--omax", "10", "--tmax", "1e20", "-ts", "1", "--sep", str(bh_sep), "-f", Nfile, "--tol", str(1.0 * 10.0 ** exponet)], stdout=sbp.PIPE, stderr=sbp.PIPE, universal_newlines=True)
+                ["./newtonianScript.sh", "--star", "-x", str(star_dist), "-vy", str(star_y_vel), "-45", "--omax", "10", "--tmax", "1e20", "-ts", "1", "--sep", str(bh_sep), "-f", Nfile, "--tol", str(1.0 * 10.0 ** exponet)], stdout=sbp.PIPE, stderr=sbp.PIPE, universal_newlines=True, timeout=time_out)
         except TimeoutError as e:
             print('This run went for too long...')
             print(e)

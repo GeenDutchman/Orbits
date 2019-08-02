@@ -4,10 +4,17 @@ from RK import RK4_Step, RK45_Step
 import sys
 from PN import center_of_mass_coordinates_to_BH_positions, Omega_of_r, PN_Acceleration
 
+'''
+    Helps manage indexing into the Y list by dynamically assigning (key: Y_index) pairs.
+    It can also add a list or array of these pairs given two lists of identical length.
+'''
+
+
 def addY(values, keys, Y, key_dict):
     if isinstance(values, (list, tuple, np.ndarray)) and isinstance(keys, (list, tuple, np.ndarray)):
         if len(values) != len(keys):
-            raise IndexError('The length of values must match the length of keys!!')
+            raise IndexError(
+                'The length of values must match the length of keys!!')
         for index in range(len(values)):
             Y_len = len(Y)
             Y = np.append(Y, values[index])
@@ -18,17 +25,25 @@ def addY(values, keys, Y, key_dict):
         key_dict[keys] = Y_len
     return Y, key_dict
 
+
+'''
+    This method is responsible for calculating the time derivatives of each thing in y0.
+    Additional arguments are passed to subordinate methods through kwargs, most of which define
+    default values if necessary.
+'''
+
+
 def Keppler_Binary_RHS(t, y0, **kwargs):
     if 'Y_dict' in kwargs:
         Y_dict = kwargs['Y_dict']
     else:
         print('Must have the dictionary!!')
         exit(2)
-    
+
     star_x_vec = np.array([y0[Y_dict['star_x']],
-                  y0[Y_dict['star_y']], y0[Y_dict['star_z']]], dtype=np.float64)  # star position
+                           y0[Y_dict['star_y']], y0[Y_dict['star_z']]], dtype=np.float64)  # star position
     star_v_vec = np.array([y0[Y_dict['star_vx']],
-                  y0[Y_dict['star_vy']], y0[Y_dict['star_vz']]], dtype=np.float64)  # star velocity
+                           y0[Y_dict['star_vy']], y0[Y_dict['star_vz']]], dtype=np.float64)  # star velocity
     # star angle position
     #star_phi_vec = y0[Y_dict['star_angle']]
 
@@ -37,20 +52,10 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
     # or the distance from the origin
     # star_r = np.linalg.norm(star_x_vec)
 
-    if 'mass' in kwargs:
-        combined_BH_mass = kwargs['mass']
-    else:
-        combined_BH_mass = 1.0
-
-    if 'G' in kwargs:
-        G = kwargs['G']
-    else:
-        G = 1.0
-
-    if 'massratio' in kwargs:
-        BH_ratio = kwargs['massratio']
-    else:
-        BH_ratio = 1.0  # equal mass default
+    '''
+        This part used to have a bunch of "if 'this' in kwargs, set it from kwargs. Else, here is some default value.
+        Most of those are found in subordinate methods now.
+    '''
 
     if 'bh1' in kwargs:
         BH1 = kwargs['bh1']
@@ -68,23 +73,21 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
 
     BH2_x_vec = BH2[0:3]
 
-    if 'BH_dist' in kwargs:
-        r_vec = kwargs['BH_dist']
-    else:
-        print("Must have black hole information!!")
-        exit(2)
-
     # corrections: star_acc, bh_r_dot, bh_Omega_dot
-    star_v_dot, bh_r_dot, bh_Omega_dot = PN_Acceleration(star_x_vec, star_v_vec, y0[Y_dict['bh_r']], y0[Y_dict['bh_psi']], y0[Y_dict['bh_Omega']], **kwargs)
+    star_v_dot, bh_r_dot, bh_Omega_dot = PN_Acceleration(
+        star_x_vec, star_v_vec, y0[Y_dict['bh_r']], y0[Y_dict['bh_psi']], y0[Y_dict['bh_Omega']], **kwargs)
 
     # calculate the current position, but does not do the z coord??
-    BH1_x_vec[0:3], BH2_x_vec[0:3] = center_of_mass_coordinates_to_BH_positions(y0[Y_dict['bh_r']], y0[Y_dict['bh_psi']], **kwargs)
+    BH1_x_vec[0:3], BH2_x_vec[0:3] = center_of_mass_coordinates_to_BH_positions(
+        y0[Y_dict['bh_r']], y0[Y_dict['bh_psi']], **kwargs)
 
-    BH1_mass = combined_BH_mass / (BH_ratio + 1)
-    # (-1 * combined_BH_mass * BH_ratio) / (BH_ratio + 1)
-    BH2_mass = combined_BH_mass - BH1_mass
+    # One way to calculate mass of the Black Holes
+    # BH1_mass = combined_BH_mass / (BH_ratio + 1)
+    # BH2_mass = (-1 * combined_BH_mass * BH_ratio) / (BH_ratio + 1)
 
-    phi_dot = np.linalg.norm(np.cross(star_x_vec, star_v_vec)) / (np.linalg.norm(star_x_vec) ** 2)
+    # star angle
+    phi_dot = np.linalg.norm(
+        np.cross(star_x_vec, star_v_vec)) / (np.linalg.norm(star_x_vec) ** 2)
 
     kwargs['bh1'] = BH1_x_vec
     kwargs['bh2'] = BH2_x_vec
@@ -104,11 +107,15 @@ def Keppler_Binary_RHS(t, y0, **kwargs):
     deltas[Y_dict['star_angle']] = phi_dot
 
     deltas[Y_dict['bh_r']] = bh_r_dot
-    deltas[Y_dict['bh_psi']] = y0[Y_dict['bh_Omega']] # bh_psi_dot is bh_Omega
+    deltas[Y_dict['bh_psi']] = y0[Y_dict['bh_Omega']]  # bh_psi_dot is bh_Omega
     deltas[Y_dict['bh_Omega']] = bh_Omega_dot
 
     return deltas
-    
+
+
+'''
+    Simple enough, this will print the default values for the various arguments.
+'''
 
 
 def print_default():
@@ -124,6 +131,11 @@ def print_default():
     print('Default black hole separation: \t\t\t\t100')
     print('Default mass ratio: \t\t\t\t\t1.0')
     print('Default maximum orbits: \t\t\tinfinite\n')
+
+
+'''
+    This prints the help
+'''
 
 
 def print_help():
@@ -147,12 +159,27 @@ def print_help():
     print('--extended, -e\t\t\tWill print extra data to the file')
     print('--rk45, -45\t\t\tSets to auto adjust the time-step dynamically\n')
 
+
+'''
+    This is more for clerical information when plotting.
+
+    By keeping track of the star's orbit, all bodies can be kept in view.
+'''
+
+
 def update_min_max(min_max_list, Y, index):
     # if new coordinate is less than stored minimum, update
     if Y[index] < min_max_list[0]:
         min_max_list[0] = np.floor(Y[index])
-    elif Y[index] > min_max_list[1]: # if new coord is more than stored maximum
+    elif Y[index] > min_max_list[1]:  # if new coord is more than stored maximum
         min_max_list[1] = np.ceil(Y[index])
+
+
+'''
+    Main set up default values, parses command line arguments, and then if parameters are
+    OK, will run the simulation until A) the simulation time is elapsed, B) the orbital maximum is reached, 
+    or C) the Black Holes are at or within 10 separations of eachother.
+'''
 
 
 def main(argv):
@@ -167,10 +194,11 @@ def main(argv):
     # Default mass, G, and q values
     kwargs = {'mass': 1.0, 'G': 1.0, 'massratio': 1.0}
 
+    # Default star's position
     x0 = 5000
     y0 = 0.0
     z0 = 0.0
-
+    # Default star's velocity
     vx0 = 0.0
     vy0 = 0.014
     vz0 = 0.0
@@ -184,9 +212,9 @@ def main(argv):
     # max time
     tmax = 1.0e0300
 
-    # max orbits
+    # max orbits, if this is '-1' the orbital maximum will be ignored
     MAX_ORBITS = -1
-    
+
     # Separation of Black Holes' initial position
     r_x_hat = 100.0
     r_y_hat = 0.0
@@ -197,44 +225,41 @@ def main(argv):
 
     i = 0
     use_RK_45 = False
-    extended = 0
-    
-    kwargs['tol'] = 1e-8
-    
-    file_name = "R100.dat"
+    extended = 0  # controls how much information is printed
+
+    kwargs['tol'] = 1e-8  # tolerance for RK_45
+
+    # 'R' relativistic '1e2' separations 'x50' star is 50 times the separation 'T1e-8' tolerance
+    file_name = "R1e2x50T1e-8.dat"
 
     # for better options menu https://docs.python.org/3/library/argparse.html#sub-commands
+    # But we just kept it simple
 
     while i < len(argv):  # while there are unprocessed arguments
         if argv[i] == '--star':
             i += 1
-            while i < len(argv):  # while there are unprocessed star
+            while i < len(argv):  # while there are unprocessed star arguments
                 # print('Star arguments')
                 if argv[i] == '--x0' or argv[i] == '-x':
                     i += 1
                     x0 = float(argv[i])
+                    # automatically calculated to be less than circular velocity
                     vy0 = 1/(np.sqrt(x0)) * 0.99
-                    # print('X position  changed')
                 elif argv[i] == '--y0' or argv[i] == '-y':
                     i += 1
                     y0 = float(argv[i])
-                    # print('Y position  changed')
                 elif argv[i] == '--z0' or argv[i] == '-z':
                     i += 1
                     z0 = float(argv[i])
-                    # print('Z position  changed')
                 elif argv[i] == '--vx0' or argv[i] == '-vx':
                     i += 1
                     vx0 = float(argv[i])
-                    # print('Velocity x vector  changed')
                 elif argv[i] == '--vy0' or argv[i] == '-vy':
                     i += 1
                     vy0 = float(argv[i])
-                    # print('Velocity y vector  changed')
                 elif argv[i] == '--vz0' or argv[i] == '-vz':
                     i += 1
                     vz0 = float(argv[i])
-                    # print('Velocity z vector  changed')
                 else:
                     # If the *current* argument is not for a star, counter the *next* increment
                     i -= 1
@@ -248,11 +273,9 @@ def main(argv):
                 if argv[i] == '--rx' or argv[i] == '-x':
                     i += 1
                     r_x_hat = float(argv[i])
-                    # print('X position  changed')
                 elif argv[i] == '--ry' or argv[i] == '-y':
                     i += 1
                     r_y_hat = float(argv[i])
-                    # print('Y position  changed')
                 else:
                     # If the *current* argument is not for a separation, counter the *next* increment
                     i -= 1
@@ -306,11 +329,11 @@ def main(argv):
 
     # Calculate initial star angle(phi)
     # TODO: need to check if this is the right initialization
-    initial_phi = np.array(np.arctan2(y0, x0), dtype=np.float64) 
+    initial_phi = np.array(np.arctan2(y0, x0), dtype=np.float64)
 
     # Concatenate star parameters
-    Y = [] # contains the things to be integrated
-    Y_dict = {} # uses a key:index pairing to keep track of where what values are in Y
+    Y = []  # contains the things to be integrated
+    Y_dict = {}  # uses a key:index pairing to keep track of where what values are in Y
     Y, Y_dict = addY(initial_position, [
                      'star_x', 'star_y', 'star_z'], Y, Y_dict)
     Y, Y_dict = addY(initial_velocity, [
@@ -318,7 +341,8 @@ def main(argv):
     Y, Y_dict = addY(initial_phi, 'star_angle', Y, Y_dict)
 
     # Puts separation parameters into an array
-    initial_separation = np.array((r_x_hat, r_y_hat, r_z_hat), dtype=np.float64)
+    initial_separation = np.array(
+        (r_x_hat, r_y_hat, r_z_hat), dtype=np.float64)
 
     r_vec = initial_separation
 
@@ -328,7 +352,8 @@ def main(argv):
     BH1 = initial_bh1_pos
 
     # Puts black hole 2 position parameters into an array
-    initial_bh2_pos = ((-1 * kwargs['massratio'])/(1 + kwargs['massratio']))*r_vec
+    initial_bh2_pos = (
+        (-1 * kwargs['massratio'])/(1 + kwargs['massratio']))*r_vec
 
     BH2 = initial_bh2_pos
 
@@ -344,20 +369,25 @@ def main(argv):
 
         bh_r = np.linalg.norm(r_vec)
         if bh_r <= 10:
-            print("# The magnitude of the separation must be larger than 10 separations!!", file=f)
+            print(
+                "# The magnitude of the separation must be larger than 10 separations!!", file=f)
             exit(2)
         Omega = Omega_of_r(bh_r, **kwargs)
         psi = 0
 
-        Y, Y_dict = addY([bh_r, psi, Omega], ['bh_r', 'bh_psi', 'bh_Omega'], Y, Y_dict)
-        
+        Y, Y_dict = addY([bh_r, psi, Omega], [
+                         'bh_r', 'bh_psi', 'bh_Omega'], Y, Y_dict)
+
         if extended == 0:
             print('#', 'time', 'star_x', 'star_angle', 'star_r', 'bh_r', file=f)
         elif extended >= 1:
+            # use this option if you want to use any of our '.plt' scripts
             print('#', 'time', 'star_x', 'star_y', 'star_z', 'bh1_x', 'bh1_y', 'bh1_z',
-                'bh2_x', 'bh2_y', 'bh2_z', 'star_r', 'star_angle', 'bh_r', 'star_r_dot', end=' ', file=f)
+                  'bh2_x', 'bh2_y', 'bh2_z', 'star_r', 'star_angle', 'bh_r', 'star_r_dot', end=' ', file=f)
             if extended >= 2:
-                print('star_vx', 'star_vy', 'star_vz', 'bh_psi', 'bh_Omega', end=' ', file=f)
+                # more data
+                print('star_vx', 'star_vy', 'star_vz',
+                      'bh_psi', 'bh_Omega', end=' ', file=f)
             print('', file=f)
 
         star_x_min_max = [Y[Y_dict['star_x']], Y[Y_dict['star_x']]]
@@ -384,8 +414,8 @@ def main(argv):
             # Star's distance from the origin
             star_r = np.linalg.norm(star_pos)
 
-            #Dot product are velocity and position of star divided by
-            #norm of star position vector
+            # Dot product are velocity and position of star divided by
+            # norm of star position vector
             star_r_dot = (np.dot(star_vel, star_pos))/star_r
 
             BH1 = kwargs['bh1']
@@ -400,15 +430,15 @@ def main(argv):
             # Star x velocity, Star y velocity, Star z velocity
 
             if extended == 0:
-                print(t, Y[Y_dict['star_x']], Y[Y_dict['star_angle']], star_r, Y[Y_dict['bh_r']], file=f)
+                print(t, Y[Y_dict['star_x']], Y[Y_dict['star_angle']],
+                      star_r, Y[Y_dict['bh_r']], file=f)
             elif extended >= 1:
                 print(t, Y[Y_dict['star_x']], Y[Y_dict['star_y']], Y[Y_dict['star_z']], BH1[0], BH1[1],
-                    BH1[2], BH2[0], BH2[1], BH2[2], star_r, Y[Y_dict['star_angle']], Y[Y_dict['bh_r']], star_r_dot, end=' ', file=f)
+                      BH1[2], BH2[0], BH2[1], BH2[2], star_r, Y[Y_dict['star_angle']], Y[Y_dict['bh_r']], star_r_dot, end=' ', file=f)
                 if extended >= 2:
                     print(Y[Y_dict['star_vx']], Y[Y_dict['star_vy']], Y[Y_dict['star_vz']],
-                            Y[Y_dict['bh_psi']], Y[Y_dict['bh_Omega']], end=' ', file=f)
+                          Y[Y_dict['bh_psi']], Y[Y_dict['bh_Omega']], end=' ', file=f)
                 print(file=f)
-
 
             # The Runge-Kutta routine returns the new value of Y, t, and a
             # possibly updated value of dt
@@ -418,7 +448,8 @@ def main(argv):
             else:
                 # does not change the dt
                 t, Y, dt = RK4_Step(t, Y, dt, Keppler_Binary_RHS, **kwargs)
-            
+
+            # Keeps track of the min and max of the star for plotting purposes
             update_min_max(star_x_min_max, Y, Y_dict['star_x'])
             update_min_max(star_y_min_max, Y, Y_dict['star_y'])
             update_min_max(star_z_min_max, Y, Y_dict['star_z'])
@@ -429,10 +460,10 @@ def main(argv):
                 break
 
         print('# The star does', Y[Y_dict['star_angle']
-                                ] / (2 * np.pi), 'orbits.', file=f)
+                                   ] / (2 * np.pi), 'orbits.', file=f)
         print("# Xmin\tXmax\tYmin\tYmax\tZmin\tZmax", file=f)
         print("#", star_x_min_max[0], "\t", star_x_min_max[1], "\t", star_y_min_max[0],
-            "\t", star_y_min_max[1], "\t", star_z_min_max[0], "\t", star_z_min_max[1], file=f)
+              "\t", star_y_min_max[1], "\t", star_z_min_max[0], "\t", star_z_min_max[1], file=f)
 
         f.close()
     except FileExistsError:
